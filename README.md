@@ -14,6 +14,6 @@ Attack blocks around your build with a mainhand golden sword to make triangles u
 
 Run `/volume calcvolume` to have the script use the [tetrahedral shoelace method](https://ysjournal.com/tetrahedral-shoelace-method-calculating-volume-of-irregular-solids) to find the volume of the region.
 
-This **does not** find the number of full blocks that will approximate this shape. It instead finds the mathematical volume of the exact outlines region. If you wanted the number of blocks, feel free to read [this](http://math.sfsu.edu/beck/papers/noprint.pdf) paper on the topic.
+This **does not** find the number of full blocks that will approximate this shape. It instead finds the mathematical volume of the exact outlined region. If you wanted the number of blocks, feel free to read [this](http://math.sfsu.edu/beck/papers/noprint.pdf) paper on the topic.
 
 If the output seems off(especially much lower than expected), use `/volume logdata` to drop the relevant data in a text file.
