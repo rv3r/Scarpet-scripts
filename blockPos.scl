@@ -1,0 +1,79 @@
+__config() ->
+(
+	return(
+		m(
+			l('scope','global'),
+			l('stay_loaded',true);
+		);
+	);
+);
+
+global_appname = 'blockPos';
+
+printdata(appname) -> (
+	print(read_file(appname,'nbt'));
+);
+
+__add_to_nbt(appname) -> (
+	data = read_file(appname + '_block','nbt');
+	print(data);
+	print(type(data));
+	if(data == null || data == 'null',
+		data = encode_nbt(l());
+		write_file(appname + '_blocks','nbt',data);
+	);
+	print(appname + ' nbt file created');
+	return(data);
+);
+
+__addpos(appname,triple,tags) -> (
+	data = parse_nbt(read_file(appname + '_blocks','nbt'));
+	result = 0;
+	for(data,
+		if(_ == l(triple,tags),
+			result = 1;
+			break();
+		);
+	);
+	if(result,
+		put(data,null,l(triple,tags));
+	);
+	write_file(appname + '_blocks','nbt',encode_nbt(data));
+);
+
+__deletepos(appname,triple,tags) -> (
+	data = parse_nbt(read_file(appname + '_blocks','nbt'));
+	result = 0;
+	for(data,
+		if(_ == l(triple,tags),
+			delete(data:_i);
+			result = 1;
+			break();
+		);
+	);
+	write_file(appname + '_blocks','nbt',encode_nbt(data));
+	return(result);
+);
+
+__findpos(appname,triple,tags) -> (
+	data = parse_nbt(read_file(appname + '_blocks','nbt'));
+	result = 0;
+	for(data,
+		if(_ = l(triple,tags),
+			result = 1;
+			break();
+		);
+	);
+	return(result);
+);
+
+__listallpos(appname,tags) -> (
+	data = parse_nbt(read_file(appname + '_blocks','nbt'));
+	for(data,
+		print(_);
+	);
+);
+
+if(parse_nbt(read_file('data','nbt')) == null,
+	__add_to_nbt(global_appname);
+);
