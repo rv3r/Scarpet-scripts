@@ -1,6 +1,9 @@
 # Scarpet Scripts
 Pick the script you need and follow [these](https://github.com/gnembon/fabric-carpet/wiki/Installing-carpet-scripts-in-your-world) instructions for installation!
 
+# Beehive Count Script
+Right click a bee nest or beehive with an empty mainhand to learn how many bees are in the block.
+
 # blockPos Library
 ### Incomplete and potentially privated at the moment but has the following goals: 
 Provides methods to
