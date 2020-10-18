@@ -8,7 +8,7 @@ Right click a bee nest or beehive with an empty mainhand to learn how many bees 
 ### Has not been tested yet in another script but does work on its own 
 Library to allow your scripts to save block positions along with associated data. Saved blocks can be searched for certain positions or data.
 
-It is suggested that you set a variable to the name of the file that you would like the blocks to be stored in, such as `global_appname = 'beehiveCount'` if used in config or just `appname = 'beehiveCount'` if in the main program.
+It is suggested that you set a variable to the name of the file that you would like the blocks to be stored in, such as `global_appname = 'beehiveCount'` if used in config or just `appname = 'beehiveCount'` if in the main program. This will be called in any method that requires `appname`.
 
 Blocks are stored in <script_name>\_blocks.data with the following format:
 ```
