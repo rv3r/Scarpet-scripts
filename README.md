@@ -19,7 +19,7 @@ l(                                                    //main list
     l('tags',                                         //second map value is for the associated tags
       m(                                              //this is just an example map
         l('dimension','the_end'),                     //for example, you might want to store the dimension that the block is in
-        l('player','gnembon'),                        //or you might want to link the block to a player
+        l('player','AnonymousRover'),                 //or you might want to link the block to a player
         l('block','armor_stand')                      //probably unnecessary, but you could store the block name
         l('armor',l('golden_helmet', 'golden_boots')) //or you might want to store a list of things in one tag
         l('foo','bar')                                //or you might create some app-specific tag with your own key and value
@@ -57,13 +57,14 @@ It is suggested that you set a variable to the name of the file that you would l
         - `'any'` - returns blocks that match _any_ of the provided tags
         - `'all'` - returns blocks that match _all_ of the provided tags
           - if a block has extra tags that are not searched for, it will still be valid as long as the tags being searched for match the values
-          - searching for `l('tags',m(l('mode','all'),l('player','gnembon')))` in the above example map would return the first block even though it has extra tags, but searching for `l('tags',m(l('mode','all'),l('player','gnembon'),l('bar','foo')))` would return null(unless, of course, the second block matches it) as the first block has a value of `null` for the key `'bar'`
+          - searching for `l('tags',m(l('mode','all'),l('player','AnonymousRover')))` in the above example map would return the first block even though it has extra tags, but searching for `l('tags',m(l('mode','all'),l('player','AnonymousRover'),l('bar','foo')))` would return null(unless, of course, the second block matches it) as the first block has a value of `null` for the key `'bar'`
             - you can use `null` as your value if you want to search for blocks that do not have the key you are searching for
             
 * `__add(container,pos,tags)` - `container`(list),`pos`(list),`tags`(map)
   - add a new block at `pos` with associated `tags` to `container`
   - again, `container` should be the list of stored blocks, perhaps fetched from `__load_blocks(appname)`
-  - note that `tags` can be almost **any** map as the only restriction is that it cannot use a key of `'mode'`. Have fun with this!
+  - note that `pos` must be a list of three elements. There are no other restrictions.
+  - similarly, note that `tags` can be almost **any** map as the only restriction is that it cannot use a key of `'mode'`. Have fun with these flexible elements!
   
 * `__delete_value(container,pos,tags)` - `container`(list),`pos`(list),`tags`(map))
   - deletes the first element of `container` that _exactly_ matches `pos` and `tags`
