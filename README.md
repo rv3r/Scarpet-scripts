@@ -23,6 +23,7 @@ l(                                                    //main list
         l('block','armor_stand')                      //probably unnecessary, but you could store the block name
         l('armor',l('golden_helmet', 'golden_boots')) //or you might want to store a list of things in one tag
         l('foo','bar')                                //or you might create some app-specific tag with your own key and value
+                                                      //you can store whatever you want in this map
       )
     )
   ),
@@ -54,7 +55,8 @@ It is suggested that you set a variable to the name of the file that you would l
     - This is only meant to be used with this library as `type` must be `'pos'` or `'tags'`, so `container` should be the list of stored blocks, perhaps fetched from `__load_blocks(appname)`
       - `'pos'` - `values` requires a list of three elements
       - `'tags'` - `values` requires a map containing the key `'mode'` and an associated value of `'any'` or `'all'` along with at least one tag to be searched for, such as the key-value pair `l('dimension','the_end')`
-        - you might suggest that I use variable length arguments for `mode`, but I have avoided this to increase backwards compatibility
+        - you might suggest that I use variable length arguments for `'mode'`, but I have avoided this to increase backwards compatibility
+        - since the value of `'mode'` is saved and then removed from the map, you can't find blocks that match a value of `'mode'`
         - `'any'` - returns blocks that match _any_ of the provided tags
         - `'all'` - returns blocks that match _all_ of the provided tags
           - if a block has extra tags that are not searched for, it will still be valid as long as the tags being searched for match the values
@@ -65,7 +67,7 @@ It is suggested that you set a variable to the name of the file that you would l
   - add a new block at `pos` with associated `tags` to `container`
   - again, `container` should be the list of stored blocks, perhaps fetched from `__load_blocks(appname)`
   - note that `pos` must be a list of three elements. There are no other restrictions.
-  - similarly, note that `tags` can be almost **any** map as the only restriction is that it cannot use a key of `'mode'`. Have fun with these flexible elements!
+  - similarly, note that `tags` can be **any** map as there are no restrictions. Have fun with these flexible elements!
   
 * `__delete_value(container,pos,tags)` - `container`(list),`pos`(list),`tags`(map))
   - deletes the first element of `container` that _exactly_ matches `pos` and `tags`
