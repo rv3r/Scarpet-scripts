@@ -22,6 +22,7 @@ l(                                                    //main list
       m(                                              //this is just an example map
         l('dimension','the_end'),                     //for example, you might want to store the dimension that the block is in
         l('player','gnembon'),                        //or you might want to link the block to a player
+        l('block','armor_stand')                      //probably unnecessary, but you could store the block name
         l('armor',l('golden_helmet', 'golden_boots')) //or you might want to store a list of things in one tag
         l('foo','bar')                                //or you might create some app-specific tag with your own key and value
       )
