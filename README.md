@@ -6,9 +6,7 @@ Right click a bee nest or beehive with an empty mainhand to learn how many bees 
 
 # Block Position Library
 ### Has not been tested yet in another script but does work on its own 
-Library to allow your scripts to save block positions along with associated data. Saved blocks can be searched for certain positions or data.
-
-It is suggested that you set a variable to the name of the file that you would like the blocks to be stored in, such as `global_appname = 'beehiveCount'` if used in config or just `appname = 'beehiveCount'` if in the main program. This will be called in any method that requires `appname`.
+Library to allow your scripts to save block positions along with associated data. Saved blocks can be searched for certain positions or data. You can save almost any data alongside the block, allowing for very flexible scripts.
 
 Blocks are stored in <script_name>\_blocks.data with the following format:
 ```
@@ -37,6 +35,8 @@ l(                                                    //main list
 )
 ```
 
+It is suggested that you set a variable to the name of the file that you would like the blocks to be stored in, such as `global_appname = 'beehiveCount'` if used in config or just `appname = 'beehiveCount'` if in the main program. This variable should then be used in any method that requires `appname`.
+
 ### Description of methods
 * `__initialize(appname)` - `appname`(string)
   - if the current script does not already have an associated file for saving blocks, creates the file, otherwise does nothing
@@ -63,6 +63,7 @@ l(                                                    //main list
 * `__add(container,pos,tags)` - `container`(list),`pos`(list),`tags`(map)
   - add a new block at `pos` with associated `tags` to `container`
   - again, `container` should be the list of stored blocks, perhaps fetched from `__load_blocks(appname)`
+  - note that `tags` can be almost **any** map as the only restriction is that it cannot use a key of `'mode'`. Have fun with this!
   
 * `__delete_value(container,pos,tags)` - `container`(list),`pos`(list),`tags`(map))
   - deletes the first element of `container` that _exactly_ matches `pos` and `tags`
