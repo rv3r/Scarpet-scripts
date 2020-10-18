@@ -12,11 +12,7 @@ __config() ->
 __intialize(appname) -> (
 	data = read_file(appname + '_blocks','nbt');
 	if(data == null,
-		print(type(data));
-		print(length(data));
-		print('file contains null');
-		data = encode_nbt(l());
-		write_file(appname + '_blocks','nbt',data);
+		__save_blocks(appname,l());
 		print(appname + ' nbt file created');
 	);
 );
