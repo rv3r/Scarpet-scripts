@@ -83,16 +83,17 @@ l(                                                    //main list
 
 Do note that loading the stored data and parsing the nbt repeatedly is inefficient, so
 ```
+__find_blocks(....);
 __add_block(....);
 __delete_block(....);
-__find_blocks(....);
 ```
 is less efficient than
 ```
 data = __load_blocks(....);
+__find(data,....);
 __add(data,....);
 __delete_value(data,....);
-__find(data,....);
+__save_blocks(....,data);
 ```
 Thus, the methods that automatically load the data are most efficient when only one needs to be called at a time. If many need to be called in a row, store the current loaded data in a variable and use the simpler methods.
   
