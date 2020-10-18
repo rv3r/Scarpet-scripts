@@ -1,4 +1,4 @@
-__config() ->
+__config() -> 
 (
 	return(
 		m(
@@ -6,74 +6,129 @@ __config() ->
 			l('stay_loaded',true);
 		);
 	);
+	global_appname = 'blockPos';
 );
 
-global_appname = 'blockPos';
-
-printdata(appname) -> (
-	print(read_file(appname,'nbt'));
-);
-
-__add_to_nbt(appname) -> (
-	data = read_file(appname + '_block','nbt');
-	print(data);
-	print(type(data));
-	if(data == null || data == 'null',
+__intialize(appname) -> (
+	data = read_file(appname + '_blocks','nbt');
+	if(data == null,
+		print(type(data));
+		print(length(data));
+		print('file contains null');
 		data = encode_nbt(l());
 		write_file(appname + '_blocks','nbt',data);
+		print(appname + ' nbt file created');
 	);
-	print(appname + ' nbt file created');
-	return(data);
 );
 
-__addpos(appname,triple,tags) -> (
-	data = parse_nbt(read_file(appname + '_blocks','nbt'));
-	result = 0;
-	for(data,
-		if(_ == l(triple,tags),
-			result = 1;
-			break();
+__load_blocks(appname) ->
+(
+	return(parse_nbt(read_file(appname + '_blocks','nbt')));
+);
+
+__save_blocks(appname,data) ->
+(
+	write_file(appname + '_blocks','nbt',encode_nbt(data));
+);
+
+__find(container,type,values) ->
+(
+	if(type == 'pos' && length(values) != 3,
+		print('to match a position, the third argument of find() must be a triple');
+		return(l()),
+		
+		type == 'tags' && length(values) < 2,
+		print('to match a tag, the third argument of find() must have at least two elements');
+		return(l()),
+		
+		type == 'tags' && values:'mode' == null,
+		print('to match a tag, the third argument of find() must have \'mode\' as a key');
+		return(l());
+	);
+	data = l();
+	if(type == 'pos',
+		data = filter(container,
+			_:'pos' == values
 		);
+		return(data),
+		
+		
+		type == 'tags' && length(values) > 1,
+		mode = values:'mode';
+		delete(values,'mode');
+		
+		if(mode == 'all',
+			data = filter(container,
+				tags = _:'tags';
+				all(keys(values),
+					tags:_ == values:_;
+				);
+			);
+			return(data),
+				
+			mode == 'any',
+			data = filter(container,
+				tags = _:'tags';
+				first(keys(values),
+					tags:_ == values:_;
+				);
+			);
+			return(data);
+		);
+	);
+);
+
+__add(container,pos,tags) ->
+(
+	container +=
+		m(
+			l(
+				'pos',
+				pos
+			),
+			l(
+				'tags',
+				tags
+			)
+		);
+);
+
+__delete_value(container,pos,tags) ->
+(
+	flag = false;
+	
+	result = first(container,
+		element = _i;
+		_ == m(l('pos',pos),l('tags',tags));
 	);
 	if(result,
-		put(data,null,l(triple,tags));
+		flag = delete(container,element);
 	);
-	write_file(appname + '_blocks','nbt',encode_nbt(data));
+	return(flag);
 );
 
-__deletepos(appname,triple,tags) -> (
-	data = parse_nbt(read_file(appname + '_blocks','nbt'));
-	result = 0;
-	for(data,
-		if(_ == l(triple,tags),
-			delete(data:_i);
-			result = 1;
-			break();
-		);
-	);
-	write_file(appname + '_blocks','nbt',encode_nbt(data));
-	return(result);
+
+__find_blocks(appname,type,values) ->
+(
+	data = load_blocks(appname);
+	return(find(data,type,values));
 );
 
-__findpos(appname,triple,tags) -> (
-	data = parse_nbt(read_file(appname + '_blocks','nbt'));
-	result = 0;
-	for(data,
-		if(_ = l(triple,tags),
-			result = 1;
-			break();
-		);
-	);
-	return(result);
+__add_block(appname,pos,tags) ->
+(
+	data = load_blocks(appname);
+	add(data,pos,tags);
+	save_blocks(appname,data);
 );
 
-__listallpos(appname,tags) -> (
-	data = parse_nbt(read_file(appname + '_blocks','nbt'));
-	for(data,
-		print(_);
-	);
+__delete_block(appname,pos,tags) ->
+(
+	data = load_blocks(appname);
+	delete_value(appname,data,pos,tags);
+	save_blocks(appname,data);
 );
 
-if(parse_nbt(read_file('data','nbt')) == null,
-	__add_to_nbt(global_appname);
+__clear_all(appname) ->
+(
+	save_blocks(appname,l());
 );
