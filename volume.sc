@@ -203,7 +203,9 @@ calcvolume() ->
 		)/6);
 		//print('----- calculating volume -----');
 		print('Volume: ' + sum);
-		if(sum > sanitycheck(),
+		check = sanitycheck();
+		if(sum > check,
+			print(check);
 			print('failed sanity check. please send error');
 			print('  log to help find bugs.');
 			logdata();
@@ -221,20 +223,14 @@ sanitycheck() ->
 	minZ = global_points:0:2;
 	maxZ = global_points:0:2;
 	for(global_points,
-		if(minX > _:0,
-			minX = _:0,
-			maxX < _:0,
-			maxX = _:0,
-			minY > _:1,
-			minY = _:1,
-			maxY < _:1,
-			maxY = _:1,
-			minZ > _:2,
-			minZ = _:2,
-			maxZ < _:2,
-			maxZ = _:2,
-		);
+		minX = min(minX,_:0);
+		maxX = max(maxX,_:0);
+		minY = min(minY,_:1);
+		maxY = max(maxY,_:1);
+		minZ = min(minZ,_:2);
+		maxZ = max(maxZ,_:2);
 	);
+	draw_shape('box',100,'from',l(minX,minY,minZ),'to',l(maxX,maxY,maxZ));
 	return((maxX-minX)*(maxY-minY)*(maxZ-minZ));
 );
 
@@ -243,9 +239,9 @@ logdata() ->
 	delete_file('faces','text');
 	for(global_faces,
 		i = _;
-		write_file('faces','text','face- ' + str(global_reorder:_i));
+		write_file('faces','text','face - ' + str(_i) + ', reorder - ' + str(global_reorder:_i));
 		c_for(x = 0, x < 3, x += 1,
-			write_file('faces','text',i:_:x);
+			write_file('faces','text',str(i:x:0));
 		);
 	);
 );
@@ -843,18 +839,3 @@ __on_statistic(player,category,event,value) ->
 		);
 	);
 );
-
-//__on_player_starts_sneaking(player) ->
-//(
-	//schedule(0,'calcvolume');
-//);
-
-//__on_player_swaps_hands(player) ->
-//(
-	//schedule(0,'showfaces');
-//);
-
-//__on_player_drops_item(player) ->
-//(
-	//schedule(0,'clearall');
-//);
