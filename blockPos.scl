@@ -9,7 +9,7 @@ __config() ->
 	global_appname = 'blockPos';
 );
 
-__intialize(appname) -> (
+__initialize(appname) -> (
 	data = read_file(appname + '_blocks','nbt');
 	if(data == null,
 		__save_blocks(appname,l());
