@@ -69,7 +69,7 @@ It is suggested that you set a variable to the name of the file that you would l
   - note that `pos` must be a list of three elements. There are no other restrictions.
   - similarly, note that `tags` can be **any** map as there are no restrictions. Have fun with these flexible elements!
   
-* `__delete_value(container,pos,tags)` - `container`(list),`pos`(list),`tags`(map))
+* `__delete_value(container,pos,tags)` - `container`(list),`pos`(list),`tags`(map)
   - deletes the first element of `container` that _exactly_ matches `pos` and `tags`
   - again, `container` should be the list of stored blocks, perhaps fetched from `__load_blocks(appname)`
   
