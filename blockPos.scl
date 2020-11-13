@@ -107,7 +107,7 @@ __delete_value(container,pos,tags) ->
 __find_blocks(appname,type,values) ->
 (
 	data = __load_blocks(appname);
-	return(find(data,type,values));
+	return(__find(data,type,values));
 );
 
 __add_block(appname,pos,tags) ->
