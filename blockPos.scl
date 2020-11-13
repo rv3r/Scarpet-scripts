@@ -106,25 +106,25 @@ __delete_value(container,pos,tags) ->
 
 __find_blocks(appname,type,values) ->
 (
-	data = load_blocks(appname);
+	data = __load_blocks(appname);
 	return(find(data,type,values));
 );
 
 __add_block(appname,pos,tags) ->
 (
-	data = load_blocks(appname);
-	add(data,pos,tags);
-	save_blocks(appname,data);
+	data = __load_blocks(appname);
+	__add(data,pos,tags);
+	__save_blocks(appname,data);
 );
 
 __delete_block(appname,pos,tags) ->
 (
-	data = load_blocks(appname);
-	delete_value(appname,data,pos,tags);
-	save_blocks(appname,data);
+	data = __load_blocks(appname);
+	__delete_value(appname,data,pos,tags);
+	__save_blocks(appname,data);
 );
 
 __clear_all(appname) ->
 (
-	save_blocks(appname,l());
+	__save_blocks(appname,l());
 );
