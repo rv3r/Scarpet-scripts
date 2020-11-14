@@ -1,0 +1,55 @@
+__shiftclick(source,slot,destination) ->
+(
+	playerList = l(range(44,8,-1));
+	for(playerList,
+		playerList:_i = _%36;
+	);
+	
+	while(inventory_get(source,slot),inventory_size(destination),
+		l(itemName, itemCount, itemNbt) = inventory_get(source,slot);
+	
+		if(destination~'type' == 'player',
+			loop(2*length(playerList),
+				prevSlot = playerList:_;
+				prevCount = inventory_get(destination,prevSlot):1;
+				prevNbt = inventory_get(destination,prevSlot):2;
+				if((prevCount != null || (_ >= length(playerList) && prevCount == null)) && prevCount < stack_limit(itemName) && (prevNbt == itemNbt || prevNbt == null),
+					break(),
+					prevSlot = null;
+					prevCount = null;
+					prevNbt = null;
+				);
+			),
+			loop(2*inventory_size(destination),
+				prevSlot = _%inventory_size(destination);
+				prevCount = inventory_get(destination,prevSlot):1;
+				prevNbt = inventory_get(destination,prevSlot):2;
+				if((prevCount != null || (_ >= inventory_size(destination) && prevCount == null)) && prevCount < stack_limit(itemName) && (prevNbt == itemNbt || prevSlot == null),
+					break(),
+					prevSlot = null;
+					prevCount = null;
+					prevNbt = null;
+				);
+			);
+		);
+	
+		if(stack_limit(itemName) < prevCount + itemCount,
+			moveAmount = stack_limit(itemName) - prevCount,
+			moveAmount = itemCount;
+		);
+		if(prevSlot != null,
+			inventory_set(destination,prevSlot,prevCount+moveAmount,itemName,itemNbt);
+			inventory_remove(source,itemName,moveAmount)
+		);
+	);
+);
+
+__swap(inventory,slot1,slot2) ->
+(
+	stack1 = inventory_get(inventory,slot1);
+	stack2 = inventory_get(inventory,slot2);
+	inventory_set(inventory,slot2,stack1:1,stack1:0,stack1:2);
+	inventory_set(inventory,slot1,stack2:1,stack2:0,stack2:2);
+	return();
+);
+
