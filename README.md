@@ -5,7 +5,6 @@ Pick the script you need and follow [these](https://github.com/gnembon/fabric-ca
 Right click a bee nest or beehive with an empty mainhand to learn how many bees are in the block.
 
 # Block Position Library
-### Has not been tested yet in another script but does work on its own 
 Library to allow your scripts to save block positions along with associated data. Saved blocks can be searched for certain positions or data. You can save almost any data alongside the block, allowing for very flexible scripts.
 
 Blocks are stored in <script_name>\_blocks.data with the following format:
@@ -102,7 +101,21 @@ __delete_value(data,....);
 __save_blocks(....,data);
 ```
 Thus, the methods that automatically load the data are most efficient when only one needs to be called at a time. If many need to be called in a row, store the current loaded data in a variable and use the simpler methods.
+
+# Inventory Library
+Imitates two common actions the player uses in an inventory
+
+### Description of methods
+* `__shiftclick(source,slot,destination)` - `source`(entity or block with inventory),`slot`(int),`destination`(entity or block with inventory)
+  - imitates 'shift-clicking' of a stack from inventory to another
+  - allows you to make a fake player move items between their inventory and a block or another player(isn't realistic but is still possible)
+  - **this is only meant for use with players and storage blocks that allow any item in any slot**
+    - use with other mobs or furnaces, smokers, blast furnaces, brewing stands, enchanting tables, beacons, anvils, grindstones, cartography tables, looms, smithing tables, etc at your own risk
   
+* `__swap(inventory,slot1,slot2)` - `inventory`(entity or block with inventory),`slot1`(int),`slot2`(int)
+  - transposes items between two slots, such as when you pick up a stack, left click on another, and set down the new stack
+  - allows you to make a fake player move items around in their inventory, allowing for equipping/removing of armor and switching mainhand/offhand item with another item from their inventory
+
 # Volume Script
 ### Colors are not final and there are still some bugs to be worked out
 Attack blocks around your build with a mainhand golden sword to make triangles until you have a complete solid.
