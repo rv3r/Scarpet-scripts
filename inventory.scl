@@ -20,11 +20,18 @@ __shiftclick(source,slot,destination) ->
 					prevNbt = null;
 				);
 			),
-			loop(2*inventory_size(destination),
-				prevSlot = _%inventory_size(destination);
-				prevCount = inventory_get(destination,prevSlot):1;
-				prevNbt = inventory_get(destination,prevSlot):2;
-				if((prevCount != null || (_ >= inventory_size(destination) && prevCount == null)) && prevCount < stack_limit(itemName) && (prevNbt == itemNbt || prevSlot == null),
+			loop(inventory_size(destination) + 1,
+				if(_ < inventory_size(destination),
+					prevSlot = _;
+					prevCount = inventory_get(destination,prevSlot):1;
+					prevNbt = inventory_get(destination,prevSlot):2,
+					
+					_ == inventory_size(destination),
+					prevSlot = inventory_find(destination,null);
+					prevCount = null;
+					prevNbt = null;
+				);
+				if((prevCount != null  && prevCount < stack_limit(itemName) && prevNbt == itemNbt) || (_ == inventory_size(destination) && prevCount == null),
 					break(),
 					prevSlot = null;
 					prevCount = null;
@@ -32,7 +39,7 @@ __shiftclick(source,slot,destination) ->
 				);
 			);
 		);
-	
+		
 		if(stack_limit(itemName) < prevCount + itemCount,
 			moveAmount = stack_limit(itemName) - prevCount,
 			moveAmount = itemCount;
@@ -52,4 +59,3 @@ __swap(inventory,slot1,slot2) ->
 	inventory_set(inventory,slot1,stack2:1,stack2:0,stack2:2);
 	return();
 );
-
