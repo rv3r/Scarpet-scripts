@@ -102,6 +102,9 @@ __save_blocks(....,data);
 ```
 Thus, the methods that automatically load the data are most efficient when only one needs to be called at a time. If many need to be called in a row, store the current loaded data in a variable and use the simpler methods.
 
+# Block Test Script
+Create your own test for in `your_test_function_here` and let the script test every block in the game(up to 1.16.4) for you. It will create a map containing every block that passed the test, allowing you put the map into your script and call `has()` to see what blocks are valid for your use case. Setting `global_fail_bool` to true will produce a second map of every block that failed your test.
+
 # Inventory Library
 Imitates two common actions the player uses in an inventory
 
