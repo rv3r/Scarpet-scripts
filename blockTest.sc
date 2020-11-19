@@ -1,3 +1,4 @@
+RamsaKd's array of every Minecraft block
 global_all_blocks = [
 	'acacia_button', 
 	'acacia_door', 
