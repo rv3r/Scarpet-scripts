@@ -694,12 +694,15 @@ __command() ->
 	delete_file('blocktest_fail','text');
 	write_file('blocktest_fail','text','{');
 	for(global_all_blocks,
-		if(your_test_function_here(_),
+		test = null;
+		test = your_test_function_here(_);
+		if(test,
 			result = l(str(_),1);
 			write_file('blocktest','text',str('\'' + _ + '\'->1,')),
-			global_fail_bool,
-			result = l(str(_),1);
-			write_file('blocktest_fail','text',str('\'' + _ + '\'->1,')),
+			if(global_fail_bool,
+				result = l(str(_),1);
+				write_file('blocktest_fail','text',str('\'' + _ + '\'->1,'))
+			);
 		);
 	);
 	write_file('blocktest','text','}');
