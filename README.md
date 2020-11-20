@@ -104,23 +104,26 @@ Thus, the methods that automatically load the data are most efficient when only 
 
 # Block Test Script
 Uses RamsaKd's array of every Minecraft block
-Create your own test for in `your_test_function_here` and let the script test every block in the game(up to 1.16.4) for you. It will create a map containing every block that passed the test, allowing you put the map into your script and call `has()` to see what blocks are valid for your use case. Setting `global_fail_bool` to true will produce a second map of every block that failed your test.
+Create your own test in `your_test_function_here` and let the script test every block in the game(up to 1.16.4) for you. It will create a map containing every block that passed the test, allowing you put the map into your script and call `has()` to see what blocks are valid for your use case. Setting `global_fail_bool` to true will produce a second map of every block that failed your test.
 
 # Inventory Library
 Imitates two common actions the player uses in an inventory
 
 ### Description of methods
 * `__shiftclick(source,slot,destination)` - `source`(entity or block with inventory),`slot`(int),`destination`(entity or block with inventory)
+  - shift-clicks item in `slot` from `source` inventory to `destination` inventory
   - imitates 'shift-clicking' of a stack from inventory to another
   - allows you to make a fake player move items between their inventory and a block or another player(isn't realistic but is still possible)
   - **this is only meant for use with players and storage blocks that allow any item in any slot**
     - use with other mobs or furnaces, smokers, blast furnaces, brewing stands, enchanting tables, beacons, anvils, grindstones, cartography tables, looms, smithing tables, etc at your own risk
   
 * `__swap(inventory,slot1,slot2)` - `inventory`(entity or block with inventory),`slot1`(int),`slot2`(int)
+  - swaps `slot1` and `slot2` inside `inventory`
   - transposes items between two slots, such as when you pick up a stack, left click on another, and set down the new stack
   - allows you to make a fake player move items around in their inventory, allowing for equipping/removing of armor and switching mainhand/offhand item with another item from their inventory
 
 * `__swapto(inventory,item,newslot)` - `inventory`(entity or block with inventory),`item`(string),`newslot`(int)
+  - swaps `item` into `newslot` inside `inventory`
   - swaps a particular to item to the desired slot
   - basically just `__swap()`, but calls `inventory_find()` for you
 
