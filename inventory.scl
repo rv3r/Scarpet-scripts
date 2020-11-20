@@ -57,5 +57,4 @@ __swap(inventory,slot1,slot2) ->
 	stack2 = inventory_get(inventory,slot2);
 	inventory_set(inventory,slot2,stack1:1,stack1:0,stack1:2);
 	inventory_set(inventory,slot1,stack2:1,stack2:0,stack2:2);
-	return();
 );
