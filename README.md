@@ -120,6 +120,10 @@ Imitates two common actions the player uses in an inventory
   - transposes items between two slots, such as when you pick up a stack, left click on another, and set down the new stack
   - allows you to make a fake player move items around in their inventory, allowing for equipping/removing of armor and switching mainhand/offhand item with another item from their inventory
 
+* `__swapto(inventory,item,newslot)` - `inventory`(entity or block with inventory),`item`(string),`newslot`(int)
+  - swaps a particular to item to the desired slot
+  - basically just `__swap()`, but calls `inventory_find()` for you
+
 # Volume Script
 ### Colors are not final and there are still some bugs to be worked out
 Attack blocks around your build with a mainhand golden sword to make triangles until you have a complete solid.
