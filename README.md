@@ -116,7 +116,11 @@ Imitates two common actions the player uses in an inventory
   - allows you to make a fake player move items between their inventory and a block or another player(isn't realistic but is still possible)
   - **this is only meant for use with players and storage blocks that allow any item in any slot**
     - use with other mobs or furnaces, smokers, blast furnaces, brewing stands, enchanting tables, beacons, anvils, grindstones, cartography tables, looms, smithing tables, etc at your own risk
-  
+
+* `__shiftitem(source,item,destination)` - `source`(entity or block with inventory),`item`(string),`destination`(entity or block with inventory)
+  - shift-clicks `item` from `source` inventory to `destination` inventory
+  - basically just `__shiftclick()`, but calls `inventory_find()` for you
+
 * `__swap(inventory,slot1,slot2)` - `inventory`(entity or block with inventory),`slot1`(int),`slot2`(int)
   - swaps `slot1` and `slot2` inside `inventory`
   - transposes items between two slots, such as when you pick up a stack, left click on another, and set down the new stack
@@ -124,7 +128,7 @@ Imitates two common actions the player uses in an inventory
 
 * `__swapto(inventory,item,newslot)` - `inventory`(entity or block with inventory),`item`(string),`newslot`(int)
   - swaps `item` into `newslot` inside `inventory`
-  - swaps a particular to item to the desired slot
+  - swaps a particular item to the desired slot
   - basically just `__swap()`, but calls `inventory_find()` for you
 
 # Volume Script
