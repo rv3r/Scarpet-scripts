@@ -51,6 +51,12 @@ __shiftclick(source,slot,destination) ->
 	);
 );
 
+__shiftitem(source,item,destination) ->
+(
+	slot = inventory_find(source,item);
+	__shiftclick(source,slot,destination);
+);
+
 __swap(inventory,slot1,slot2) ->
 (
 	if(slot1 != null && slot2 != null,
