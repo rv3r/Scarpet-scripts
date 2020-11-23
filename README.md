@@ -106,6 +106,9 @@ Thus, the methods that automatically load the data are most efficient when only 
 Uses RamsaKd's array of every Minecraft block
 Create your own test in `your_test_function_here` and let the script test every block in the game(up to 1.16.4) for you. It will create a map containing every block that passed the test, allowing you put the map into your script and call `has()` to see what blocks are valid for your use case. Setting `global_fail_bool` to true will produce a second map of every block that failed your test.
 
+# Eye Remover Script
+Shift right-click on an end portal frame containing an eye of ender to remove the eye. Note that an existing portal will be removed.
+
 # Inventory Library
 Imitates two common actions the player uses in an inventory
 
