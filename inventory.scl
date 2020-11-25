@@ -1,5 +1,8 @@
 __shiftclick(source,slot,destination) ->
 (
+	if(slot == null,
+		return();
+	);
 	playerList = l(range(44,8,-1));
 	for(playerList,
 		playerList:_i = _%36;
