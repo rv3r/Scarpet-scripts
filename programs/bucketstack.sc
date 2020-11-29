@@ -1,4 +1,4 @@
-__config() ->
+__config() ->
 (
 	//change these number to whatever you want the maximum stack size to be
 	global_buckets = m(
