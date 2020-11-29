@@ -3,10 +3,7 @@ __shiftclick(source,slot,destination) ->
 	if(slot == null,
 		return();
 	);
-	playerList = l(range(44,8,-1));
-	for(playerList,
-		playerList:_i = _%36;
-	);
+	playerList = map(l(range(44,8,-1)),_%36);
 	
 	while(inventory_get(source,slot),inventory_size(destination),
 		l(itemName, itemCount, itemNbt) = inventory_get(source,slot);
