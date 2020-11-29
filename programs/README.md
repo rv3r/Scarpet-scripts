@@ -1,17 +1,25 @@
 # Scarpet Scripts
 Pick the script you need and follow [these](https://github.com/gnembon/fabric-carpet/wiki/Installing-carpet-scripts-in-your-world) instructions for installation!
 
-# Beehive Count Script
+# Beehive Count
 Right click a bee nest or beehive with an empty mainhand to learn how many bees are in the block.
 
-# Block Test Script
+# Block Test
 Uses RamsaKd's array of every Minecraft block
+
 Create your own test in `your_test_function_here()` and let the script test every block in the game(up to 1.16.4) for you. It will create a map containing every block that passed the test, allowing you put the map into your script and call `has()` to see what blocks are valid for your use case. Setting `global_fail_bool` to true will produce a second map of every block that failed your test.
 
-# Eye Remover Script
+# Bucket Stack
+Bucket placement written by [Firigion](https://github.com/Firigion)
+
+Be sure to edit the numbers at the beginning of the script so you can have your own custom bucket stack sizes!
+
+Allows every(up to 1.16.4) nonstackable bucket type to stack when a player picks them up and allows for using buckets similar to honey bottles. You get the empty buckets back in your inventory unless you don't have space.
+
+# Eye Remover
 Shift right-click on an end portal frame containing an eye of ender to remove the eye. Note that an existing portal will be removed.
 
-# Volume Script
+# Volume
 ### Colors are not final and there are still some bugs to be worked out
 Attack blocks around your build with a mainhand golden sword to make triangles until you have a complete solid.
 
