@@ -25,12 +25,11 @@ __on_player_collides_with_entity(player,entity) ->
 		if(item~'_bucket',
 			//if it's an item we're picking up that is a non-empty bucket
 			//first determine the max stack size
-			for(global_buckets,
-				max_stack = global_buckets:(item~_);
-				if(max_stack != null,
-					break();
-				);
+			type = null;
+			while(type == null,length(global_buckets),
+				type = item~(keys(global_buckets):_);
 			);
+			max_stack = global_buckets:type;
 			//then find a non-full slot to put it in
 			//modified lines 103 and 104 of gnembon's shulkerboxes.sc to find a non-full slot
 			slot = -1;
