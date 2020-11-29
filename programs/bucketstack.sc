@@ -77,7 +77,20 @@ __on_player_right_clicks_block(player,item_tuple,hand,block,face,hitvec) ->
 		//-1 is offhand
 		slot = -1;
 	);
-  if(item_tuple:0~'_bucket',
+  if(item_tuple:0~'_bucket' && !item_tuple:0~'milk',
+		schedule(0,'test_bucket_used',player,hand,item_tuple,slot);
+	);
+);
+
+//only for milk
+__on_player_finishes_using_item(player,item_tuple,hand) ->
+(
+	if(hand == 'mainhand',
+		slot = player~'selected_slot',
+		//-1 is offhand
+		slot = -1;
+	);
+  if(item_tuple:0~'_bucket' && item_tuple:0~'milk',
 		schedule(0,'test_bucket_used',player,hand,item_tuple,slot);
 	);
 );
@@ -86,7 +99,7 @@ test_bucket_used(player, hand, item_tuple, slot) ->
 (
 	l(item,count,nbt) = item_tuple;
 	//trigger only if bucket was used
-  if(query(player,'holds',hand):0 == 'bucket',
+  if(query(player,'holds',hand):0 == 'bucket' || item~'milk',
     if(count == 1,
 			//do nothing if it was the last bucket in the stack
 			return();
