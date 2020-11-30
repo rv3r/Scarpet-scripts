@@ -42,7 +42,7 @@ __on_player_collides_with_entity(player,entity) ->
 				);
 			);
 			//if all possible stacks are full, find as many empty slots as necessary
-			//_slot < 36 and inventory_size(player)-5 unless you want to wear the buckets
+			//slot < 36 and inventory_size(player)-5 unless you want to wear the buckets
 			while(count && (slot = inventory_find(player,null)) != null && slot < 36,inventory_size(player)-5,
 				count = __pickup(player,entity,item,slot,count,0,max_stack);
 			);
