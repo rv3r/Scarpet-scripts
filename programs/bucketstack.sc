@@ -1,6 +1,7 @@
 __config() ->
 (
 	//change these number to whatever you want the maximum stack size to be
+	//note that the max scarpet can inventory_set() is 2^31 - 1
 	global_buckets = m(
 		l('water',1),
 		l('lava',1),
