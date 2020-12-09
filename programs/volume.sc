@@ -1,5 +1,6 @@
 __config() ->
 (
+	//stats to refresh showing of current face
 	global_statsList = l(
 		'walk_one_cm',
 		'sprint_one_cm',
@@ -11,6 +12,7 @@ __config() ->
 		'swim_one_cm'
 	);
 	
+	//lists of important stuff
 	global_currentpoints = l();
 	global_points = l();
 	global_edges = l();
@@ -18,6 +20,21 @@ __config() ->
 	global_currentedge = l();
 	global_currentface = l();
 	global_reorder = l();
+	
+	//import from personal math library
+	import('math',
+		'__magnitude',
+		'__unit',
+		'__roundnum',
+		'__sum',
+		'__sign',
+		'__det',
+		'__vector',
+		'__dot',
+		'__cross3',
+		'__plane',
+		'__inPlane'
+	);
 	
 	return(
 		m(
@@ -32,38 +49,6 @@ __command() ->
 	return();
 );
 
-//required vector math and volume math
-
-__magnitude(vector) ->
-(
-	return(sqrt(__dot(vector,vector)));
-);
-
-__unit(vector) ->
-(
-	return(vector/__magnitude(vector));
-);
-
-__roundnum(number,digits) ->
-(
-	return(round(number*10^digits)/10^digits);
-);
-
-__sum(list) ->
-(
-	return(reduce(list,_a+_,0));
-);
-
-__sign(number) ->
-(
-	if(number < 0,
-		return(-1),
-		number > 0,
-		return(1),
-		return(0);
-	);
-);
-
 //not actually used but mightve been in another universe
 
 __choose(n,k) ->
@@ -71,125 +56,24 @@ __choose(n,k) ->
 	return(fact(n)/(fact(k)*fact(n-k)));
 );
 
-__det(matrix) ->
-(
-	for(matrix,
-		if(_i == 0,
-			length = length(_);
-			if(length(matrix) != length,
-				print('matrix is not square');
-				return();
-			),
-			if(length(_) != length,
-				print('row dimensions do not match');
-				return();
-			);
-		);
-	);
-	
-	if(length >= 3,
-		sum = 0;
-		loop(length,
-			row = _;
-			product = 1;
-			loop(length,
-				term = matrix:_:(_+row);
-				//print(term);
-				product = product * matrix:_:(_+row);
-			);
-			sum = sum + product;
-		);
-		difference = 0;
-		loop(length,
-			row = _;
-			product = 1;
-			loop(length,
-				term = matrix:_:(length-(_+row));
-				//print(term);
-				product = product * matrix:_:(length-(_+row));
-			);
-			difference = difference + product;
-		);
-		determinant = sum - difference,
-		
-		determinant = matrix:0:0*matrix:1:1-matrix:0:1*matrix:1:0;
-	);
-	return(determinant);
-);
-
-
-__vector(point1,point2) ->
-(
-	return(point2 - point1);
-);
-
-__dot(vec1,vec2) ->
-(
-	if(length(vec1) == length(vec2),
-		return(__sum(vec1*vec2)),
-		print('vectors do not have same length');
-	);
-);
-
-__cross3(vec1,vec2) ->
-(
-	if(length(vec1) != 3 || length(vec2) != 3,
-		print('at least one vector does not have 3 components');
-		return(null);
-	);
-	//performs cross product
-	x = 1*vec1:1*vec2:2 - 1*vec1:2*vec2:1;
-	y = 1*vec1:2*vec2:0 - 1*vec1:0*vec2:2;
-	z = 1*vec1:0*vec2:1 - 1*vec1:1*vec2:0;
-	
-	cross = l(x,y,z);
-	return(cross);
-);
-
-__plane(point1,point2,point3) ->
-(
-	vector1 = __vector(point1,point2);
-	vector2 = __vector(point1,point3);
-	planeVec = __cross3(vector1,vector2);
-	
-	return(planeVec);
-);
-
-__inPlane(point1,point2,point3,point4) ->
-(
-	planeVec = plane(point1,point2,point3);
-	if(sum(planeVec * (point4 - point1)),
-		return(false),
-		return(true);
-	);
-);
+//returns the number of unpaired edges
 
 checkedges() ->
 (
-	alledges = l();
-	for(global_edges,
-		alledges:_i = _;
-	);
-	checkpos = 0;
-	loop(length(alledges),
-		tester = alledges:checkpos;
-		//c_for(x = checkpos, x < length(alledges), x += 1,
+	alledges = copy(global_edges);
+	while(length(alledges) > 0,length(alledges),
 		for(alledges,
-			if(tester == l(_:1,_:0),
+			if(alledges:0 == l(_:1,_:0),
 				delete(alledges,_i);
 				delete(alledges,0);
 				break();
 			);
 		);
-		//if(tester == alledges:checkpos,
-			//checkpos += 1;
-		//);
-		if(length(alledges) == 0,
-			break();
-		);
 	);
 	return(length(alledges));
 );
+
+//applies tetrahedral shoelace method once edges are paired and faces are ordered properly
 
 calcvolume() ->
 (
@@ -214,6 +98,8 @@ calcvolume() ->
 	);
 );
 
+//ensures volume isnt greater than what is physically possible
+
 sanitycheck() ->
 (
 	minX = global_points:0:0;
@@ -233,6 +119,8 @@ sanitycheck() ->
 	draw_shape('box',100,'from',l(minX,minY,minZ),'to',l(maxX,maxY,maxZ));
 	return((maxX-minX)*(maxY-minY)*(maxZ-minZ));
 );
+
+//writes down info for debugging
 
 logdata() ->
 (
@@ -839,3 +727,18 @@ __on_statistic(player,category,event,value) ->
 		);
 	);
 );
+
+//__on_player_starts_sneaking(player) ->
+//(
+	//schedule(0,'calcvolume');
+//);
+
+//__on_player_swaps_hands(player) ->
+//(
+	//schedule(0,'showfaces');
+//);
+
+//__on_player_drops_item(player) ->
+//(
+	//schedule(0,'clearall');
+//);
