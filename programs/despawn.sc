@@ -6,6 +6,7 @@ __config() ->
 		l('blue',0x0000FFFF),
 		l('black',0x000000FF),
 		l('gray',0x808080FF),
+		l('grey',0x808080FF),
 		l('white',0xFFFFFFFF)
 	);
 	return(
@@ -37,10 +38,10 @@ __config() ->
 						m(
 							l('type','term'),
 							l('options',
-								l('red','green','blue','black','gray','white')
+								l('red','green','blue','black','gray','grey','white')
 							),
 							l('suggest',
-								l('red','green','blue','black','gray','white')
+								l('red','green','blue','black','gray','grey','white')
 							)
 						)
 					)
