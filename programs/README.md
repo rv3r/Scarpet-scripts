@@ -23,10 +23,15 @@ Gives those of us who don't use [MiniHUD](https://masa.dy.fi/mcmods/all_mods/?mc
 Shift right-click on an end portal frame containing an eye of ender to remove the eye. Note that an existing portal will be removed.
 
 # Volume
+### Requires my math.scl library
 ### Colors are not final and there are still some bugs to be worked out
 Attack blocks around your build with a mainhand golden sword to make triangles until you have a complete solid.
 
-Run `/volume calcvolume` to have the script use the [tetrahedral shoelace method](https://ysjournal.com/tetrahedral-shoelace-method-calculating-volume-of-irregular-solids) to find the volume of the region.
+Run `/volume perimeter` to find the perimeter of an open region that you've outlined. Nothing fancy here, just vector magnitudes.
+
+Run `/volume area` to find the area of the region you've outlined using Heron's formula for each face.
+
+Run `/volume vol` to have the script use the [tetrahedral shoelace method](https://ysjournal.com/tetrahedral-shoelace-method-calculating-volume-of-irregular-solids) to find the volume of the region.
 
 This **does not** find the number of full blocks that will approximate this shape. It instead finds the mathematical volume of the exact outlined region. If you wanted the number of blocks, feel free to read [this](http://math.sfsu.edu/beck/papers/noprint.pdf) paper on the topic.
 
