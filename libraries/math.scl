@@ -1,16 +1,16 @@
-//constructs a vector pointing from point 1 to point 2
+//returns a vector pointing from point 1 to point 2
 __vector(point1,point2) ->
 (
 	return(point2 - point1);
 );
 
-//returns magnitude of a vector
+//returns the magnitude of the provided vector
 __magnitude(vector) ->
 (
 	return(sqrt(__dot(vector,vector)));
 );
 
-//returns a vector of length 1 that points in the same direction of the original vector
+//returns a vector of magnitude 1 that points in the same direction as the provided vector
 __unit(vector) ->
 (
 	return(vector/__magnitude(vector));
@@ -41,7 +41,7 @@ __cross3(vec1,vec2) ->
 	return(cross);
 );
 
-//rounds a decimal to your preferred amount of decimal places
+//rounds a float to your preferred amount of decimal places
 //use negative numbers for nearest 10, 100, 1000, etc.
 __roundnum(number,digits) ->
 (
@@ -68,7 +68,10 @@ __sign(number) ->
 //returns n choose k
 __choose(n,k) ->
 (
-	return(fact(n)/(fact(k)*fact(n-k)));
+	if(k > n,
+		return(0),
+		return(fact(n)/(fact(k)*fact(n-k)));
+	);
 );
 
 //returns determinant of any size square matrix
@@ -110,7 +113,7 @@ __det(matrix) ->
 	return(determinant);
 );
 
-//returns the vector representing a plane that goes through all three points
+//returns the plane vector representing a plane that goes through all three points
 __plane(point1,point2,point3) ->
 (
 	vector1 = __vector(point1,point2);
@@ -130,7 +133,7 @@ __inPlane(point1,point2,point3,point4) ->
 	);
 );
 
-//finds area of a triangle using Heron's semiperimeter formula
+//finds area of a triangle with side lengths a, b, and c using Heron's semiperimeter formulaa
 __heron(a,b,c) ->
 (
 	s = (a+b+c)/2;
