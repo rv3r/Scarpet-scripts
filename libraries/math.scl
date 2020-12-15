@@ -1,0 +1,139 @@
+//constructs a vector pointing from point 1 to point 2
+__vector(point1,point2) ->
+(
+	return(point2 - point1);
+);
+
+//returns magnitude of a vector
+__magnitude(vector) ->
+(
+	return(sqrt(__dot(vector,vector)));
+);
+
+//returns a vector of length 1 that points in the same direction of the original vector
+__unit(vector) ->
+(
+	return(vector/__magnitude(vector));
+);
+
+//returns the dot product of two equal length vectors
+__dot(vec1,vec2) ->
+(
+	if(length(vec1) == length(vec2),
+		return(__sum(vec1*vec2)),
+		print('vectors do not have same length');
+	);
+);
+
+//returns the cross product of two 3D vectors
+__cross3(vec1,vec2) ->
+(
+	if(length(vec1) != 3 || length(vec2) != 3,
+		print('at least one vector does not have 3 components');
+		return(null);
+	);
+	
+	x = 1*vec1:1*vec2:2 - 1*vec1:2*vec2:1;
+	y = 1*vec1:2*vec2:0 - 1*vec1:0*vec2:2;
+	z = 1*vec1:0*vec2:1 - 1*vec1:1*vec2:0;
+	
+	cross = l(x,y,z);
+	return(cross);
+);
+
+//rounds a decimal to your preferred amount of decimal places
+//use negative numbers for nearest 10, 100, 1000, etc.
+__roundnum(number,digits) ->
+(
+	return(round(number*10^digits)/10^digits);
+);
+
+//returns the sum of a list
+__sum(list) ->
+(
+	return(reduce(list,_a+_,0));
+);
+
+//returns the sign of a number
+__sign(number) ->
+(
+	if(number < 0,
+		return(-1),
+		number > 0,
+		return(1),
+		return(0);
+	);
+);
+
+//returns n choose k
+__choose(n,k) ->
+(
+	return(fact(n)/(fact(k)*fact(n-k)));
+);
+
+//returns determinant of any size square matrix
+//must be structured as
+// [ [ 1 0 0 ]
+//   [ 0 1 0 ]
+//   [ 0 0 1 ] ]
+__det(matrix) ->
+(
+	if(length(matrix) == 0,
+		print('matrix is empty');
+		return();
+	);
+	for(matrix,
+		if(_i == 0,
+			length = length(_);
+			if(length(matrix) != length,
+				print('matrix is not square');
+				return();
+			),
+			if(length(_) != length,
+				print('row dimensions do not match');
+				return();
+			);
+		);
+	);
+	
+	if(length >= 3,
+		sum = reduce(matrix,row = _i;_a + reduce(matrix,_a * _:(row + _i),1),0);
+		difference = reduce(matrix,row = _i;_a + reduce(matrix,_a * _:(row - _i),1),0);
+		determinant = sum - difference,
+		
+		length == 2,
+		determinant = matrix:0:0*matrix:1:1-matrix:0:1*matrix:1:0,
+		
+		length == 1,
+		determinant = matrix:0:0;
+	);
+	return(determinant);
+);
+
+//returns the vector representing a plane that goes through all three points
+__plane(point1,point2,point3) ->
+(
+	vector1 = __vector(point1,point2);
+	vector2 = __vector(point1,point3);
+	planeVec = __cross3(vector1,vector2);
+	
+	return(planeVec);
+);
+
+//determines if a 4th point is in the same plane as three other points
+__inPlane(point1,point2,point3,point4) ->
+(
+	planeVec = plane(point1,point2,point3);
+	if(sum(planeVec * (point4 - point1)),
+		return(false),
+		return(true);
+	);
+);
+
+//finds area of a triangle using Heron's semiperimeter formula
+__heron(a,b,c) ->
+(
+	s = (a+b+c)/2;
+	area = sqrt(s*(s-a)*(s-b)*(s-c));
+	return(area);
+);
