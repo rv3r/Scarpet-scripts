@@ -20,6 +20,7 @@ __config() ->
 	global_currentedge = l();
 	global_currentface = l();
 	global_reorder = l();
+	global_suggestion_bools = l(true,true);
 	
 	//import from personal math library
 	import('math',
@@ -33,7 +34,8 @@ __config() ->
 		'__dot',
 		'__cross3',
 		'__plane',
-		'__inPlane'
+		'__inPlane',
+		'__heron'
 	);
 	
 	return(
@@ -73,27 +75,77 @@ checkedges() ->
 	return(length(alledges));
 );
 
+perimeter() ->
+(
+	if(length(global_edges) == 0,
+		print('Please select at least one edge first.');
+		return();
+	);
+	alledges = copy(global_edges);
+	enum = 0;
+	while(length(alledges) > 0,length(alledges),
+		check = alledges:enum;
+		flag = true;
+		for(alledges,
+			if(_i > enum && alledges:enum == l(_:1,_:0),
+				delete(alledges,_i);+
+				delete(alledges,enum);
+				flag = false;
+				break();
+			);
+		);
+		if(flag,
+			enum += 1;
+		);
+	);
+	if(length(alledges) == 0,
+		print('This does not work on closed polyhedra.');
+		return();
+	);
+	showfaces();
+	perimeter = reduce(alledges,_a + __magnitude(__vector(_:0,_:1)),0);
+	print(format('c Perimeter: ','w ' + str(perimeter)));
+	return();
+	//return(perimeter);
+);
+
+//applies Heron's semiperimeter formula to find the area of every current face
+
+area() ->
+(
+	if(length(global_faces) == 0,
+		print('Please select at least one face first.');
+		return();
+	);
+	showfaces();
+	area = reduce(global_faces,_a +	__heron(__magnitude(__vector(_:0:0,_:0:1)),__magnitude(__vector(_:1:0,_:1:1)),__magnitude(__vector(_:2:0,_:2:1))),0);
+	print(format('c Area: ','w ' + str(area)));
+	return();
+	//return(area);
+);
+
 //applies tetrahedral shoelace method once edges are paired and faces are ordered properly
 
-calcvolume() ->
+vol() ->
 (
 	showfaces();
-	sum = 0;
+	volume = 0;
 	if(!checkedges() && length(global_edges),
-		sum = abs(reduce(global_faces,
+		volume = abs(reduce(global_faces,
 			//print(det(l(_:0:0,_:1:0,_:2:0)));
 			_a + __det(l(_:0:0,_:1:0,_:2:0)),
 			0
 		)/6);
 		//print('----- calculating volume -----');
-		print('Volume: ' + sum);
+		print(format('c Volume: ','w ' + str(volume)));
 		check = sanitycheck();
-		if(sum > check,
+		if(volume > check,
 			print(check);
 			print('failed sanity check. please send error');
 			print('  log to help find bugs.');
 			logdata();
 		);
+		return();
 		//return(sum);
 	);
 );
@@ -168,7 +220,9 @@ __basiclattice(point1,point2,point3,point4) ->
 	latticepoints = 0;
 	blocksChecked = 0;
 	pointlist = l();
+	print('limits');
 	print(l(minX,maxX,minY,maxY,minZ,maxZ));
+	print('debug info');
 	c_for(x = minX, x < maxX, x+=1,
 		c_for(y = minY, y < maxY, y+=1,
 			z1 = (-1*((plane1:0)*( x - point2:0)+(plane1:1)*( y - point2:1)))/(plane1:2) + (point2:2);
@@ -176,13 +230,13 @@ __basiclattice(point1,point2,point3,point4) ->
 			z3 = (-1*((plane3:0)*( x - point4:0)+(plane3:1)*( y - point4:1)))/(plane3:2) + (point4:2);
 			z4 = (-1*((plane4:0)*( x - point1:0)+(plane4:1)*( y - point1:1)))/(plane4:2) + (point1:2);
 			zlistnum = l(z1,z2,z3,z4);
+			print(zlistnum);
 			cleanz = l();
 			for(zlistnum,
 				if(_ > minZ && _ < maxZ,
 					cleanz += _;
 				);
 			);
-			
 			if(!cleanz,
 				cleanz = l(null);
 			);
@@ -194,6 +248,7 @@ __basiclattice(point1,point2,point3,point4) ->
 			//c_for(z = minZ, z < maxZ, z+=1, deprecated
 				blocksChecked += 1;
 				testpoint = l(x,y,z);
+				pointlist += l('sphere',ticks,'color',0xFF00FFFF,'fill',0xFF0000FF,'center',testpoint,'radius',0.1);
 				result1 = __sum(plane1*(testpoint-point2));
 				result2 = __sum(plane2*(testpoint-point3));
 				result3 = __sum(plane3*(testpoint-point4));
@@ -267,6 +322,7 @@ clearall() ->
 	global_currentedge = l();
 	global_currentface = l();
 	global_currentpoints = l();
+	global_suggestion_bools = l(true,true);
 	return();
 );
 
@@ -276,7 +332,7 @@ clearall() ->
 //  more importantly, it calls addedge with the point
 //addedge attempts to add the point to the current edge,
 //  reorders the edge if necessary, calls addface,
-//  checks to see if you can call calcvolume, and can point you to your original point
+//  checks to see if you can call vol, and can point you to your original point
 //addface attempts to add the point to the current face,
 //  reorders the face if necessary, and shows the face
 
@@ -292,7 +348,8 @@ __addpoint(triple) ->
 	if(flag,
 		global_points += triple;
 		//print(str(triple) + ' added to points');
-		print('Point added');
+		
+		//print('Point added');
 	);
 	__addedge(triple);
 );
@@ -312,17 +369,25 @@ __addedge(point) ->
 			(facelength == 1 && (global_currentface:0:0 != point && global_currentface:0:1 != point)) ||
 			(facelength == 2 && (global_currentface:0:0 == point || global_currentface:0:1 == point)),
 			
+			//runs if second face point(non origin) is added properly
 			if(facelength == 1 && (global_currentface:0:0 != point && global_currentface:0:1 != point),
-				print('Second point added');
+				
+				//print('Second face point added');
+				
 				global_currentpoints:1 = point;
 				//print(global_currentpoints);
 			);
 			
+			//runs if player does continue to another point
+			if(facelength == 2 && (global_currentface:0:0 == point || global_currentface:0:1 == point),
+				thing = 1;
+				//print(format('biuc gottem'));
+			);
 			
 			
 			if(global_currentedge:0 != point,
 				global_currentedge += point,
-				print('Point already used in current edge');
+				print(format('br Point already used in current edge.'));
 				return();
 			),
 			
@@ -361,14 +426,14 @@ __addedge(point) ->
 				flagbackward = true;
 			);
 			if(flagforward && flagbackward,
-				print('Edge already used. please use different points.');
+				print(format('br Edge already used. Please use different points.'));
 				global_currentedge = l();
 				return();
 			);
 		);
 		for(global_currentface,
 			if(_ == global_currentedge || l(_:1,_:0) == global_currentedge,
-				print('Edge already used in current face');
+				print(format('br Edge already used in current face.'));
 				return();
 			);
 		);
@@ -379,27 +444,41 @@ __addedge(point) ->
 			global_currentedge = global_currentedge;
 		);
 		if(length(global_currentface) != 2,
-			draw_shape('line',40,'color',0x7FBF7FFF,'line',5,'from',global_currentedge:0 + 0.5,'to',global_currentedge:1 + 0.5);
+			draw_shape('line',40,'color',0x000000FF,'line',7,'from',global_currentedge:0 + 0.5,'to',global_currentedge:1 + 0.5);
 		);
 		__addface(global_currentedge);
 		__showcurrentface();
 		global_edges += global_currentedge;
 		//print(str(global_currentedge) + ' edge added');
-		print('Edge added');
 		
+		//print('Edge added');
+		
+		//checks to see what you can do
+		if(length(global_edges) > 0 && global_suggestion_bools:0,
+			print(format('w You can now run ','c /volume perimeter.','^w Calculates perimeter of the open polyhedron you outlined.','?/volume perimeter'));
+			global_suggestion_bools:0 = false;
+		);
 		if(!checkedges(),
-			print('You can now run /volume calcvolume');
+			print(format('w You can now run ','c /volume vol.','^w Calculates volume of the closed polyhedron you outlined.','?/volume vol'));
 		);
 		
 		global_currentedge = l();
 		facelength = length(global_currentface);
+		//print('---');
+		//print(global_currentface);
+		//print(facelength);
 		if(facelength == 1,
-			global_currentedge += startpoint;
-			print('Please select the final point'),
+			global_currentedge += startpoint,
+			
+			//print('Please select the final point'),
+			
 			facelength == 2,
 			global_currentedge += startpoint;
-			print('Please return to the starting point or');
-			print('  move to a new point.');
+			//print(global_currentedge);
+			//print(global_currentface);
+			print(format('y Please return to the starting point or'));
+			print(format('y   move to a new point.'));
+			//print('---');
 		);
 	);
 );
@@ -417,7 +496,7 @@ __addface(edge) ->
 			//print('-----');
 			for(global_faces,
 				if(sort(__facepoints(global_currentface)) == sort(__facepoints(_)),
-					print('Face is already in use.');
+					print(format('br Face is already in use.'));
 					return();
 				);
 			);
@@ -454,7 +533,15 @@ __addface(edge) ->
 		global_reorder += reorderflag;
 		global_faces += global_currentface;
 		//print(str(global_currentface) + ' face added');
-		print('Face added');
+		print(format('bl Face added'));
+		
+		//checks to see what you can do
+		if(length(global_faces) > 0 && global_suggestion_bools:1,
+			print(format('w You can now run ','c /volume area.','^w Calculates surface area of the polyhedron you outlined.','?/volume area'));
+			global_suggestion_bools:1 = false;
+		);
+		
+		print(' ---------- ');
 		__showplaneface(global_currentface);
 		//showplanecenter(global_currentface:0:0 + 0.5,global_currentface:1:0 + 0.5,global_currentface:2:0 + 0.5);
 		global_currentface = l();
@@ -542,7 +629,7 @@ showedges() ->
 (
 	shapelist = l();
 	for(global_edges,
-		shapelist += l('line',500,'line',5,'color',0xFF0000FF,'from',_:0 + 0.5,'to',((_:0 + _:1) / 2) + 0.5);
+		shapelist += l('line',100,'line',5,'color',0xFF0000FF,'from',_:0 + 0.5,'to',((_:0 + _:1) / 2) + 0.5);
 	);
 	draw_shape(shapelist);
 );
@@ -565,7 +652,7 @@ __showcurrentface() ->
 	);
 	
 	for(face,
-		draw_shape('line',40,'color',0x7FBF7FFF,'line',5,'from',face:_i:0 + 0.5,'to',face:_i:1 + 0.5);
+		draw_shape('line',40,'color',0x000000FF,'line',5,'from',face:_i:0 + 0.5,'to',face:_i:1 + 0.5);
 	);
 );
 
@@ -608,7 +695,7 @@ __showplaneface(face) ->
 		draw_shape(shapelist);
 	);
 	for(face,
-		draw_shape('line',40,'color',0x7FBF7FFF,'line',5,'from',face:_i:0 + 0.5,'to',face:_i:1 + 0.5);
+		draw_shape('line',100,'color',0x000000FF,'line',5,'from',face:_i:0 + 0.5,'to',face:_i:1 + 0.5);
 	);
 	return();
 );
@@ -730,7 +817,7 @@ __on_statistic(player,category,event,value) ->
 
 //__on_player_starts_sneaking(player) ->
 //(
-	//schedule(0,'calcvolume');
+	//schedule(0,'vol');
 //);
 
 //__on_player_swaps_hands(player) ->
