@@ -23,7 +23,7 @@ __config() ->
 	global_suggestion_bools = l(true,true);
 	
 	//import from personal math library
-	import('math',
+	import('rv3r_math',
 		'__magnitude',
 		'__unit',
 		'__roundnum',
