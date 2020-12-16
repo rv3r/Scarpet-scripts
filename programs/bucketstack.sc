@@ -9,7 +9,8 @@ __config() ->
 		l('pufferfish',1),
 		l('salmon',1),
 		l('cod',1),
-		l('tropical_fish',1)
+		l('tropical_fish',1),
+		l('axolotl',1)
 	);
 	return(
 		m(
