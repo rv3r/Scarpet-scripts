@@ -6,7 +6,8 @@ __config() ->
 		'sprint_one_cm',
 		'fly_one_cm',
 		'crouch_one_cm',
-		'jump','aviate_one_cm',
+		'jump',
+		'aviate_one_cm',
 		'walk_under_water_one_cm',
 		'walk_on_water_one_cm',
 		'swim_one_cm'
@@ -58,7 +59,7 @@ __choose(n,k) ->
 	return(fact(n)/(fact(k)*fact(n-k)));
 );
 
-//returns the number of unpaired edges
+//returns edge list length after first few paired edges are removed
 
 checkedges() ->
 (
@@ -78,9 +79,10 @@ checkedges() ->
 perimeter() ->
 (
 	if(length(global_edges) == 0,
-		print('Please select at least one edge first.');
+		print(format('br Please select at least one edge first.'));
 		return();
 	);
+	//gets rids of EVERY duplicate edge
 	alledges = copy(global_edges);
 	enum = 0;
 	while(length(alledges) > 0,length(alledges),
@@ -99,10 +101,11 @@ perimeter() ->
 		);
 	);
 	if(length(alledges) == 0,
-		print('This does not work on closed polyhedra.');
+		print(format('br This does not work on closed polyhedra.'));
 		return();
 	);
 	showfaces();
+	//sums magnitudes of every unpaired edge
 	perimeter = reduce(alledges,_a + __magnitude(__vector(_:0,_:1)),0);
 	print(format('c Perimeter: ','w ' + str(perimeter)));
 	return();
@@ -114,7 +117,7 @@ perimeter() ->
 area() ->
 (
 	if(length(global_faces) == 0,
-		print('Please select at least one face first.');
+		print(format('br Please select at least one face first.'));
 		return();
 	);
 	showfaces();
@@ -128,6 +131,13 @@ area() ->
 
 vol() ->
 (
+	if(length(global_edges) == 0,
+		print(format('br Please select at least one edge first.'));
+		return(),
+		length(global_faces) == 0,
+		print(format('br Please select at least one face first.'));
+		return();
+	);
 	showfaces();
 	volume = 0;
 	if(!checkedges() && length(global_edges),
@@ -268,7 +278,7 @@ __basiclattice(point1,point2,point3,point4) ->
 							signs += '+'
 					);
 				);
-				if(signs == '-+-+' || signs == '+-+-',
+				if(signs == '-+-+',// || signs == '+-+-',
 					//print(str(testpoint) + ' : ' + str(signs) + ' : ' + str(l(result1,result2,result3,result4)));
 					pointlist += l('sphere',ticks,'color',0xFF0000FF,'fill',0xFF0000FF,'center',testpoint,'radius',0.1);
 					latticepoints += 1//,
@@ -476,8 +486,8 @@ __addedge(point) ->
 			global_currentedge += startpoint;
 			//print(global_currentedge);
 			//print(global_currentface);
-			print(format('y Please return to the starting point or'));
-			print(format('y   move to a new point.'));
+			print(format('y Please return to the starting point ','w ' + str(global_currentface:0:0)));
+			print(format('y   or move to a new point.'));
 			//print('---');
 		);
 	);
