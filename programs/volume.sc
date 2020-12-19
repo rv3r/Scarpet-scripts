@@ -893,6 +893,8 @@ __moveball(point,vector,num,denom) ->
 	draw_shape('sphere',10,'color',0xFF0000FF,'fill',0xFF0000FF,'center',point + vector*num/denom,'radius',0.1);
 );
 
+//
+
 show(type) ->
 (
 	if(type == 'edges',
@@ -901,6 +903,9 @@ show(type) ->
 		__showfaces();
 	);
 );
+
+//draws red lines to indicate edges, allowing
+//	you to see which ones are unpaired
 
 __showedges() -> 
 (
@@ -911,7 +916,7 @@ __showedges() ->
 	draw_shape(shapelist);
 );
 
-//draws black lines along the face to
+//draws blue lines along the face to
 //  help in visualization and shows the
 //  direction to the original point
 
