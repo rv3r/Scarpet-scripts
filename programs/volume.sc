@@ -118,11 +118,6 @@ __command() ->
 	return();
 );
 
-//tester(block) ->
-//(
-	//print(format('br ' + str(block)));
-//);
-
 //not actually used but mightve been in another universe
 
 __choose(n,k) ->
@@ -503,7 +498,7 @@ clear(arg) ->
 //  more importantly, it calls addedge with the point
 //addedge attempts to add the point to the current edge,
 //  reorders the edge if necessary, calls addface,
-//  checks to see if you can call vol, and can point you to your original point
+//  checks to see if you can call volume, and can point you to your original point
 //addface attempts to add the point to the current face,
 //  reorders the face if necessary, and shows the face
 
