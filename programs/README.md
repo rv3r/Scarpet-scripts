@@ -39,7 +39,7 @@ Attack blocks around your build with a mainhand golden sword to make triangles u
 
 ### Geometric Properties
 
-`/volume perimeter` - finds the perimeter of an open region that you've outlined. Nothing fancy here, just vector magnitudes
+`/volume perimeter` - finds the perimeter of an open region that you've outlined with simple vector magnitudes
 
 `/volume area` - finds the area of the region you've outlined using Heron's formula for each face
 
