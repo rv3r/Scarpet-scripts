@@ -192,7 +192,7 @@ perimeter() ->
 		flag = true;
 		for(alledges,
 			if(_i > enum && alledges:enum == l(_:1,_:0),
-				delete(alledges,_i);+
+				delete(alledges,_i);
 				delete(alledges,enum);
 				flag = false;
 				break();
