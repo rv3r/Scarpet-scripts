@@ -25,7 +25,7 @@ Shift right-click on an end portal frame containing an eye of ender to remove th
 # Volume
 ### Requires my rv3r_math.scl library
 ### Colors are not final and there are still some bugs to be worked out
-Attack blocks around your build with a mainhand golden sword to make triangles until you the region you want to manipulate.
+Attack blocks around your build with a mainhand golden sword to make triangles until you obtain the region you want to manipulate.
 
 ### Data Manipulation
 
