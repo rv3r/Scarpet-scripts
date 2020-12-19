@@ -861,10 +861,6 @@ __linvalue(x,line) ->
 	return(x * line:0 + line:1);
 );
 
-//places a red sphere along a vector
-//  loop this by increasing the numerator
-//  up to the denominator
-
 //gets every face block from global_faces
 
 __allfaceblocks() ->
@@ -887,6 +883,10 @@ __allfaceblocks() ->
 	);
 	return(blocks);
 );
+
+//places a red sphere along a vector
+//  loop this by increasing the numerator
+//  up to the denominator
 
 __moveball(point,vector,num,denom) ->
 (
