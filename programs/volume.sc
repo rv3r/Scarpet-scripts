@@ -916,7 +916,7 @@ __showedges() ->
 	draw_shape(shapelist);
 );
 
-//draws blue lines along the face to
+//draws black lines along the face to
 //  help in visualization and shows the
 //  direction to the original point
 
