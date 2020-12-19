@@ -304,10 +304,8 @@ fill(fillmode,block) ->
 	filllist = __allfaceblocks();
 	successes = 0;
 	if(fillmode == 'all',
-		for(keys(filllist),
-			if(set(_,block),
-				successes += 1;
-			);
+		successes += for(keys(filllist),
+			set(_,block) != 0;
 		),
 		fillmode == 'border',
 		borderlist = m();
@@ -319,10 +317,8 @@ fill(fillmode,block) ->
 				borderlist += _;
 			);
 		);
-		for(keys(borderlist),
-			if(set(_,block),
-				successes += 1;
-			);
+		successes += for(keys(borderlist),
+			set(_,block) != 0;
 		);
 	);
 	
