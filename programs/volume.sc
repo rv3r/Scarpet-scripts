@@ -22,6 +22,8 @@ __config() ->
 	global_currentface = l();
 	global_reorder = l();
 	global_suggestion_bools = l(true,true);
+	global_axis = null;
+	global_formulas = l();
 	
 	//import from personal math library
 	import('rv3r_math',
@@ -42,15 +44,72 @@ __config() ->
 	return(
 		m(
 			l('scope','player'),
-			l('stay_loaded',true)
+			l('stay_loaded',true),
+			
+			l('commands',
+				m(
+					l('perimeter','perimeter'),
+					l('area','area'),
+					l('volume','vol'),
+					l('logdata','logdata'),
+					l('showedges','showedges'),
+					l('showfaces','showfaces'),
+					l('clear',['clear','all']),
+					l('clear <clearmode>','clear'),
+					l('fill <fillmode> <block>','fill'),
+					l('extrude <pos> <int>','extrude')
+				)
+			),
+			
+			l('arguments',
+				m(
+					l('clearmode',
+						m(
+							l('type','term'),
+							l('options',
+								l('points','edges','faces','all')
+							),
+							l('suggest',
+								l('points','edges','faces','all')
+							)
+						)
+					),
+					l('fillmode',
+						m(
+							l('type','term'),
+							l('options',
+								l('all','border')
+							),
+							l('suggest',
+								l('all','border')
+							)
+						)
+					),
+					l('int',
+						m(
+							l('type','int'),
+							l('min',0),
+							l('max',100),
+							l('suggest',
+								l(1,2,4,8,16)
+							)
+						)
+					)
+				)
+			)
 		)
-	);
+	)
 );
 
 __command() ->
 (
 	return();
 );
+
+//tester(block) ->
+//(
+	//print(format('br ' + str(block)));
+//);
 
 //not actually used but mightve been in another universe
 
@@ -59,9 +118,45 @@ __choose(n,k) ->
 	return(fact(n)/(fact(k)*fact(n-k)));
 );
 
-//returns edge list length after first few paired edges are removed
+//returns number of points that are not in the same x, y, or z plane as all other points
+//along with main axis for the first three points and their common value
 
-checkedges() ->
+__checkpoints(pointlist) ->
+(
+	allpoints = copy(pointlist);
+	axis = null;
+	for(range(3),
+		flag = true;
+		testaxis = _;
+		for(range(length(allpoints)),
+			if(allpoints:_i:testaxis != allpoints:(_i+1):testaxis,
+				flag = false;
+				break();
+			);
+		);
+		if(flag,
+			value = allpoints:0:_;
+			axis = _;
+			break();
+		);
+	);
+	if(axis == null,
+		print(format('br Please clear all points and select points that are in the same plane.'));
+		return(l(null,null,null)),
+		global_axis = axis;
+	);
+	while(length(allpoints) > 0,length(allpoints),
+		if(allpoints:0:axis == value,
+			delete(allpoints,0);
+		);
+	);
+	return(l(length(allpoints),axis,value));
+);
+
+//returns edge list length after first few paired edges are removed
+//it had better be 0 if you want to find the volume
+
+__checkedges() ->
 (
 	alledges = copy(global_edges);
 	while(length(alledges) > 0,length(alledges),
@@ -107,7 +202,7 @@ perimeter() ->
 	showfaces();
 	//sums magnitudes of every unpaired edge
 	perimeter = reduce(alledges,_a + __magnitude(__vector(_:0,_:1)),0);
-	print(format('c Perimeter: ','w ' + str(perimeter)));
+	print(format('c Perimeter: ','w ' + str(__roundnum(perimeter,3))));
 	return();
 	//return(perimeter);
 );
@@ -122,7 +217,7 @@ area() ->
 	);
 	showfaces();
 	area = reduce(global_faces,_a +	__heron(__magnitude(__vector(_:0:0,_:0:1)),__magnitude(__vector(_:1:0,_:1:1)),__magnitude(__vector(_:2:0,_:2:1))),0);
-	print(format('c Area: ','w ' + str(area)));
+	print(format('c Area: ','w ' + str(__roundnum(area,3))));
 	return();
 	//return(area);
 );
@@ -140,15 +235,15 @@ vol() ->
 	);
 	showfaces();
 	volume = 0;
-	if(!checkedges() && length(global_edges),
+	if(!__checkedges() && length(global_edges),
 		volume = abs(reduce(global_faces,
 			//print(det(l(_:0:0,_:1:0,_:2:0)));
 			_a + __det(l(_:0:0,_:1:0,_:2:0)),
 			0
 		)/6);
 		//print('----- calculating volume -----');
-		print(format('c Volume: ','w ' + str(volume)));
-		check = sanitycheck();
+		print(format('c Volume: ','w ' + str(__roundnum(volume,3))));
+		check = __sanitycheck();
 		if(volume > check,
 			print(check);
 			print('failed sanity check. please send error');
@@ -162,7 +257,7 @@ vol() ->
 
 //ensures volume isnt greater than what is physically possible
 
-sanitycheck() ->
+__sanitycheck() ->
 (
 	minX = global_points:0:0;
 	maxX = global_points:0:0;
@@ -196,6 +291,75 @@ logdata() ->
 	);
 );
 
+//fills the currently selected region ONLY if it is in one plane(xy,xz,yz) in the prescribed style
+fill(fillmode,block) ->
+(
+	if(fillmode == 'all',
+		borderstyle = null;
+	);
+	filllist = __allfaceblocks();
+	successes = 0;
+	if(fillmode == 'all',
+		for(keys(filllist),
+			if(set(_,block),
+				successes += 1;
+			);
+		),
+		fillmode == 'border',
+		borderlist = m();
+		for(keys(filllist),
+			result = for(neighbours(_),
+				has(filllist,pos(_));
+			);
+			if(result < 4 && !has(borderlist,_),
+				borderlist += _;
+			);
+		);
+		for(keys(borderlist),
+			if(set(_,block),
+				successes += 1;
+			);
+		);
+	);
+	
+	print(format('l Successfully filled ' + str(successes) + ' blocks'));
+);
+
+//repeats the selected region every <period> blocks up to <pos>
+extrude(pos,period) ->
+(
+	blockmap = __allfaceblocks();
+	for(range(3),
+		flag = true;
+		test = _;
+		for(keys(blockmap),
+			//print(str(_:test) + ' ?= ' + str(keys(blockmap):(_i+1):test)); 
+			if(_:test != keys(blockmap):(_i+1):test,
+				flag = false;
+				break();
+			);
+			//print('result: ' + _:test == keys(blockmap):(_i+1):test);
+		);
+		if(flag,
+			value = keys(blockmap):0:_;
+			axis = _;
+			break();
+		);
+	);
+	
+	direction = __sign(pos:axis - value);
+	successes = 0;
+	
+	c_for(x = value + direction*period, x*direction <= (pos:axis)*direction, x += direction*period,
+		successes += for(keys(blockmap),
+			newpos = copy(_);
+			newpos:axis = x;
+			set(newpos,block(_)) != 0;
+		);
+	);
+		
+	print(format('l Successfully filled ' + str(successes) + ' blocks'));
+);
 
 //not used
 //BUT
@@ -267,18 +431,8 @@ __basiclattice(point1,point2,point3,point4) ->
 				sign2 = __sign(result2);
 				sign3 = __sign(result3);
 				sign4 = __sign(result4);
-				signs = '';
-				for(l(sign1,sign2,sign3,sign4),
-					if(
-						_ == -1,
-							signs += '-',
-						_ == 0,
-							signs += '0',
-						_ == 1,
-							signs += '+'
-					);
-				);
-				if(signs == '-+-+',// || signs == '+-+-',
+				signs = l(sign1,sign2,sign3,sign4);
+				if(signs == l(-1,1,-1,1),// || signs == l(1,-1,1,-1),
 					//print(str(testpoint) + ' : ' + str(signs) + ' : ' + str(l(result1,result2,result3,result4)));
 					pointlist += l('sphere',ticks,'color',0xFF0000FF,'fill',0xFF0000FF,'center',testpoint,'radius',0.1);
 					latticepoints += 1//,
@@ -306,34 +460,29 @@ __basiclattice(point1,point2,point3,point4) ->
 
 //functions to clear current values
 
-clearpoints() ->
+clear(arg) ->
 (
-	global_points = l();
-	return();
-);
-
-clearedges() ->
-(
-	global_edges = l();
-	return();
-);
-
-clearfaces() ->
-(
-	global_faces = l();
-	return();
-);
-
-clearall() ->
-(
-	clearpoints();
-	clearedges();
-	clearfaces();
-	global_currentedge = l();
-	global_currentface = l();
-	global_currentpoints = l();
-	global_suggestion_bools = l(true,true);
-	return();
+	if(arg == 'points',
+		global_points = l();
+		return(),
+		arg == 'edges',
+		global_edges = l();
+		return(),
+		arg == 'faces',
+		global_faces = l();
+		return(),
+		arg == 'all',
+		global_points = l();
+		global_edges = l();
+		global_faces = l();
+		global_currentedge = l();
+		global_currentface = l();
+		global_currentpoints = l();
+		global_suggestion_bools = l(true,true);
+		global_axis = null;
+		global_formulas = l();
+		return();
+	)
 );
 
 //heart and soul of the program
@@ -349,13 +498,7 @@ clearall() ->
 __addpoint(triple) ->
 (
 	//print('----- adding point -----');
-	flag = true;
-	for(global_points,
-		if(_ == triple,
-			flag = false;
-		);
-	);
-	if(flag,
+	if(!filter(global_points,_ == triple),
 		global_points += triple;
 		//print(str(triple) + ' added to points');
 		
@@ -465,11 +608,11 @@ __addedge(point) ->
 		
 		//checks to see what you can do
 		if(length(global_edges) > 0 && global_suggestion_bools:0,
-			print(format('w You can now run ','c /volume perimeter.','^w Calculates perimeter of the open polyhedron you outlined.','?/volume perimeter'));
+			print(format('w You can now run ','c /volume perimeter.','^w Calculates perimeter of the open polyhedron you outlined.','!/volume perimeter'));
 			global_suggestion_bools:0 = false;
 		);
-		if(!checkedges(),
-			print(format('w You can now run ','c /volume vol.','^w Calculates volume of the closed polyhedron you outlined.','?/volume vol'));
+		if(!__checkedges(),
+			print(format('w You can now run ','c /volume volume.','^w Calculates volume of the closed polyhedron you outlined.','!/volume volume'));
 		);
 		
 		global_currentedge = l();
@@ -543,11 +686,11 @@ __addface(edge) ->
 		global_reorder += reorderflag;
 		global_faces += global_currentface;
 		//print(str(global_currentface) + ' face added');
-		print(format('bl Face added'));
+		print(format('l Face added'));
 		
 		//checks to see what you can do
 		if(length(global_faces) > 0 && global_suggestion_bools:1,
-			print(format('w You can now run ','c /volume area.','^w Calculates surface area of the polyhedron you outlined.','?/volume area'));
+			print(format('w You can now run ','c /volume area.','^w Calculates surface area of the polyhedron you outlined.','!/volume area'));
 			global_suggestion_bools:1 = false;
 		);
 		
@@ -604,7 +747,7 @@ __reorderface() ->
 	return(reorderflag);
 );
 
-//just returns the points that make up a face
+//just returns the verticess that make up a face
 
 __facepoints(face) ->
 (
@@ -626,13 +769,128 @@ __facepoints(face) ->
 	return(points);
 );
 
+//returns all points that are present in a face
+
+__faceblocks(face) ->
+(
+	p1 = face:0:0;
+	p2 = face:0:1;
+	p3 = face:1:1;
+	l(extra,axis,value) = __checkpoints(l(p1,p2,p3));
+	if(axis == null,
+		return(),
+		global_axis == null,
+		global_axis = axis,
+		global_axis != axis && global_axis != null,
+		print(format('br Not all faces are in the same plane.'));
+		return();
+	);
+	if(extra > 0,
+		print(format('br At least one point is not in the same plane as the others.'));
+		return();
+	);
+	if(axis != 0,
+		xaxis = 0,
+		xaxis = 1;
+	);
+	yaxis = 3 - (axis + xaxis);
+	l(p1,p2,p3) = sort_key(l(p1,p2,p3),_:xaxis);
+	points = l(p1,p2,p3);
+	centroid = (p1 + p2 + p3)/3;
+	eqn12 = __linreg(l(p1:xaxis,p1:yaxis),l(p2:xaxis,p2:yaxis));
+	eqn23 = __linreg(l(p2:xaxis,p2:yaxis),l(p3:xaxis,p3:yaxis));
+	eqn31 = __linreg(l(p1:xaxis,p1:yaxis),l(p3:xaxis,p3:yaxis));
+	eqnlist = l(eqn12,eqn23,eqn31);
+	checksigns = l();
+	for(eqnlist,
+		checksigns:_i = __sign(centroid:yaxis - __linvalue(centroid:xaxis,_));
+	);
+	
+	pointlist = m();
+	checked = 0;
+	
+	c_for(x = min(p1:xaxis,p2:xaxis,p3:xaxis), x <= max(p1:xaxis,p2:xaxis,p3:xaxis), x += 1,
+		if(checksigns:2 == 1,
+			miny = ceil(__linvalue(x,eqnlist:2)),
+			checksigns:2 == -1,
+			maxy = floor(__linvalue(x,eqnlist:2))
+		);
+		if(x <= p2:xaxis,
+			if(checksigns:0 == 1,
+				miny = ceil(__linvalue(x,eqnlist:0)),
+				checksigns:0 == -1,
+				maxy = floor(__linvalue(x,eqnlist:0))
+			),
+			x > p2:xaxis,
+			if(checksigns:1 == 1,
+				miny = ceil(__linvalue(x,eqnlist:1)),
+				checksigns:1 == -1,
+				maxy = floor(__linvalue(x,eqnlist:1))
+			)
+		);
+		if(x == p1:xaxis && x == p2:xaxis,
+			miny = min(p1:yaxis,p2:yaxis);
+			maxy = max(p1:yaxis,p2:yaxis)
+		);
+		c_for(y = miny, y <= maxy, y += 1,
+			checked += 1;
+			point = l();
+			point:axis = value;
+			point:xaxis = x;
+			point:yaxis = y;
+			pointlist += point;
+		);
+	);
+	showfaces();
+	return(pointlist);
+);
+
+//constructs a linear equation through two 2d points
+
+__linreg(p1,p2) ->
+(
+	m = (p2:1-p1:1)/(p2:0-p1:0);
+	b = p1:1 - p1:0*m;
+	return(l(m,b));
+);
+
+//takes an x-value and a line and returns a y-value
+
+__linvalue(x,line) ->
+(
+	return(x * line:0 + line:1);
+);
+
 //places a red sphere along a vector
 //  loop this by increasing the numerator
 //  up to the denominator
 
+//gets every face block from global_faces
+
+__allfaceblocks() ->
+(
+	if(length(global_faces) == 0,
+		print(format('br Please select at least one face first.'));
+		return();
+	);
+	blocks = m();
+	for(global_faces,
+		points = __faceblocks(_);
+		if(points == null,
+			return();
+		);
+		for(keys(points),
+			if(!has(blocks,_),
+				blocks += _;
+			);
+		);
+	);
+	return(blocks);
+);
+
 __moveball(point,vector,num,denom) ->
 (
-	draw_shape('sphere',10,'color',0xFF0000FF,'fill',0xFF0000FF,'center',point + num*vector/denom,'radius',0.1);
+	draw_shape('sphere',10,'color',0xFF0000FF,'fill',0xFF0000FF,'center',point + vector*num/denom,'radius',0.1);
 );
 
 showedges() -> 
