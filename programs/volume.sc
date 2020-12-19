@@ -22,8 +22,10 @@ __config() ->
 	global_currentface = l();
 	global_reorder = l();
 	global_suggestion_bools = l(true,true);
-	global_axis = null;
 	global_formulas = l();
+	
+	//important but just not a list
+	global_axis = null;
 	
 	//import from personal math library
 	import('rv3r_math',
