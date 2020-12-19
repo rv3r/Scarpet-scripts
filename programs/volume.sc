@@ -52,8 +52,7 @@ __config() ->
 					l('area','area'),
 					l('volume','vol'),
 					l('logdata','logdata'),
-					l('showedges','showedges'),
-					l('showfaces','showfaces'),
+					l('show <showmode>',['show']),
 					l('clear',['clear','all']),
 					l('clear <clearmode>','clear'),
 					l('fill <fillmode> <block>','fill'),
@@ -63,6 +62,17 @@ __config() ->
 			
 			l('arguments',
 				m(
+					l('showmode',
+						m(
+							l('type','term'),
+							l('options',
+								l('edges','faces')
+							),
+							l('suggest',
+								l('edges','faces')
+							)
+						)
+					),
 					l('clearmode',
 						m(
 							l('type','term'),
@@ -199,7 +209,7 @@ perimeter() ->
 		print(format('br This does not work on closed polyhedra.'));
 		return();
 	);
-	showfaces();
+	__showfaces();
 	//sums magnitudes of every unpaired edge
 	perimeter = reduce(alledges,_a + __magnitude(__vector(_:0,_:1)),0);
 	print(format('c Perimeter: ','w ' + str(__roundnum(perimeter,3))));
@@ -215,7 +225,7 @@ area() ->
 		print(format('br Please select at least one face first.'));
 		return();
 	);
-	showfaces();
+	__showfaces();
 	area = reduce(global_faces,_a +	__heron(__magnitude(__vector(_:0:0,_:0:1)),__magnitude(__vector(_:1:0,_:1:1)),__magnitude(__vector(_:2:0,_:2:1))),0);
 	print(format('c Area: ','w ' + str(__roundnum(area,3))));
 	return();
@@ -233,7 +243,7 @@ vol() ->
 		print(format('br Please select at least one face first.'));
 		return();
 	);
-	showfaces();
+	__showfaces();
 	volume = 0;
 	if(!__checkedges() && length(global_edges),
 		volume = abs(reduce(global_faces,
@@ -841,7 +851,7 @@ __faceblocks(face) ->
 			pointlist += point;
 		);
 	);
-	showfaces();
+	__showfaces();
 	return(pointlist);
 );
 
@@ -893,7 +903,16 @@ __moveball(point,vector,num,denom) ->
 	draw_shape('sphere',10,'color',0xFF0000FF,'fill',0xFF0000FF,'center',point + vector*num/denom,'radius',0.1);
 );
 
-showedges() -> 
+show(type) ->
+(
+	if(type == 'edges',
+		__showedges(),
+		type == 'faces',
+		__showfaces();
+	);
+);
+
+__showedges() -> 
 (
 	shapelist = l();
 	for(global_edges,
@@ -926,7 +945,7 @@ __showcurrentface() ->
 
 //calls showplaneface for every added face
 
-showfaces() ->
+__showfaces() ->
 (
 	for(global_faces,
 		//showplanecenter(_:0:0+l(0.5,0.5,0.5),_:1:0+l(0.5,0.5,0.5),_:2:0+l(0.5,0.5,0.5));
@@ -1090,7 +1109,7 @@ __on_statistic(player,category,event,value) ->
 
 //__on_player_swaps_hands(player) ->
 //(
-	//schedule(0,'showfaces');
+	//schedule(0,'__showfaces');
 //);
 
 //__on_player_drops_item(player) ->
