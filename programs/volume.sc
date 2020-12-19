@@ -211,7 +211,6 @@ perimeter() ->
 	perimeter = reduce(alledges,_a + __magnitude(__vector(_:0,_:1)),0);
 	print(format('c Perimeter: ','w ' + str(__roundnum(perimeter,3))));
 	return();
-	//return(perimeter);
 );
 
 //applies Heron's semiperimeter formula to find the area of every current face
@@ -226,7 +225,6 @@ area() ->
 	area = reduce(global_faces,_a +	__heron(__magnitude(__vector(_:0:0,_:0:1)),__magnitude(__vector(_:1:0,_:1:1)),__magnitude(__vector(_:2:0,_:2:1))),0);
 	print(format('c Area: ','w ' + str(__roundnum(area,3))));
 	return();
-	//return(area);
 );
 
 //applies tetrahedral shoelace method once edges are paired and faces are ordered properly
@@ -258,7 +256,6 @@ vol() ->
 			logdata();
 		);
 		return();
-		//return(sum);
 	);
 );
 
