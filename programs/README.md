@@ -56,4 +56,4 @@ These require you to select a set of faces in one plane(x-y,y-z,z-x). Failure to
 
 `/volume fill border <block>` - fills just the outside border of the region with the block of your choice
 
-`/volume extrude <pos> <int>` - repeats the entire region every `int` blocks up to `pos`
+`/volume extrude <pos> <int>` - repeats the entire region in a direction normal to the faces every `int` blocks up to `pos`
