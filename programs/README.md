@@ -27,7 +27,7 @@ Shift right-click on an end portal frame containing an eye of ender to remove th
 ### Colors are not final and there are still some bugs to be worked out
 Attack blocks around your build with a mainhand golden sword to make triangles until you the region you want to manipulate.
 
-#### Data Manipulation
+### Data Manipulation
 
 `/volume clear` - clears all data so you can start fresh, same as `/volume clear all`
 
@@ -37,7 +37,7 @@ Attack blocks around your build with a mainhand golden sword to make triangles u
 
 `/volume show faces` - draw blue lines to indicate faces used in `/volume area`
 
-#### Geometric Properties
+### Geometric Properties
 
 `/volume perimeter` - finds the perimeter of an open region that you've outlined. Nothing fancy here, just vector magnitudes
 
@@ -49,7 +49,7 @@ This **does not** find the number of full blocks that will approximate this shap
 
 If the output seems off(especially much lower than expected), use `/volume logdata` to drop the relevant data in a text file.
 
-#### World Manipulation
+### World Manipulation
 These require you to select a set of faces in one plane(x-y,y-z,z-x). Failure to do so results in an error being thrown.
 
 `/volume fill all <block>` - fills every face with the block of your choice
