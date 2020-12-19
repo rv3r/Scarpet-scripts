@@ -1096,18 +1096,3 @@ __on_statistic(player,category,event,value) ->
 		);
 	);
 );
-
-//__on_player_starts_sneaking(player) ->
-//(
-	//schedule(0,'vol');
-//);
-
-//__on_player_swaps_hands(player) ->
-//(
-	//schedule(0,'__showfaces');
-//);
-
-//__on_player_drops_item(player) ->
-//(
-	//schedule(0,'clearall');
-//);
