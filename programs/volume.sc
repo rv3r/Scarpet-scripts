@@ -747,7 +747,7 @@ __reorderface() ->
 	return(reorderflag);
 );
 
-//just returns the verticess that make up a face
+//just returns the vertices that make up a face
 
 __facepoints(face) ->
 (
