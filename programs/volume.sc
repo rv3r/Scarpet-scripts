@@ -178,6 +178,8 @@ __checkedges() ->
 	return(length(alledges));
 );
 
+//sum of vector magnitudes of unpaired edges
+
 perimeter() ->
 (
 	if(length(global_edges) == 0,
