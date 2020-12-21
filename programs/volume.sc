@@ -893,7 +893,7 @@ __moveball(point,vector,num,denom) ->
 	draw_shape('sphere',10,'color',0xFF0000FF,'fill',0xFF0000FF,'center',point + vector*num/denom,'radius',0.1);
 );
 
-//
+//calls one of the show functions depending on the argument
 
 show(type) ->
 (
