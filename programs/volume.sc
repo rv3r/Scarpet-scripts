@@ -22,7 +22,6 @@ __config() ->
 	global_currentface = l();
 	global_reorder = l();
 	global_suggestion_bools = l(true,true);
-	global_formulas = l();
 	
 	//important but just not a list
 	global_axis = null;
@@ -482,7 +481,6 @@ clear(arg) ->
 		global_currentpoints = l();
 		global_suggestion_bools = l(true,true);
 		global_axis = null;
-		global_formulas = l();
 		return();
 	)
 );
