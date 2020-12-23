@@ -53,7 +53,7 @@ __config() ->
 					l('area','area'),
 					l('volume','vol'),
 					l('logdata','logdata'),
-					l('show <showmode>',['show']),
+					l('show <showmode>','show'),
 					l('clear',['clear','all']),
 					l('clear <clearmode>','clear'),
 					l('fill <fillmode> <block>','fill'),
