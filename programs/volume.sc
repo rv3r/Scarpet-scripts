@@ -57,6 +57,7 @@ __config() ->
 					l('clear',['clear','all']),
 					l('clear <clearmode>','clear'),
 					l('fill <fillmode> <block>','fill'),
+					l('extrude <pos>',['extrude',1]),
 					l('extrude <pos> <int>','extrude')
 				)
 			),
