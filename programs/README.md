@@ -16,8 +16,11 @@ Be sure to edit the numbers at the beginning of the script so you can have your 
 
 Allows every(up to 1.16.5) nonstackable bucket type to stack when a player picks them up and allows for using buckets similar to honey bottles. You get the empty buckets back in your inventory unless you don't have space.
 
+# Death
+Gives players who don't use [Tweakeroo](https://masa.dy.fi/mcmods/all_mods/) a death message indicating coordinates and dimension of death. Also prints death messages to server log.
+
 # Despawn
-Gives those of us who don't use [MiniHUD](https://masa.dy.fi/mcmods/all_mods/?mcver=1.16.4&mod=minihud) a despawn sphere around the player showing where mobs will despawn. You can pick any time in seconds under an hour and choose from one of six fantastic colors, red, green, blue, black, gray(or grey), and white. Default sphere is red and lasts for 60 seconds.
+Gives those of us who don't use [MiniHUD](https://masa.dy.fi/mcmods/all_mods/) a despawn sphere around the player showing where mobs will despawn. You can pick any time in seconds under an hour and choose from one of six fantastic colors, red, green, blue, black, gray(or grey), and white. Default sphere is red and lasts for 60 seconds.
 
 # Eye Remover
 Shift right-click on an end portal frame containing an eye of ender to remove the eye. Note that an existing portal will be removed.
