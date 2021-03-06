@@ -25,9 +25,16 @@ Gives those of us who don't use [MiniHUD](https://masa.dy.fi/mcmods/all_mods/) a
 # Eye Remover
 Shift right-click on an end portal frame containing an eye of ender to remove the eye. Note that an existing portal will be removed.
 
+# Inventory Sort
+### Requires my inventory.scl library
+### This is still missing features for deleting and overwriting of preferences
+Allows players to set up inventory preferences for later sorting with a single command(`/invsort`). Each slot can be individually tailored based on what the player currently has in their inventory. It is suggested that you remove all but the essentials before `/invsort setup`.
+
+# No Void Damage
+Heals players if they fall into the void. This script assumes you've fallen into the void in the End as it will teleport you back to the End platform after 10 seconds if you fail to leave the void. Useful for when the server lets you glitch through the world and fall into the void. There's no point in losing your stuff if it wasn't your fault.
+
 # Volume
 ### Requires my rv3r_math.scl library
-### Colors are not final and there are still some bugs to be worked out
 Attack blocks around your build with a mainhand golden sword to make triangles until you obtain the region you want to manipulate.
 
 ### Data Manipulation
