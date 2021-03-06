@@ -101,7 +101,7 @@ __config() ->
 						m(
 							l('type','int'),
 							l('min',0),
-							l('max',100),
+							l('max',1024),
 							l('suggest',
 								l(1,2,4,8,16)
 							)
