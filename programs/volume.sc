@@ -297,17 +297,36 @@ logdata() ->
 	);
 );
 
+//sets a block using blocks from the player's inventory
+__playerset(player,pos,block) ->
+(
+	if(inventory_find(player,block),
+		if(set(pos,str(block),block_state(block)),
+			result = inventory_remove(player,block);
+		);
+	);
+	return(result);
+);
+
 //fills the currently selected region ONLY if it is in one plane(xy,xz,yz) in the prescribed style
 fill(fillmode,block) ->
 (
+	p = player();
 	if(fillmode == 'all',
 		borderstyle = null;
 	);
 	filllist = __allfaceblocks();
 	successes = 0;
+	gamemode = p ~ 'gamemode';
 	if(fillmode == 'all',
-		successes += for(keys(filllist),
-			set(_,block) != 0;
+		if(gamemode == 'creative',
+			successes += for(keys(filllist),
+				set(_,block) != 0;
+			),
+			gamemode == 'survival',
+			successes += for(keys(filllist),
+				__playerset(p,_,block) != 0;
+			)
 		),
 		fillmode == 'border',
 		borderlist = m();
@@ -319,8 +338,16 @@ fill(fillmode,block) ->
 				borderlist += _;
 			);
 		);
-		successes += for(keys(borderlist),
-			set(_,block) != 0;
+		if(gamemode == 'creative',
+			successes += for(keys(borderlist),
+				set(_,block) != 0;
+			),
+			gamemode == 'survival',
+			successes += for(keys(borderlist),
+				if(air(block(_)) || liquid(block(_)),
+					__playerset(p,_,block) != 0;
+				);
+			);
 		);
 	);
 	
@@ -330,6 +357,7 @@ fill(fillmode,block) ->
 //repeats the selected region every <period> blocks up to <pos>
 extrude(pos,period) ->
 (
+	p = player();
 	blockmap = __allfaceblocks();
 	for(range(3),
 		flag = true;
@@ -352,12 +380,25 @@ extrude(pos,period) ->
 	direction = __sign(pos:axis - value);
 	successes = 0;
 	
-	c_for(x = value + direction*period, x*direction <= (pos:axis)*direction, x += direction*period,
-		successes += for(keys(blockmap),
-			newpos = copy(_);
-			newpos:axis = x;
-			set(newpos,block(_)) != 0;
-		);
+	gamemode = p ~ 'gamemode';
+	if(gamemode == 'creative',
+		c_for(x = value + direction*period, x*direction <= (pos:axis)*direction, x += direction*period,
+			successes += for(keys(blockmap),
+				newpos = copy(_);
+				newpos:axis = x;
+				set(newpos,block(_)) != 0;
+			);
+		),
+		gamemode == 'survival',
+		c_for(x = value + direction*period, x*direction <= (pos:axis)*direction, x += direction*period,
+			successes += for(keys(blockmap),
+				newpos = copy(_);
+				newpos:axis = x;
+				if(air(block(newpos)) || liquid(block(newpos)),
+					__playerset(p,newpos,block(_)) != 0;
+				);
+			);
+		),
 	);
 		
 	print(format('l Successfully filled ' + str(successes) + ' blocks'));
