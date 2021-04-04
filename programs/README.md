@@ -60,7 +60,7 @@ This **does not** find the number of full blocks that will approximate this shap
 If the output seems off(especially much lower than expected), use `/volume logdata` to drop the relevant data in a text file.
 
 ### World Manipulation
-These require you to select a set of faces in one plane(x-y,y-z,z-x). Failure to do so results in an error being thrown.
+These require you to select a set of faces in one plane(x-y,y-z,z-x). Failure to do so results in an error being thrown. This will use blocks from a survival player's inventory, but it will only replace air and liquids and will only set empty containers.
 
 `/volume fill all <block>` - fills every face with the block of your choice
 
