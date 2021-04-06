@@ -56,9 +56,11 @@ __config() ->
 					l('show <showmode>','show'),
 					l('clear',['clear','all']),
 					l('clear <clearmode>','clear'),
-					l('fill <fillmode> <block>','fill'),
-					l('extrude <pos>',['extrude',1]),
-					l('extrude <pos> <int>','extrude')
+					l('fill <fillmode> <block>',['fill',true]),
+					l('fill <fillmode> <block> <replace>',['fill']),
+					l('extrude <pos>',['extrude',1,true]),
+					l('extrude <pos> <int>',['extrude',true]),
+					l('extrude <pos> <int> <replace>',['extrude'])
 				)
 			),
 			
@@ -106,7 +108,12 @@ __config() ->
 								l(1,2,4,8,16)
 							)
 						)
-					)
+					),
+					l('replace',
+						m(
+							l('type','bool')
+						)
+					)	
 				)
 			)
 		)
@@ -298,6 +305,7 @@ logdata() ->
 );
 
 //sets a block using blocks from the player's inventory
+//uses block name and state to ensure empty block inventory
 __playerset(player,pos,block) ->
 (
 	if(inventory_find(player,block),
@@ -309,7 +317,7 @@ __playerset(player,pos,block) ->
 );
 
 //fills the currently selected region ONLY if it is in one plane(xy,xz,yz) in the prescribed style
-fill(fillmode,block) ->
+fill(fillmode,block,replace) ->
 (
 	p = player();
 	if(fillmode == 'all',
@@ -321,7 +329,9 @@ fill(fillmode,block) ->
 	if(fillmode == 'all',
 		if(gamemode == 'creative',
 			successes += for(keys(filllist),
-				set(_,block) != 0;
+				if(replace || air(_),
+					set(_,block) != 0;
+				);
 			),
 			gamemode == 'survival',
 			successes += for(keys(filllist),
@@ -340,7 +350,9 @@ fill(fillmode,block) ->
 		);
 		if(gamemode == 'creative',
 			successes += for(keys(borderlist),
-				set(_,block) != 0;
+				if(replace || air(_),
+					set(_,block) != 0;
+				);
 			),
 			gamemode == 'survival',
 			successes += for(keys(borderlist),
@@ -354,8 +366,8 @@ fill(fillmode,block) ->
 	print(format('l Successfully filled ' + str(successes) + ' blocks'));
 );
 
-//repeats the selected region every <period> blocks up to <pos>
-extrude(pos,period) ->
+//repeats the selected region in a direction normal to the plane every <period> blocks up to <pos>
+extrude(pos,period,replace) ->
 (
 	p = player();
 	blockmap = __allfaceblocks();
@@ -386,7 +398,9 @@ extrude(pos,period) ->
 			successes += for(keys(blockmap),
 				newpos = copy(_);
 				newpos:axis = x;
-				set(newpos,block(_)) != 0;
+				if(replace || air(newpos),
+					set(newpos,block(_)) != 0;
+				);
 			);
 		),
 		gamemode == 'survival',
