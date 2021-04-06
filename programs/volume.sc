@@ -286,7 +286,7 @@ __sanitycheck() ->
 		minZ = min(minZ,_:2);
 		maxZ = max(maxZ,_:2);
 	);
-	draw_shape('box',100,'from',l(minX,minY,minZ),'to',l(maxX,maxY,maxZ));
+	draw_shape('box',100,'from',l(minX,minY,minZ)+0.5,'to',l(maxX,maxY,maxZ)+0.5);
 	return((maxX-minX)*(maxY-minY)*(maxZ-minZ));
 );
 
@@ -976,8 +976,12 @@ show(type) ->
 __showedges() -> 
 (
 	shapelist = l();
+	divisions = 2;
 	for(global_edges,
-		shapelist += l('line',100,'line',5,'color',0xFF0000FF,'from',_:0 + 0.5,'to',((_:0 + _:1) / 2) + 0.5);
+		e = _;
+		for(range(divisions),
+			shapelist += l('line',100,'line',5,'color',0xFF0000FF,'from',(e:0 + _*__vector(e:0,e:1)/divisions) + 0.5,'to',(e:0 + (_+0.5)*__vector(e:0,e:1)/divisions) + 0.5);
+		);
 	);
 	draw_shape(shapelist);
 );
@@ -1028,13 +1032,13 @@ __showplaneface(face) ->
 		vector1 = __vector(point2,point3);
 		vector2 = __vector(point3,point1);
 		vector3 = __vector(point1,point2);
-		max_length = 2 * max(__magnitude(vector1),__magnitude(vector2),__magnitude(vector3));
+		max_length = 10 * max(__magnitude(vector1),__magnitude(vector2),__magnitude(vector3));
 		shapelist = l();
 		c_for(x = 1, x < max_length, x += 1,
 			shapelist += 
 				l(
 					'line',100,
-					'color',0x0000FFFF,
+					'color',0x0000FF2A,
 					'line',5,
 					'from',l(0.5,0.5,0.5) + point1 + x * vector3 / max_length,
 					'to',l(0.5,0.5,0.5) + point3 - x * vector1 / max_length
