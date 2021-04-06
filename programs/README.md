@@ -66,4 +66,4 @@ These require you to select a set of faces in one plane(x-y,y-z,z-x). Failure to
 
 `/volume fill border <block> <replace>` - fills just the outside border of the region with the block of your choice, only replaces blocks in creative if `<replace>` is `true`, `<replace>` defaults to `true`
 
-`/volume extrude <pos> <int> <replace>` - repeats the entire region in a direction normal to the faces every `int` blocks up to `pos`, `<int>` defaults to period of `1`
+`/volume extrude <pos> <int> <replace>` - repeats the entire region in a direction normal to the faces every `int` blocks up to `pos`, `<int>` defaults to period of `1`, `<replace>` defaults to `true`
