@@ -48,10 +48,26 @@ __roundnum(number,digits) ->
 	return(round(number*10^digits)/10^digits);
 );
 
-//returns the sum of a list
+//returns the sum of an n-dimensional list
 __sum(list) ->
 (
-	return(reduce(list,_a+_,0));
+	if(length(list) == 0,
+		return();
+	);
+	if(type(list:0) == 'number',
+		n = 0,
+		n = length(list:0);
+	);
+	if(n == 0,
+		sum = 0,
+		sum = l();
+		i = 0;
+		while(i < n, n,
+			sum += 0;
+			i = i + 1;
+		);
+	);
+	return(reduce(list,_a+_,sum));
 );
 
 //returns the sign of a number
