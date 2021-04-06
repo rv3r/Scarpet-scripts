@@ -316,6 +316,12 @@ __playerset(player,pos,block) ->
 	return(result);
 );
 
+//sorts blocks to be placed so they are set in a reasonable order
+__anglesort(blocklist,centroid) ->
+(
+	return(sort_key(blocklist,atan2((_-centroid):(global_axis-1),(_-centroid):(global_axis+1))));
+);
+
 //fills the currently selected region ONLY if it is in one plane(xy,xz,yz) in the prescribed style
 fill(fillmode,block,replace) ->
 (
@@ -324,18 +330,21 @@ fill(fillmode,block,replace) ->
 		borderstyle = null;
 	);
 	filllist = __allfaceblocks();
+	centroid = __sum(keys(filllist))/length(filllist);
 	successes = 0;
 	gamemode = p ~ 'gamemode';
 	if(fillmode == 'all',
 		if(gamemode == 'creative',
-			successes += for(keys(filllist),
+			successes += for(__anglesort(keys(filllist),centroid),
 				if(replace || air(_),
 					set(_,block) != 0;
 				);
 			),
 			gamemode == 'survival',
-			successes += for(keys(filllist),
-				__playerset(p,_,block) != 0;
+			successes += for(__anglesort(keys(filllist),centroid),
+				if(air(block(_)) || liquid(block(_)),
+					__playerset(p,_,block) != 0;
+				);
 			)
 		),
 		fillmode == 'border',
@@ -349,17 +358,17 @@ fill(fillmode,block,replace) ->
 			);
 		);
 		if(gamemode == 'creative',
-			successes += for(keys(borderlist),
+			successes += for(__anglesort(keys(borderlist),centroid),
 				if(replace || air(_),
 					set(_,block) != 0;
 				);
 			),
 			gamemode == 'survival',
-			successes += for(keys(borderlist),
+			successes += for(__anglesort(keys(borderlist),centroid),
 				if(air(block(_)) || liquid(block(_)),
 					__playerset(p,_,block) != 0;
 				);
-			);
+			)
 		);
 	);
 	
@@ -371,6 +380,7 @@ extrude(pos,period,replace) ->
 (
 	p = player();
 	blockmap = __allfaceblocks();
+	centroid = __sum(keys(blockmap))/length(blockmap);
 	for(range(3),
 		flag = true;
 		test = _;
@@ -395,7 +405,7 @@ extrude(pos,period,replace) ->
 	gamemode = p ~ 'gamemode';
 	if(gamemode == 'creative',
 		c_for(x = value + direction*period, x*direction <= (pos:axis)*direction, x += direction*period,
-			successes += for(keys(blockmap),
+			successes += for(__anglesort(keys(blockmap),centroid),
 				newpos = copy(_);
 				newpos:axis = x;
 				if(replace || air(newpos),
@@ -405,7 +415,7 @@ extrude(pos,period,replace) ->
 		),
 		gamemode == 'survival',
 		c_for(x = value + direction*period, x*direction <= (pos:axis)*direction, x += direction*period,
-			successes += for(keys(blockmap),
+			successes += for(__anglesort(keys(blockmap),centroid),
 				newpos = copy(_);
 				newpos:axis = x;
 				if(air(block(newpos)) || liquid(block(newpos)),
@@ -1017,7 +1027,7 @@ __showplaneface(face) ->
 		//print(l(point1,point2,point3));
 		vector1 = __vector(point2,point3);
 		vector2 = __vector(point3,point1);
-		vector3 = __vector(point1,point2); 
+		vector3 = __vector(point1,point2);
 		max_length = 2 * max(__magnitude(vector1),__magnitude(vector2),__magnitude(vector3));
 		shapelist = l();
 		c_for(x = 1, x < max_length, x += 1,
