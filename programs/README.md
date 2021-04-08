@@ -43,7 +43,7 @@ Attack blocks around your build with a mainhand golden sword to make triangles u
 
 `/volume clear <list>` - clears only one list of data, normally not necessary as `/volume clear` is most useful
 
-`/volume show edges` - draws red lines to indicate edges, incomplete edges are unpaired and are used in `/volume perimeter`, `/volume fill border <block>`, and cause `/volume volume` to throw an error
+`/volume show edges` - draws red lines to indicate edges, incomplete edges are unpaired and are used in `/volume perimeter`, `/volume fill ...`, and cause `/volume volume` to throw an error
 
 `/volume show faces` - draw blue lines to indicate faces used in `/volume area`
 
@@ -62,8 +62,8 @@ If the output seems off(especially much lower than expected), use `/volume logda
 ### World Manipulation
 These require you to select a set of faces in one plane(x-y,y-z,z-x). Failure to do so results in an error being thrown. In survival, this will use blocks from a player's inventory, will only replace air and liquids, will not replace blocks, will update set blocks, and will only set empty containers. In creative, this will freely set blocks, will default to not replacing any blocks, will default to setting blocks without updates, and will set filled containers.
 
-`/volume fill all <block> <replace> <update>` - fills every face with the block of your choice
+`/volume fill all <block> <replace?> <update?>` - fills every face with the block of your choice
 
-`/volume fill border <block> <replace> <update>` - fills just the outside border of the region with the block of your choice
+`/volume fill border <block> <replace?> <update?>` - fills just the outside border of the region with the block of your choice
 
-`/volume extrude <pos> <period> <replace> <update>` - repeats the entire region in a direction normal to the faces every `period` blocks up to `pos`
+`/volume extrude <pos> <period?> <replace?> <update?>` - repeats the entire region in a direction normal to the faces every `period` blocks up to `pos`
