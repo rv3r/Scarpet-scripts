@@ -56,11 +56,13 @@ __config() ->
 					l('show <showmode>','show'),
 					l('clear',['clear','all']),
 					l('clear <clearmode>','clear'),
-					l('fill <fillmode> <block>',['fill',true]),
-					l('fill <fillmode> <block> <replace>',['fill']),
-					l('extrude <pos>',['extrude',1,true]),
-					l('extrude <pos> <int>',['extrude',true]),
-					l('extrude <pos> <int> <replace>',['extrude'])
+					l('fill <fillmode> <block>',['fill',false,false]),
+					l('fill <fillmode> <block> <replace>',['fill',false]),
+					l('fill <fillmode> <block> <replace> <update>',['fill']),
+					l('extrude <pos>',['extrude',1,false,false]),
+					l('extrude <pos> <period>',['extrude',false,false]),
+					l('extrude <pos> <period> <replace>',['extrude',false]),
+					l('extrude <pos> <period> <replace> <update>',['extrude'])
 				)
 			),
 			
@@ -99,7 +101,7 @@ __config() ->
 							)
 						)
 					),
-					l('int',
+					l('period',
 						m(
 							l('type','int'),
 							l('min',0),
@@ -113,7 +115,12 @@ __config() ->
 						m(
 							l('type','bool')
 						)
-					)	
+					),
+					l('update',
+						m(
+							l('type','bool')
+						)
+					)
 				)
 			)
 		)
@@ -323,7 +330,7 @@ __anglesort(blocklist,centroid) ->
 );
 
 //fills the currently selected region ONLY if it is in one plane(xy,xz,yz) in the prescribed style
-fill(fillmode,block,replace) ->
+fill(fillmode,block,replace,update) ->
 (
 	p = player();
 	if(fillmode == 'all',
@@ -333,50 +340,40 @@ fill(fillmode,block,replace) ->
 	centroid = __sum(keys(filllist))/length(filllist);
 	successes = 0;
 	gamemode = p ~ 'gamemode';
+	
 	if(fillmode == 'all',
-		if(gamemode == 'creative',
-			successes += for(__anglesort(keys(filllist),centroid),
-				if(replace || air(_),
-					set(_,block) != 0;
-				);
-			),
-			gamemode == 'survival',
-			successes += for(__anglesort(keys(filllist),centroid),
-				if(air(block(_)) || liquid(block(_)),
-					__playerset(p,_,block) != 0;
-				);
-			)
-		),
+			filllist = filllist,
 		fillmode == 'border',
-		borderlist = m();
-		for(keys(filllist),
-			result = for(neighbours(_),
-				has(filllist,pos(_));
-			);
-			if(result < 4 && !has(borderlist,_),
-				borderlist += _;
-			);
-		);
-		if(gamemode == 'creative',
-			successes += for(__anglesort(keys(borderlist),centroid),
-				if(replace || air(_),
-					set(_,block) != 0;
+			borderlist = m();
+			for(keys(filllist),
+				result = for(neighbours(_),
+					has(filllist,pos(_));
 				);
-			),
-			gamemode == 'survival',
-			successes += for(__anglesort(keys(borderlist),centroid),
-				if(air(block(_)) || liquid(block(_)),
-					__playerset(p,_,block) != 0;
+				if(result < 4 && !has(borderlist,_),
+					borderlist += _;
 				);
-			)
-		);
+			);
+			filllist = borderlist;
 	);
 	
-	print(format('l Successfully filled ' + str(successes) + ' blocks'));
+	for(__anglesort(keys(filllist),centroid),
+		if(gamemode == 'creative' && (replace || air(_)),
+				result = without_updates(bool(set(_,block))),
+			gamemode == 'survival' && (air(_) || liquid(_)),
+				result = __playerset(p,_,block),
+			result = 0;
+		);
+		if(gamemode == 'survival' || update,
+			schedule(1,_(arg) -> update(arg),_);
+		);
+		successes += result;
+	);
+	
+	print(format('l Successfully filled ' + str(successes) + ' block' + bool(successes-1) * 's'));
 );
 
 //repeats the selected region in a direction normal to the plane every <period> blocks up to <pos>
-extrude(pos,period,replace) ->
+extrude(pos,period,replace,update) ->
 (
 	p = player();
 	blockmap = __allfaceblocks();
@@ -400,32 +397,27 @@ extrude(pos,period,replace) ->
 	);
 	
 	direction = __sign(pos:axis - value);
-	successes = 0;
 	
 	gamemode = p ~ 'gamemode';
-	if(gamemode == 'creative',
+	
+	for(__anglesort(keys(blockmap),centroid),
 		c_for(x = value + direction*period, x*direction <= (pos:axis)*direction, x += direction*period,
-			successes += for(__anglesort(keys(blockmap),centroid),
-				newpos = copy(_);
-				newpos:axis = x;
-				if(replace || air(newpos),
-					set(newpos,block(_)) != 0;
-				);
+			newpos = copy(_);
+			newpos:axis = x;
+			if(gamemode == 'creative' && (replace || air(newpos)),
+					result = without_updates(bool(set(newpos,block(_)))),
+				gamemode == 'survival' && (air(newpos) || liquid(newpos)),
+					result = __playerset(p,newpos,block(_)),
+				result = 0;
 			);
-		),
-		gamemode == 'survival',
-		c_for(x = value + direction*period, x*direction <= (pos:axis)*direction, x += direction*period,
-			successes += for(__anglesort(keys(blockmap),centroid),
-				newpos = copy(_);
-				newpos:axis = x;
-				if(air(block(newpos)) || liquid(block(newpos)),
-					__playerset(p,newpos,block(_)) != 0;
-				);
+			if(gamemode == 'survival' || update,
+				schedule(1,_(arg) -> update(arg),newpos);
 			);
-		),
+			successes += result;
+		);
 	);
 		
-	print(format('l Successfully filled ' + str(successes) + ' blocks'));
+	print(format('l Successfully filled ' + str(successes) + ' block' + bool(successes-1) * 's'));
 );
 
 //not used
