@@ -307,7 +307,7 @@ __playerset(player,pos,block) ->
 //sorts blocks to be placed so they are set in a reasonable order
 __anglesort(blocklist,centroid) ->
 (
-	return(sort_key(blocklist,atan2((_-centroid):(global_axis-1),(_-centroid):(global_axis+1))));
+	return(sort_key(blocklist,atan2(number((_-centroid):(global_axis-1)),number((_-centroid):(global_axis+1)))));
 );
 
 //fills the currently selected region ONLY if it is in one plane(xy,xz,yz) in the prescribed style
