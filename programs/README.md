@@ -5,9 +5,7 @@ Pick the script you need and follow [these](https://github.com/gnembon/fabric-ca
 Right click a bee nest or beehive with an empty mainhand to learn how many bees are in the block.
 
 # Block Test
-Uses RamsaKd's array of every Minecraft block
-
-Create your own test in `your_test_function_here()` and let the script test every block in the game(up to 1.16.5) for you. It will create a map containing every block that passed the test, allowing you put the map into your script and call `has()` to see what blocks are valid for your use case. Setting `global_fail_bool` to true will produce a second map of every block that failed your test.
+Create your own test in `your_test_function_here()` and let the script test every block in the game for you. It will create a map containing every block that passed the test, allowing you put the map into your script and call `has()` to see what blocks are valid for your use case. Setting `global_fail_bool` to true will produce a second map of every block that failed your test.
 
 # Bucket Stack
 Bucket placement written by [Firigion](https://github.com/Firigion)
