@@ -156,3 +156,13 @@ __heron(a,b,c) ->
 	area = sqrt(s*(s-a)*(s-b)*(s-c));
 	return(area);
 );
+
+//concatenates any number of lists
+__concatenate(... lists) ->
+(
+	return = l();
+	for(lists,
+		reduce(_,_a+=_,return);
+	);
+	return(return);
+);
