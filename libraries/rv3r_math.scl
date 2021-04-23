@@ -166,3 +166,13 @@ __concatenate(... lists) ->
 	);
 	return(return);
 );
+
+//unpacks a single list and concatenates its elements
+__unpackConcatenate(list) ->
+(
+	return = l();
+	for(list,
+		return = __concatenate(return,_);
+	);
+	return(return);
+);
