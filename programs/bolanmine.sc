@@ -137,7 +137,7 @@ __get_ores(block) ->
 	//);
 	
 	//draws a box to show you what area it's scanning
-	draw_shape('box',100,'fill',0xFFFFFF11,'from',l(searchminx,62,chunkminz),'to',l(searchmaxx+1,63,chunkmaxz+1));
+	//draw_shape('box',100,'fill',0xFFFFFF11,'from',l(searchminx,62,chunkminz),'to',l(searchmaxx+1,63,chunkmaxz+1));
 	
 	flagmap = __return_zeros();
 	
