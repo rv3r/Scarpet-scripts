@@ -7,6 +7,17 @@ Right click a bee nest or beehive with an empty mainhand to learn how many bees 
 # Block Test
 Create your own test in `your_test_function_here()` and let the script test every block in the game for you. It will create a map containing every block that passed the test, allowing you put the map into your script and call `has()` to see what blocks are valid for your use case. Setting `global_fail_bool` to true will produce a second map of every block that failed your test.
 
+# Bolan Mine
+Applies ideas from Matthew Bolan's [ore finding video](https://youtu.be/5Icj5TNmBUI) to determine the best spots to mine for ores based on the location of clay and gravel patches in your pre-1.17 world.
+
+Left-click on a central clay or gravel block to do stuff.
+
+Use a sword to scan the region below the patch for ores. Switch hands within 5 seconds of scanning to permanently log the data in a text file. The script will alert you if a block has already been scanned.
+
+Use a pickaxe to display labels showing you where to mine for any given ore.
+
+`/bolanmine <base> <ore>` will show a histogram of offsets for the given `<ore>` relative to the center of the patch of `<base>`
+
 # Bucket Stack
 Bucket placement written by [Firigion](https://github.com/Firigion)
 
