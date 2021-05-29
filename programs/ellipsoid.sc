@@ -68,9 +68,9 @@ __config() ->
 );
 
 //center is the center of the ellipsoid
-//xaxis is the minor radius in the x direction
-//yaxis is the minor radius in the y direction
-//zaxis is the minor radius in the z direction
+//xradius is the minor radius in the x direction
+//yradius is the minor radius in the y direction
+//zradius is the minor radius in the z direction
 //radial is the radial density of lines about the longest axis
 //longitudinal is the longitudinal density of lines in the direction of the longest axis
 //ticks is the time the ellipsoid exists for, in ticks
