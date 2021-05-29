@@ -7,7 +7,7 @@ __config() ->
 			
 			l('commands',
 				m(
-					l('<center> <xaxis> <yaxis> <zaxis> <radial> <longitudinal> <time>','__ellipsoid') 
+					l('<center> <xradius> <yradius> <zradius> <radial> <longitudinal> <time>','__ellipsoid') 
 				)
 			),
 			
@@ -18,21 +18,21 @@ __config() ->
 							l('type','location')
 						)
 					),
-					l('xaxis',
+					l('xradius',
 						m(
 							l('type','float'),
 							l('min',0.1),
 							l('suggest',l(1,16,128))
 						)
 					),
-					l('yaxis',
+					l('yradius',
 						m(
 							l('type','float'),
 							l('min',0.1),
 							l('suggest',l(1,16,128))
 						)
 					),
-					l('zaxis',
+					l('zradius',
 						m(
 							l('type','float'),
 							l('min',0.1),
@@ -75,7 +75,7 @@ __config() ->
 //longitudinal is the longitudinal density of lines in the direction of the longest axis
 //ticks is the time the ellipsoid exists for, in ticks
 
-__ellipsoid(center,xaxis,yaxis,zaxis,radial,longitudinal,ticks) ->
+__ellipsoid(center,xradius,yradius,zradius,radial,longitudinal,ticks) ->
 (
 	global_color = 0x0000FFAA;
 	global_shapelist = l();
@@ -83,7 +83,7 @@ __ellipsoid(center,xaxis,yaxis,zaxis,radial,longitudinal,ticks) ->
 	
 	//print(global_ticks);
 	
-	global_axes = l(xaxis,yaxis,zaxis);
+	global_axes = l(xradius,yradius,zradius);
 	for(global_axes,
 		if(_ == max(global_axes),
 			global_axis = _i;
