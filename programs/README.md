@@ -31,6 +31,13 @@ Gives players who don't use [Tweakeroo](https://masa.dy.fi/mcmods/all_mods/) a d
 # Despawn
 Gives those of us who don't use [MiniHUD](https://masa.dy.fi/mcmods/all_mods/) a despawn sphere around the player showing where mobs will despawn. You can pick any time in seconds under an hour and choose from one of six fantastic colors, red, green, blue, black, gray(or grey), and white. Default sphere is red and lasts for 60 seconds.
 
+# Ellipsoid
+Draws ellipsoids(default green color) with `draw_shape()` instead of setting blocks.
+
+`/ellipsoid <center> <xradius> <yradius> <zradius> <radial> <longitudinal> <time>`
+
+Draws ellipsoid at `center` with the given radii(`xradius`,`yradius`,`zradius`) and line densities of `radial`(around the longest axis) and `longitudinal`(along the longest axis) for `ticks`
+
 # Eye Remover
 Shift right-click on an end portal frame containing an eye of ender to remove the eye. Note that an existing portal will be removed.
 
