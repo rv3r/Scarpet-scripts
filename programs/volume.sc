@@ -379,8 +379,8 @@ extrude(pos,period,replace,update) ->
 	
 	gamemode = p ~ 'gamemode';
 	
-	for(__anglesort(keys(blockmap),centroid),
-		c_for(x = value + direction*period, x*direction <= (pos:axis)*direction, x += direction*period,
+	c_for(x = value + direction*period, x*direction <= (pos:axis)*direction, x += direction*period,
+		for(__anglesort(keys(blockmap),centroid),
 			newpos = copy(_);
 			newpos:axis = x;
 			if(gamemode == 'creative' && (replace || air(newpos)),
