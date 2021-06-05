@@ -48,8 +48,10 @@ __config() ->
 			),
 			
 			l('requires',
-				l('carpet','>=1.4.34'),
-				l('minecraft','<1.17')
+				m(
+					l('carpet','>=1.4.34'),
+					l('minecraft','<1.17')
+				)
 			)
 		)
 	)
