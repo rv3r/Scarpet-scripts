@@ -1,10 +1,5 @@
 __config() ->
 (
-	//checks for pre 1.17 game version
-	if(split('\\.',system_info('game_target')):1 > 16,
-		exit();
-	);
-	
 	//just some handy global variables
 	global_block = null;
 	global_data = m();
@@ -50,6 +45,11 @@ __config() ->
 						)
 					)
 				)
+			),
+			
+			l('requires',
+				l('carpet','>=1.4.34'),
+				l('minecraft','<1.17')
 			)
 		)
 	)
@@ -59,32 +59,15 @@ __config() ->
 __initialize() ->
 (
 	files = list_files('','text');
-	gravelflag = false;
-	swampclayflag = false;
-	nonswampclayflag = false;
-	blockflag = false;
-	for(files,
-		if(_ == 'gravel',
-			gravelflag = true,
-			_ == 'swamp_clay',
-			swampclayflag = true,
-			_ == 'nonswamp_clay',
-			nonswampclayflag = true,
-			_ == 'loggedblocks',
-			blockflag = true;
+	file_list = l('gravel','loggedblocks','nonswamp_clay','swamp_clay');
+	file_map = m(...files);
+	for(file_list,
+		if(!has(file_map,_),
+			if(_ != 'loggedblocks',
+				write_file(_,'text',encode_json(__return_zeros())),
+				write_file(_,'text',encode_json(m()));
+			);
 		);
-	);
-	if(!gravelflag,
-		write_file('gravel','text',encode_json(__return_zeros()));
-	);
-	if(!swampclayflag,
-		write_file('swamp_clay','text',encode_json(__return_zeros()));
-	);
-	if(!nonswampclayflag,
-		write_file('nonswamp_clay','text',encode_json(__return_zeros()));
-	);
-	if(!blockflag,
-		write_file('loggedblocks','text',encode_json(m()));
 	);
 );
 
@@ -111,33 +94,13 @@ __get_ores(block) ->
 
 	blockz = pos(block):2;
 	chunkz = blockz % 16;
-	chunkminz = blockz - __posmod(blockz,16);
+	chunkminz = blockz - (blockz % 16);
 	chunkmaxz = chunkminz + 15;
 	blockx = pos(block):0;
 	chunkx = blockx % 16;
-	
-	//print('Block z : ' + blockz);
-	//print('Chunk z : ' + chunkz);
-	//print(p,'Chunk z bounds : ' + l(chunkminz,chunkmaxz));
-	//print(p,'Chunk x : ' + chunkx);
-	
-	//if(chunkx < -1,
 		
-		searchminx = blockx - 1;
-		searchmaxx = blockx + 1;
-		
-		//,
-		
-		//chunkx == -1,
-		//searchminx = blockx - 1;
-		//searchmaxx = blockx,
-		//chunkx == 0,
-		//searchminx = blockx;
-		//searchmaxx = blockx + 1;
-	//);
-	
-	//draws a box to show you what area it's scanning
-	//draw_shape('box',100,'fill',0xFFFFFF11,'from',l(searchminx,62,chunkminz),'to',l(searchmaxx+1,63,chunkmaxz+1));
+	searchminx = blockx - 1;
+	searchmaxx = blockx + 1;
 	
 	flagmap = __return_zeros();
 	
@@ -150,8 +113,6 @@ __get_ores(block) ->
 			flagmap:str(_):offset = 1;
 		);
 	);
-	
-	//__printdata(flagmap);
 
 	print(p,'Swap hands in the next 5 seconds to log this data.');
 	global_swap = 1;
@@ -192,7 +153,7 @@ __display_ores(block) ->
 		);
 	);
 	
-	//initialize list of shape and map of text and fill colors
+	//initialize list of shapes and map of text and fill colors
 	shapelist = l();
 	namemap = m(
 		l('C',l(0x000000FF,0x00000033)),
@@ -205,7 +166,7 @@ __display_ores(block) ->
 	);
 	x = pos(block):0;
 	z = pos(block):2;
-	chunkmaxz = z - __posmod(z,16) + 15 + 1;
+	chunkmaxz = z - (z % 16) + 15 + 1;
 	for(keys(maxmap),
 		ores = maxmap:_;
 		length = length(ores);
@@ -213,12 +174,15 @@ __display_ores(block) ->
 		if(length > 0,
 			for(ores,
 				angle = __offset(_i,length);
+				
 				labelx = x + 0.5 + angle:0;
-				labely = 63 + 0.5 + angle:1;
 				labelz = z + 0.5 + offset;
 				if(labelz > chunkmaxz,
 					labelz = labelz - 16;
 				);
+				//print above terrain block, need offset z first
+				labely = max(63,top('terrain',l(x,63,labelz))) + 0.5 + angle:1;
+				
 				name = upper(slice(_,0,1));
 				
 				shapelist += l('label',300,'color',namemap:name:0,'fill',namemap:name:1,'text',name,'pos',l(labelx,labely,labelz),'size',20);
@@ -228,7 +192,7 @@ __display_ores(block) ->
 	draw_shape(shapelist);
 );
 
-//angular offset necessary when more than one ore is likely at the same position
+//angular offset necessary when more than one ore is likely at the same offset
 __offset(num,den) ->
 (
 	amplitudes = m(
@@ -313,7 +277,7 @@ __logdata() ->
 	if(global_block == 'gravel',
 		file = 'gravel',
 		global_block == 'clay',
-		if(biome(global_block) == 'swamp',
+		if(biome(global_block) == 'swamp' || biome(global_block) == 'swamp_hills',
 			file = 'swamp_clay',
 			file = 'nonswamp_clay'
 		);
@@ -350,65 +314,53 @@ __hist(base,ore) ->
 		if(value == max,
 			maxkey = _;
 		);
-		sum = sum + value;
+		sum += value;
 		data:_ = round(divisions*rows*value/max);
 	);
 	
 	print(p,title(join(' ',split('_',ore))) + ' Distribution in ' + title(join(' ',split('_',base))));
 	print(p,round(100*max/sum) + '% of ore blocks at z offset of ' + maxkey + ' block' + bool(number(maxkey)-1)*'s');
 	c_for(y = rows-1, y >= 0, y += -1,
-		line = l('w |');
+		line = l('');
 		for(range(0,16),
 			count = data:str(_);
-			line += 'k \'\'\'';
+			line += 'k ▒';
 			//yes, i'm using three single quotes for spacing
 			//they are equal in width to the block, █(alt 219), in minecraft chat
 			blockflag = false;
 			for(range(divisions - 1,-1,-1),
 				if(count > divisions * y + _,
-					line += 'l ' + blocks:(7 - _);
+					line += 'l ' + 1*(blocks:(7 - _));
 					blockflag = true;
 					break();
 				);
 			);
 			if(!blockflag,
-				line += 'k \'\'\'';
+				line += 'k ▒';
 			);
 		);
-		line += 'k \'\'\'';
-		line += 'w |';
 		print(p,format(line));
 	);
-	print(p,'--------------------------------------------------');
+	print(p,'------------------------------------------------');
 	numberlist = l(
-		'w    0   ',
-		'w 1   ',
-		'w 2   ',
-		'w 3   ',
-		'w 4   ',
-		'w 5   ',
-		'w 6   ',
-		'w 7   ',
-		'w 8   ',
-		'w 9  ',
-		'w 10  ',
-		'w 11 ',
-		'w 12  ',
+		'w    0 ',
+		'w   1 ',
+		'w   2 ',
+		'w   3 ',
+		'w  4 ',
+		'w   5 ',
+		'w   6 ',
+		'w   7 ',
+		'w   8 ',
+		'w   9 ',
+		'w  10 ',
+		'w  11 ',
+		'w  12 ',
 		'w 13 ',
-		'w 14  ',
-		'w 15  '
+		'w  14 ',
+		'w  15 '
 	);
 	print(p,format(numberlist));
-);
-
-//necessary because scarpet returns -1 for -17 % 16
-__posmod(number,modulus) ->
-(
-	output = number % modulus;
-	if(output < -0.5,
-		output = output + modulus;
-	);
-	return(output);
 );
 
 //check to see that the files are there on startup
