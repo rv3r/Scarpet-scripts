@@ -126,6 +126,11 @@ __get_ores(block) ->
 //indicates where a player should mine for each ore given a starting block
 __display_ores(block) ->
 (
+	
+	
+	//potentially add flame particles at points that will hit lava
+	
+	
 	if(block == 'gravel',
 		file = 'gravel',
 		block == 'clay',
@@ -327,8 +332,6 @@ __hist(base,ore) ->
 		for(range(0,16),
 			count = data:str(_);
 			line += 'k ▒';
-			//yes, i'm using three single quotes for spacing
-			//they are equal in width to the block, █(alt 219), in minecraft chat
 			blockflag = false;
 			for(range(divisions - 1,-1,-1),
 				if(count > divisions * y + _,
