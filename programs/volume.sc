@@ -296,9 +296,31 @@ logdata() ->
 //uses block name and state to ensure empty block inventory
 __playerset(player,pos,block) ->
 (
-	if(inventory_find(player,block),
+	placeable = m(
+		l('tripwire','string'),
+		l('wheat','wheat_seeds'),
+		l('water','water_bucket'),
+		l('lava','lava_bucket'),
+		l('redstone_wire','redstone'),
+		l('pumpkin_stem','pumpkin_seeds'),
+		l('melon_stem','melon_seeds'),
+		l('fire','fire_charge'),
+		l('carrots','carrot'),
+		l('potatoes','potato'),
+		l('sweet_berry_bush','sweet_berries')
+	);
+	
+	if(item_list() ~ block,
+		item = str(block),
+		item = placeable:str(block);
+	);
+
+	if(slot = inventory_find(player,item),
 		if(set(pos,str(block),block_state(block)),
-			result = inventory_remove(player,block);
+			result = inventory_remove(player,item);
+			if(item ~ '_bucket',
+				inventory_set(player,slot,1,'bucket');
+			);
 		);
 	);
 	return(result);
