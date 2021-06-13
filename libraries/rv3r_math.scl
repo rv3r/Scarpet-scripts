@@ -118,7 +118,7 @@ __det(matrix) ->
 	if(length >= 3,
 		sum = reduce(matrix,row = _i;_a + reduce(matrix,_a * _:(row + _i),1),0);
 		difference = reduce(matrix,row = _i;_a + reduce(matrix,_a * _:(row - _i),1),0);
-		determinant = sum - difference,
+		determinant = number(sum) - number(difference),
 		
 		length == 2,
 		determinant = matrix:0:0*matrix:1:1-matrix:0:1*matrix:1:0,
