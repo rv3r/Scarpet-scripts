@@ -131,22 +131,20 @@ __command() ->
 
 //returns number of points that are not in the same x, y, or z plane as all other points
 //along with main axis for the first three points and their common value
+
 __checkpoints(pointlist) ->
 (
 	allpoints = copy(pointlist);
 	axis = null;
 	for(range(3),
-		flag = true;
 		testaxis = _;
-		for(range(length(allpoints)),
-			if(allpoints:_i:testaxis != allpoints:(_i+1):testaxis,
-				flag = false;
-				break();
-			);
-		);
-		if(flag,
-			value = allpoints:0:_;
-			axis = _;
+		if(
+			all(
+				range(length(allpoints)),
+				allpoints:_i:testaxis == allpoints:(_i+1):testaxis
+			),
+			axis = testaxis;
+			value = allpoints:0:testaxis;
 			break();
 		);
 	);
@@ -165,22 +163,24 @@ __checkpoints(pointlist) ->
 
 //returns edge list length after first few paired edges are removed
 //it had better be 0 if you want to find the volume
+
 __checkedges() ->
 (
 	alledges = copy(global_edges);
 	while(length(alledges) > 0,length(alledges),
-		for(alledges,
-			if(alledges:0 == l(_:1,_:0),
-				delete(alledges,_i);
-				delete(alledges,0);
-				break();
-			);
+		if(edge = 
+			first(alledges,
+				alledges:0 == l(_:1,_:0)
+			),
+			delete(alledges,alledges ~ edge);
+			delete(alledges,0);
 		);
 	);
 	return(length(alledges));
 );
 
 //sum of vector magnitudes of unpaired edges
+
 perimeter() ->
 (
 	if(length(global_edges) == 0,
@@ -217,6 +217,7 @@ perimeter() ->
 );
 
 //applies Heron's semiperimeter formula to find the area of every current face
+
 area() ->
 (
 	if(length(global_faces) == 0,
@@ -230,6 +231,7 @@ area() ->
 );
 
 //applies tetrahedral shoelace method once edges are paired and faces are ordered properly
+
 vol() ->
 (
 	if(length(global_edges) == 0,
@@ -259,6 +261,7 @@ vol() ->
 );
 
 //ensures volume isnt greater than what is physically possible
+
 __sanitycheck() ->
 (
 	minX = global_points:0:0;
@@ -280,6 +283,7 @@ __sanitycheck() ->
 );
 
 //writes down info for debugging
+
 logdata() ->
 (
 	delete_file('faces','text');
@@ -329,7 +333,19 @@ __playerset(player,pos,block) ->
 //sorts blocks to be placed so they are set in a reasonable order
 __anglesort(blocklist,centroid) ->
 (
-	return(sort_key(blocklist,atan2(number((_-centroid):(global_axis-1)),number((_-centroid):(global_axis+1)))));
+	return(
+		sort_key(
+			blocklist,
+			atan2(
+				number(
+					(_-centroid):(global_axis-1)
+				),
+				number(
+					(_-centroid):(global_axis+1)
+				)
+			)
+		)
+	)
 );
 
 //fills the currently selected region ONLY if it is in one plane(xy,xz,yz) in the prescribed style
@@ -339,27 +355,31 @@ fill(fillmode,block,replace,update) ->
 	if(fillmode == 'all',
 		borderstyle = null;
 	);
-	filllist = __allfaceblocks();
-	centroid = __sum(keys(filllist))/length(filllist);
+
+	if(!(filllist = __allfaceblocks()),
+		return();
+	);
+
+	centroid = __sum(filllist)/length(filllist);
 	successes = 0;
 	gamemode = p ~ 'gamemode';
-	
+
 	if(fillmode == 'all',
 			filllist = filllist,
 		fillmode == 'border',
-			borderlist = m();
-			for(keys(filllist),
+			borderlist = l();
+			for(filllist,
 				result = for(neighbours(_),
-					has(filllist,pos(_));
+					filllist ~ pos(_);
 				);
-				if(result < 4 && !has(borderlist,_),
+				if(result < 4 && !(borderlist ~ _),
 					borderlist += _;
 				);
 			);
 			filllist = borderlist;
 	);
 	
-	for(__anglesort(keys(filllist),centroid),
+	for(__anglesort(filllist,centroid),
 		if(gamemode == 'creative' && (replace || air(_)),
 				result = without_updates(bool(set(_,block))),
 			gamemode == 'survival' && (air(_) || liquid(_)),
@@ -379,30 +399,22 @@ fill(fillmode,block,replace,update) ->
 extrude(pos,period,replace,update) ->
 (
 	p = player();
-	blockmap = __allfaceblocks();
-	centroid = __sum(keys(blockmap))/length(blockmap);
-	for(range(3),
-		flag = true;
-		test = _;
-		for(keys(blockmap), 
-			if(_:test != keys(blockmap):(_i+1):test,
-				flag = false;
-				break();
-			);
-		);
-		if(flag,
-			value = keys(blockmap):0:_;
-			axis = _;
-			break();
-		);
+	blocklist = __allfaceblocks();
+
+	if(!blocklist,
+		return();
 	);
+
+	centroid = __sum(blocklist)/length(blocklist);
+	axis = global_axis;
+	value = blocklist:0:axis;
 	
 	direction = __sign(pos:axis - value);
 	
 	gamemode = p ~ 'gamemode';
 	
 	c_for(x = value + direction*period, x*direction <= (pos:axis)*direction, x += direction*period,
-		for(__anglesort(keys(blockmap),centroid),
+		for(__anglesort(blocklist,centroid),
 			newpos = copy(_);
 			newpos:axis = x;
 			if(gamemode == 'creative' && (replace || air(newpos)),
@@ -422,6 +434,7 @@ extrude(pos,period,replace,update) ->
 );
 
 //functions to clear current values
+
 clear(arg) ->
 (
 	if(arg == 'points',
@@ -547,6 +560,7 @@ __addedge(point) ->
 		__addface(global_currentedge);
 		__showcurrentface();
 		global_edges += global_currentedge;
+		
 		//checks to see what you can do
 		if(length(global_edges) > 0 && global_suggestion_bools:0,
 			print(format('w You can now run ','c /volume perimeter.','^w Calculates perimeter of the open polyhedron you outlined.','!/volume perimeter'));
@@ -557,7 +571,7 @@ __addedge(point) ->
 		);
 		
 		global_currentedge = l();
-		facelength = length(global_currentface);;
+		facelength = length(global_currentface);
 		if(facelength == 1,
 			global_currentedge += startpoint,
 			facelength == 2,
@@ -631,6 +645,7 @@ __addface(edge) ->
 //  of the points within the face but reorders
 //  the initial points and edges to
 //  allow for correct volume calculation
+
 __reorderface() ->
 (
 	reorderflag = false;
@@ -642,6 +657,8 @@ __reorderface() ->
 			testnum = _i;
 			for(test,
 				if(_ == tester && (test1:(testnum-1) == test:(_i-1) || test1:(testnum-2) == test:(_i-2)),
+					//print(test);
+					//print(test1);
 					global_currentface = l(
 						l(global_currentface:2:1,global_currentface:2:0),
 						l(global_currentface:1:1,global_currentface:1:0),
@@ -665,6 +682,7 @@ __reorderface() ->
 );
 
 //just returns the vertices that make up a face
+
 __facepoints(face) ->
 (
 	points = l();
@@ -686,6 +704,7 @@ __facepoints(face) ->
 );
 
 //returns all points that are present in a face
+
 __faceblocks(face) ->
 (
 	p1 = face:0:0;
@@ -721,7 +740,7 @@ __faceblocks(face) ->
 		checksigns:_i = __sign(centroid:yaxis - __linvalue(centroid:xaxis,_));
 	);
 	
-	pointlist = m();
+	pointlist = l();
 	checked = 0;
 	
 	c_for(x = min(p1:xaxis,p2:xaxis,p3:xaxis), x <= max(p1:xaxis,p2:xaxis,p3:xaxis), x += 1,
@@ -761,6 +780,7 @@ __faceblocks(face) ->
 );
 
 //constructs a linear equation through two 2d points
+
 __linreg(p1,p2) ->
 (
 	m = (p2:1-p1:1)/(p2:0-p1:0);
@@ -769,26 +789,29 @@ __linreg(p1,p2) ->
 );
 
 //takes an x-value and a line and returns a y-value
+
 __linvalue(x,line) ->
 (
 	return(x * line:0 + line:1);
 );
 
 //gets every face block from global_faces
+
 __allfaceblocks() ->
 (
 	if(length(global_faces) == 0,
 		print(format('br Please select at least one face first.'));
 		return();
 	);
-	blocks = m();
+	points = l();
+	blocks = l();
 	for(global_faces,
 		points = __faceblocks(_);
 		if(points == null,
 			return();
 		);
-		for(keys(points),
-			if(!has(blocks,_),
+		for(points,
+			if(!(blocks ~ _),
 				blocks += _;
 			);
 		);
@@ -799,12 +822,14 @@ __allfaceblocks() ->
 //places a red sphere along a vector
 //  loop this by increasing the numerator
 //  up to the denominator
+
 __moveball(point,vector,num,denom) ->
 (
 	draw_shape('sphere',10,'color',0xFF0000FF,'fill',0xFF0000FF,'center',point + vector*num/denom,'radius',0.05);
 );
 
 //calls one of the show functions depending on the argument
+
 show(type) ->
 (
 	if(type == 'edges',
@@ -816,6 +841,7 @@ show(type) ->
 
 //draws red lines to indicate edges, allowing
 //	you to see which ones are unpaired
+
 __showedges() -> 
 (
 	shapelist = l();
@@ -832,6 +858,7 @@ __showedges() ->
 //draws black lines along the face to
 //  help in visualization and shows the
 //  direction to the original point
+
 __showcurrentface() ->
 (
 	face = global_currentface;
@@ -851,6 +878,7 @@ __showcurrentface() ->
 );
 
 //calls showplaneface for every added face
+
 __showfaces() ->
 (
 	for(global_faces,
@@ -861,6 +889,7 @@ __showfaces() ->
 
 //draws blue lines across the face to
 //  aid in visualization
+
 __showplaneface(face) ->
 (
 	if(length(face) == 3,
@@ -892,6 +921,7 @@ __showplaneface(face) ->
 
 //does what it says on the tin.
 //  prints all relevant data
+
 printall() ->
 (
 	print(global_points);
@@ -903,6 +933,7 @@ printall() ->
 );
 
 //just prints the edges
+
 printedges() ->
 (
 	print('-edges');
@@ -913,6 +944,7 @@ printedges() ->
 );
 
 //just prints the faces, but is formatted a little
+
 printfaces() ->
 (
 	for(global_faces,
@@ -933,10 +965,10 @@ __on_player_clicks_block(player,block,face) ->
 
 __on_statistic(player,category,event,value) ->
 (
-	for(global_statsList,
-		if(event == _,
-			schedule(0,'__showcurrentface');
-			break();
-		);
+	if(first(
+		global_statsList,
+		event == _
+		),
+		schedule(0,'__showcurrentface');
 	);
 );
