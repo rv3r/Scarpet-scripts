@@ -49,6 +49,15 @@ Allows players to set up inventory preferences for later sorting with a single c
 # No Void Damage
 Heals players if they fall into the void. This script assumes you've fallen into the void in the End as it will teleport you back to the End platform after 10 seconds if you fail to leave the void. Useful for when the server lets you glitch through the world and fall into the void. There's no point in losing your stuff if it wasn't your fault.
 
+# Portal Orient
+Makes a player face away from a specified side of a Nether portal after a dimension change. Now you won't have to remember which way to face when getting in the portal. Settings are player specific and script will do nothing if each side has the same number of valid blocks.
+
+`/portalorient off` - does not change player orientation after portalling
+
+`/portalorient air` - makes the player face the portal side with more air blocks
+
+`/portalorient solid` - makes the player face the portal side with fewer solid blocks
+
 # Volume
 ### Requires my rv3r_math.scl library
 Attack blocks around your build with a mainhand golden sword to make triangles until you obtain the region you want to manipulate.
