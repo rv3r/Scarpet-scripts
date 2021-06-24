@@ -160,27 +160,4 @@ __corners(center,axis) ->
 	return(corners);
 );
 
-__corners2(center,axis) ->
-(
-	corners = l(
-		copy(center),
-		copy(center)
-	);
-	scanrange = l(0,22,0);
-	scanrange:axis = 22; 
-	scan(center,scanrange,
-		pos = pos(_);
-		if(neighbours(pos) ~ 'obsidian',
-			for(l(1,axis),
-				if(pos:_ < corners:0:_,
-					corners:0:_ = pos:_,
-					pos:_ > corners:1:_,
-					corners:1:_ = pos:_;
-				);
-			);
-		);
-	);
-	return(l(corners,shapelist));
-);
-
 __initialize();
