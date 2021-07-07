@@ -33,7 +33,7 @@ Makes nonstackable bucket types stack and use similar to honey bottles. You get 
 Gives players who don't use [Tweakeroo](https://masa.dy.fi/mcmods/all_mods/) a death message indicating coordinates and dimension of death. Also prints death messages to server log.
 
 # Despawn
-Gives those of us who don't use [MiniHUD](https://masa.dy.fi/mcmods/all_mods/) a despawn sphere around the player showing where mobs will despawn. You can pick any time in seconds under an hour and choose from one of six fantastic colors, red, green, blue, black, gray(or grey), and white. Default sphere is red and lasts for 60 seconds.
+Gives players who don't use [MiniHUD](https://masa.dy.fi/mcmods/all_mods/) a despawn sphere around the player showing where mobs will despawn. You can pick any time in seconds under an hour and choose from one of six fantastic colors, red, green, blue, black, gray(or grey), and white. Default sphere is red and lasts for 60 seconds.
 
 # Ellipsoid
 Draws ellipsoids(default green color) with `draw_shape()` instead of setting blocks.
