@@ -23,7 +23,11 @@ Bucket placement written by [Firigion](https://github.com/Firigion)
 
 Be sure to edit the numbers at the beginning of the script so you can have your own custom bucket stack sizes!
 
-Allows every(up to 1.16.5) nonstackable bucket type to stack when a player picks them up and allows for using buckets similar to honey bottles. You get the empty buckets back in your inventory unless you don't have space.
+Makes nonstackable bucket types stack and use similar to honey bottles. You get the empty buckets back in your inventory unless you don't have space.
+
+`/bucketstack <bucket>` - print stack size of one or all buckets
+
+`/bucketstack <bucket> <stack_size>` - change the stack size to a desired value
 
 # Death
 Gives players who don't use [Tweakeroo](https://masa.dy.fi/mcmods/all_mods/) a death message indicating coordinates and dimension of death. Also prints death messages to server log.
