@@ -78,22 +78,22 @@ __on_player_changes_dimension(player, from_pos, from_dimension, to_pos, to_dimen
 			if(mode == 'air',
 				air(_),
 				mode == 'solid',
-				solid(_);
+				1 - solid(_);
 			);
 		);
 		side2 = volume(corners:0 - offset,corners:1 - offset,
 			if(mode == 'air',
 				air(_),
 				mode == 'solid',
-				solid(_);
+				1 - solid(_);
 			);
 		);
 
 		//compare the two sides to determine which direction the player should face
 		if(side1 > side2,
-			yaw = -45 * axis + (mode == 'solid') * 180,
+			yaw = -45 * axis,
 			side2 > side1,
-			yaw = -45 * axis + (mode == 'air') * 180,
+			yaw = -45 * axis + 180,
 			//if the two sides had matching numbers of valid blocks, don't change anything
 			yaw = p ~ 'yaw'
 		);
@@ -133,11 +133,11 @@ __corners3(center,offset) ->
 	//go through each list to find the edges
 	edgecheck = l(l(),l());
 	for(l(negativecheck,positivecheck),
-		edge = __lastportal(_,copy(corneroffset));
-		//we know the edge, but what direction do we go in?
 		//+1 for positive list, -1 for negative list
 		listdirection = 2 * _i - 1;
-		//check which direction was the problem
+		edge = __lastportal(_,copy(corneroffset),listdirection);
+		//we know the edge, but what direction do we go in?
+		//we should check which direction was the problem
 		verticalbool = block(edge + listdirection * l(0,1,0)) != 'nether_portal';
 		horizontalbool = block(edge + listdirection * (corneroffset - l(0,1,0))) != 'nether_portal';
 		if(verticalbool && horizontalbool,
@@ -170,21 +170,22 @@ __corners3(center,offset) ->
 
 	//find which blocks along the edges are actually the corners
 	corners = l();
+	// print('or here');
 	for(edgecheck,
-		corners:_i = __lastportal(_,null);
+		corners:_i = __lastportal(_,null,null);
 	);
 	return(corners);
 );
 
 //find last portal block before non portal block from a list of positions
 //also catches edge case of two intersecting portals
-__lastportal(blocklist,direction) ->
+__lastportal(blocklist,direction,sign) ->
 (
-	//can't check the next value if there's only one
-	//just return what we were given
+	//can't check the next value if there's only one so just return what we were given
 	if(length(blocklist) == 1,
 		return(pos(blocklist:0));
 	);
+	//we won't care about the vertical component when using this
 	direction:1 = 0;
 	pos(
 		first(blocklist,
@@ -193,7 +194,8 @@ __lastportal(blocklist,direction) ->
 			nextbool = blocklist:(_i + 1) != 'nether_portal';
 			//if and only if we are travelling along a diagonal, we might be at the intersection of two corners
 			//in this case, we should check that the next block vertically or horizontally is a nether portal
-			adjacent = block(pos(_) + direction) == 'nether_portal' || block(pos(_) + l(0,1,0)) == 'nether_portal';
+			//this is especially important if your resulting position was a corner of the portal
+			adjacent = block(pos(_) + (sign || 1) * direction) == 'nether_portal' || block(pos(_) + (sign || 1) * l(0,1,0)) == 'nether_portal';
 			//if we were moving sideways, we can ignore this aspect and just require the next block in the list
 			//	to be a nether portal
 			nextbool || (direction && !adjacent)
