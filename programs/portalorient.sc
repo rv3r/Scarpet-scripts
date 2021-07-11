@@ -42,9 +42,8 @@ __on_start() ->
 //set a new value for the player's mode from the command
 __change(mode) ->
 (
-	p = player();
 	data = load_app_data();
-	data:p = mode;
+	data:str(player()) = mode;
 	store_app_data(data);
 );
 
@@ -54,7 +53,7 @@ __on_player_changes_dimension(player, from_pos, from_dimension, to_pos, to_dimen
 (
 	//get player and their current mode
 	p = player;
-	mode = load_app_data():p;
+	mode = load_app_data():str(p);
 
 	//only trigger under certain conditions
 	if(mode != 'off' && mode != null && (from_dimension == 'the_nether' || to_dimension == 'the_nether'),
