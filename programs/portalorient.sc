@@ -69,7 +69,7 @@ __on_player_changes_dimension(player, from_pos, from_dimension, to_pos, to_dimen
 		//get the corners of the portal and construct an offset to scan each side
 		offset = l(0,0,0);
 		offset:(2 - axis) = 1;
-		corners =  __corners3(center,offset);
+		corners =  __corners(center,offset);
 
 		//scan each side of the portal for blocks based on the player's chosen mode
 		//	air -> face the side with more air blocks
@@ -112,7 +112,7 @@ __on_player_changes_dimension(player, from_pos, from_dimension, to_pos, to_dimen
 //this is also faster than scanning a single row up, down, left, and right because using
 //	the diagonal checks two directions at once
 //according to profile_expr(), it's about 3x faster
-__corners3(center,offset) ->
+__corners(center,offset) ->
 (
 	//use the vector normal to the portal plane to construct a vector along the portal plane 
 	corneroffset = l(1,1,1) - offset;
