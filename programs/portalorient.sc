@@ -135,14 +135,7 @@ __corners3(center,offset) ->
 
 	edgecheck = l();
 	for(l(negativecheck,positivecheck),
-		current = _;
-		edge = pos(
-			first(_,
-				//if the next block in the list is not a nether portal, we're at the edge of the portal
-				//we could check for obsidian but this way the script doesn't mind if you removed it
-				current:(_i + 1) != 'nether_portal';
-			)
-		);
+		edge = __lastportal(_);
 		iterator = _ ~ edge;
 		listdirection = 2 * _i - 1;
 		if(block(edge + listdirection * l(0,1,0)) != 'nether_portal',
@@ -183,7 +176,7 @@ __corners3(center,offset) ->
 	return(corners);
 );
 
-//find last portal block before non portal block
+//find last portal block before non portal block from a list of positions
 __lastportal(positionlist) ->
 (
 	pos(
