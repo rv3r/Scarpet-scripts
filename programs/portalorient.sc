@@ -161,7 +161,7 @@ __corners(center,offset) ->
 	return(corners);
 );
 
-//find last portal block before non portal block from a list of positions
+//find last portal block before non portal block from a list of blocks
 //also catches edge case of two intersecting portals
 __lastportal(blocklist,direction,sign) ->
 (
