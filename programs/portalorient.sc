@@ -74,26 +74,23 @@ __on_player_changes_dimension(player, from_pos, from_dimension, to_pos, to_dimen
 		//scan each side of the portal for blocks based on the player's chosen mode
 		//	air -> face the side with more air blocks
 		//	solid -> face the side with less solid blocks
-		side1 = volume(corners:0 + offset,corners:1 + offset,
-			if(mode == 'air',
-				air(_),
-				mode == 'solid',
-				1 - solid(_);
-			);
-		);
-		side2 = volume(corners:0 - offset,corners:1 - offset,
-			if(mode == 'air',
-				air(_),
-				mode == 'solid',
-				1 - solid(_);
+		sidelist = l();
+		loop(2,
+			sign = 2 * _ - 1;
+			sidelist += volume(corners:0 + sign * offset,corners:1 + sign * offset,
+				if(mode == 'air',
+					air(_),
+					mode == 'solid',
+					1 - solid(_);
+				);
 			);
 		);
 
 		//compare the two sides to determine which direction the player should face
-		if(side1 > side2,
-			yaw = -45 * axis,
-			side2 > side1,
+		if(sidelist:0 > sidelist:1,
 			yaw = -45 * axis + 180,
+			sidelist:1 > sidelist:0,
+			yaw = -45 * axis,
 			//if the two sides had matching numbers of valid blocks, don't change anything
 			yaw = p ~ 'yaw'
 		);
@@ -111,31 +108,24 @@ __on_player_changes_dimension(player, from_pos, from_dimension, to_pos, to_dimen
 //according to profile_expr(), it's about 10x faster,
 //this is also faster than scanning a single row up, down, left, and right because using
 //	the diagonal checks two directions at once
-//according to profile_expr(), it's about 3x faster
+//according to profile_expr(), it's about 2.5x faster
 __corners(center,offset) ->
 (
+	corners = l();
 	//use the vector normal to the portal plane to construct a vector along the portal plane 
 	corneroffset = l(1,1,1) - offset;
-	//generate a list of blocks in each direction along one diagonal for checking later
-	//generate them in order to prevent need for sorting
-	positivecheck = l(block(center));
-	negativecheck = copy(positivecheck);
-	positive = copy(center);
-	negative = copy(center);
-	//don't construct lists with rect() because this is much faster and no sorting is needed
-	loop(20,
-		positive = positive + corneroffset;
-		positivecheck += block(positive);
-		negative = negative - corneroffset;
-		negativecheck += block(negative);
-	);
+	//we'll need to check along each direction of the diagonal to find both corners
+	loop(2,
+		//-1 for negative direction, +1 for positive direction
+		listdirection = 2 * _ - 1;
+		//generate a list of blocks for checking later
+		//do it in order to prevent need for sorting
+		pos = copy(center);
+		//don't construct lists with rect() because this is much faster and no sorting is needed
+		check = map(l(range(21)),block(_ * listdirection * corneroffset + pos));
 
-	//go through each list to find the edges
-	edgecheck = l(l(),l());
-	for(l(negativecheck,positivecheck),
-		//+1 for positive list, -1 for negative list
-		listdirection = 2 * _i - 1;
-		edge = __lastportal(_,copy(corneroffset),listdirection);
+		//first find the edges
+		edge = __lastportal(check,copy(corneroffset),listdirection);
 		//we know the edge, but what direction do we go in?
 		//we should check which direction was the problem
 		verticalbool = block(edge + listdirection * l(0,1,0)) != 'nether_portal';
@@ -154,25 +144,19 @@ __corners(center,offset) ->
 			direction = l(0,1,0)
 		);
 
-		//again, don't construct lists with rect() because this is much faster and no sorting is needed
-		//this function is 2.5x faster when this list is made loop() instead of rect()
+		//then find the corners
 		pos = copy(edge);
+		edges = l();
+		//again, don't construct lists with rect() because this is much faster and no sorting is needed
+		//this function is 2x faster when this list is made loop() instead of rect()
 		if(direction != l(0,0,0),
-			//length(_) 0 _ ~ edge to prevent checking too many blocks
-			loop(length(_) - _ ~ edge,
-				pos = pos + listdirection * direction;
-				edgecheck:_i += block(pos);
-			),
-			edgecheck:_i += block(pos);
+			//length(check) - check ~ edge to prevent checking too many blocks
+			edges = map(l(range(length(check) - check ~ edge)),block(_ * listdirection * direction + pos)),
+			edges = l(block(pos));
 		);
-		
-	);
 
-	//find which blocks along the edges are actually the corners
-	corners = l();
-	// print('or here');
-	for(edgecheck,
-		corners:_i = __lastportal(_,null,null);
+		//find which blocks along the edges are actually the corners
+		corners:_ = __lastportal(edges,null,null);
 	);
 	return(corners);
 );
@@ -192,7 +176,7 @@ __lastportal(blocklist,direction,sign) ->
 			//if the next block in the list is not a nether portal, we're at the edge of the portal
 			//we could check for obsidian but this way the script doesn't mind if you removed it
 			nextbool = blocklist:(_i + 1) != 'nether_portal';
-			//if and only if we are travelling along a diagonal, we might be at the intersection of two corners
+			//if we are travelling along a diagonal, we might be at the intersection of two corners
 			//in this case, we should check that the next block vertically or horizontally is a nether portal
 			//this is especially important if your resulting position was a corner of the portal
 			adjacent = block(pos(_) + (sign || 1) * direction) == 'nether_portal' || block(pos(_) + (sign || 1) * l(0,1,0)) == 'nether_portal';
