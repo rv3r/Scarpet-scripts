@@ -311,7 +311,8 @@ __playerset(player,pos,block) ->
 		l('fire','fire_charge'),
 		l('carrots','carrot'),
 		l('potatoes','potato'),
-		l('sweet_berry_bush','sweet_berries')
+		l('sweet_berry_bush','sweet_berries'),
+		l('wall_torch','torch')
 	);
 	
 	if(item_list() ~ block,
