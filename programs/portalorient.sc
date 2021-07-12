@@ -1,27 +1,24 @@
 __config() ->
 (
-	return(
-		m(
-			l('scope','player'),
-			l('stay_loaded',true),
-			
-			l('commands',
-				m(
-					l('<mode>','__change')
-				)
-			),
-
-			l('arguments',
-				m(
-					l('mode',
-						m(
-							l('type','term'),
-							l('options',
-								l('off','air','solid')
-							),
-							l('suggest',
-								l('off','air','solid')
-							)
+	m(
+		l('scope','player'),
+		l('stay_loaded',true),
+		
+		l('commands',
+			m(
+				l('<mode>','__change')
+			)
+		),
+		l('arguments',
+			m(
+				l('mode',
+					m(
+						l('type','term'),
+						l('options',
+							l('off','air','solid')
+						),
+						l('suggest',
+							l('off','air','solid')
 						)
 					)
 				)
