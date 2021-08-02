@@ -6,7 +6,7 @@ __config() ->
 
 		l('commands',
 			m(
-				l('clear data','__clear_data'),
+				l('clear data',_() -> (print('Cleared cached furnace positions');__clear_data())),
 				l('clear inventories','__clear_inventories'),
 				l('print','__print'),
 				l('display <display_bool>','__set_display_mode')
@@ -38,7 +38,6 @@ __clear_data() ->
 (
 	global_main_furnaces = copy(global_default_map);
 	global_furnaces = copy(global_default_map);
-	print('Cleared cached furnace positions');
 );
 
 __log_furnaces(pos1,pos2) ->
