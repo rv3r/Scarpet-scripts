@@ -2,7 +2,7 @@ __config() ->
 (
 	m(
 		l('scope','player'),
-		l('stay_loaded',false),
+		l('stay_loaded',true),
 
 		l('commands',
 			m(
@@ -59,7 +59,7 @@ __compare(inventory,pos) ->
 	for(inventory,
 		if(_:0 == comparison:_i:0,
 			output:_i = comparison:_i:1 - _:1,
-			output:_i = 'item';
+			output:_i = [comparison:_i:0,inventory:_i:0];
 		);
 	);
 	return(output);
@@ -124,8 +124,8 @@ __print() ->
 					slot_names = ['Input','Fuel','Output'];
 					for(_:1,
 						beginning = str('	- %s: ',slot_names:_i);
-						if(_ == 'item',
-							print(beginning + format('r wrong item'));
+						if(type(_) == 'list',
+							print(beginning + format(str('r wrong item, %s instead of %s',if(_:0 == null,'empty',_:0),if(_:1 == null,'empty',_:1))));
 							type(_) == 'number',
 							if(_ < 0,
 								print(beginning + format(str('y too few items, %d short',abs(_)))),
@@ -156,8 +156,8 @@ __display() ->
 	offsets = [[0,0,1],[1,0,0],[0,0,-1],[-1,0,0]];
 	p = player();
 	box_offsets = [
-		[-0.25,0.25],
-		[-0.25,-0.25],
+		[-0.25,0.15],
+		[-0.25,-0.15],
 		[0.25,0]
 	];
 	shapelist = l();
@@ -166,18 +166,20 @@ __display() ->
 			pos = _:0 + 0.5;
 			facing = block_state(pos,'facing');
 			face_index = faces ~ facing;
-			face_center = pos + 0.5 * offsets:face_index;
-			shape_corner = 0.225 * offsets:(face_index + 1) + [0,0.2,0];
+			face_center = pos + 0.5 * offsets:face_index + [0,0.2,0];
+			shape_corner = 0.25 * offsets:(face_index + 1) + [0,0.15,0];
 			for(_:1,
+				text = str(_);
 				if(_ == 0,
 					color = 0x00FF00FF,
-					_ == 'item',
+					type(_) == 'list',
+					text = 'Item';
 					color = 0xFF0000FF,
 					color = 0xFFFF00FF
 				);
 				shape_center = face_center + box_offsets:_i:0 * offsets:(face_index + 1) + [0,box_offsets:_i:1,0];
 				shapelist += ['box',2,'color',color,'fill',color,'from',shape_center + shape_corner,'to',shape_center - shape_corner + 0.02 * offsets:face_index];
-				shapelist += ['label',2,'text',str(_),'pos',shape_center + 0.03 * offsets:face_index - [0,0.125,0],'color',0x000000FF,'facing',facing];
+				shapelist += ['label',2,'text',text,'pos',shape_center + 0.03 * offsets:face_index - [0,0.125,0],'color',0x000000FF,'facing',facing];
 			)
 		)
 	);
