@@ -1,18 +1,18 @@
 __config() ->
 (
-	m(
-		l('scope','player'),
-		l('stay_loaded',true),
+	{
+		['scope','player'],
+		['stay_loaded',true],
 
-		l('commands',
-			m(
-				l('clear data',_() -> (print('Cleared cached furnace positions');__clear_data())),
-				l('clear inventories','__clear_inventories'),
-				l('print','__print'),
-				l('display <display_bool>','__set_display_mode')
-			)
-		)
-	)
+		['commands',
+			{
+				['clear data',_() -> (print('Cleared cached furnace positions');__clear_data())],
+				['clear inventories','__clear_inventories'],
+				['print','__print'],
+				['display <display_bool>','__set_display_mode']
+			}
+		]
+	}
 );
 
 __clear_inventories() ->
@@ -28,16 +28,16 @@ __clear_inventories() ->
 					['facing',block_state(_,'facing')]
 				},
 				{}
-			);
-		);
+			)
+		)
 	);
-	print('Cleared furnace inventories');
+	print('Cleared furnace inventories')
 );
 
 __clear_data() ->
 (
 	global_main_furnaces = copy(global_default_map);
-	global_furnaces = copy(global_default_map);
+	global_furnaces = copy(global_default_map)
 );
 
 __log_furnaces(pos1,pos2) ->
@@ -45,10 +45,10 @@ __log_furnaces(pos1,pos2) ->
 	volume(pos1,pos2,
 		name = str(_);
 		if((keys(global_furnaces) ~ name) != null,
-			global_furnaces:name += pos(_);
-		);
+			global_furnaces:name += pos(_)
+		)
 	);
-	print('Logged furnaces');
+	print('Logged furnaces')
 );
 
 __compare(inventory,pos) ->
@@ -58,15 +58,15 @@ __compare(inventory,pos) ->
 	for(inventory,
 		if(_:0 == comparison:_i:0,
 			output:_i = comparison:_i:1 - _:1,
-			output:_i = [comparison:_i:0,inventory:_i:0];
-		);
+			output:_i = [comparison:_i:0,inventory:_i:0]
+		)
 	);
-	return(output);
+	output
 );
 
 __compare_all() ->
 (
-	output = m(
+	output = {
 		[
 			'furnace',
 			{}
@@ -79,18 +79,18 @@ __compare_all() ->
 			'blast_furnace',
 			{}
 		]
-	);
+	};
 	for(pairs(global_furnaces),
 		key = _:0;
 		main = global_main_furnaces:(key);
 		for(_:1,
 			if(main != [],
 				output:key:_ = __compare(inventory_get(main),_),
-				output:key:_ = null;
-			);
-		);
+				output:key:_ = null
+			)
+		)
 	);
-	return(output);
+	output
 );
 
 __print() ->
@@ -139,14 +139,14 @@ __print() ->
 	);
 	if(!result,
 		print(format('l No inventory errors found'))
-	);
+	)
 );
 
 __set_display_mode(setting) ->
 (
 	data = load_app_data();
 	data:str(player()) = setting;
-	store_app_data(data);
+	store_app_data(data)
 );
 
 __display() ->
@@ -178,11 +178,11 @@ __display() ->
 				);
 				shape_center = face_center + box_offsets:_i:0 * offsets:(face_index + 1) + [0,box_offsets:_i:1,0];
 				shapelist += ['box',2,'color',color,'fill',color,'from',shape_center + shape_corner,'to',shape_center - shape_corner + 0.02 * offsets:face_index];
-				shapelist += ['label',2,'text',text,'pos',shape_center + 0.03 * offsets:face_index - [0,0.125,0],'color',0x000000FF,'facing',facing];
+				shapelist += ['label',2,'text',text,'pos',shape_center + 0.03 * offsets:face_index - [0,0.125,0],'color',0x000000FF,'facing',facing]
 			)
 		)
 	);
-	draw_shape(shapelist);
+	draw_shape(shapelist)
 );
 
 __on_player_right_clicks_block(player, item_tuple, hand, block, face, hitvec) ->
@@ -196,8 +196,8 @@ __on_player_right_clicks_block(player, item_tuple, hand, block, face, hitvec) ->
 				print('Set position 1'),
 				print('Set position 2');
 				__log_furnaces(global_pos1,pos(block));
-				global_pos1 = null;
-			);
+				global_pos1 = null
+			)
 		)
 	)
 );
@@ -221,13 +221,13 @@ __on_start() ->
 	global_pos1 = null;
 	__clear_data();
 	if(!load_app_data(),
-		store_app_data(m());
+		store_app_data(m())
 	)
 );
 
 __on_tick() ->
 (
 	if(load_app_data():str(player()),
-		__display();
-	);
+		__display()
+	)
 );
