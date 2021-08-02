@@ -2,7 +2,7 @@
 Pick the script you need and follow [these](https://github.com/gnembon/fabric-carpet/wiki/Installing-carpet-scripts-in-your-world) instructions for installation!
 
 # Beehive Count
-Right click a bee nest or beehive with an empty mainhand to learn how many bees are in the block.
+Right-click a bee nest or beehive with an empty mainhand to learn how many bees are in the block.
 
 # Block Test
 Create your own test in `your_test_function_here()` and let the script test every block in the game for you. It will create a map containing every block that passed the test, allowing you put the map into your script and call `has()` to see what blocks are valid for your use case. Setting `global_fail_bool` to true will produce a second map of every block that failed your test.
@@ -61,6 +61,17 @@ Makes a player face away from a specified side of a Nether portal after a dimens
 `/portalorient air` - makes the player face the portal side with more air blocks
 
 `/portalorient solid` - makes the player face the portal side with fewer solid blocks
+
+# Smelter Debug
+Aids in debugging while designing smelter arrays. Hold coal and right-click on two corners of a cuboid to cache all furnaces, smokers, and blast furnaces in the region. Shift right-click on any furnace variant to compare all other furnace variants of the same type. Cuboid region and main furnace variant can always be overwritten.
+
+`/smelterdebug clear data` - clears position cache and main furnace variant positions
+
+`/smelterdebug clear inventories` - clears the inventory of every cached furnace variant, best used when everything breaks and `/fill` takes too long
+
+`/smelterdebug display <display_bool>` - toggles display on the front of each furnace, indicating item discrpancies or count discrepancies
+
+`/smelterdebug print` - prints positions and discrepancies of any furnaces that do not match the inventory of the main block, click on position in chat to look at the block
 
 # Volume
 ### Requires my rv3r_math.scl library
