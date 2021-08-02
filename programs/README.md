@@ -16,7 +16,7 @@ Use a sword to scan the region below the patch for ores. Switch hands within 5 s
 
 Use a pickaxe to display labels showing you where to mine for any given ore.
 
-`/bolanmine <base> <ore>` will show a histogram of offsets for the given `<ore>` relative to the center of the patch of `<base>`
+`/bolanmine <base> <ore>` - shows a histogram of offsets for the given `<ore>` relative to the center of the patch of `<base>`
 
 # Bucket Stack
 Bucket placement written by [Firigion](https://github.com/Firigion)
@@ -38,9 +38,7 @@ Gives players who don't use [MiniHUD](https://masa.dy.fi/mcmods/all_mods/) a des
 # Ellipsoid
 Draws ellipsoids(default green color) with `draw_shape()` instead of setting blocks.
 
-`/ellipsoid <center> <xradius> <yradius> <zradius> <radial> <longitudinal> <time>`
-
-Draws ellipsoid at `center` with the given radii(`xradius`,`yradius`,`zradius`) and line densities of `radial`(around the longest axis) and `longitudinal`(along the longest axis) for `ticks`
+`/ellipsoid <center> <xradius> <yradius> <zradius> <radial> <longitudinal> <time>` - draws ellipsoid at `center` with the given radii(`xradius`,`yradius`,`zradius`) and line densities of `radial`(around the longest axis) and `longitudinal`(along the longest axis) for `ticks`
 
 # Eye Remover
 Shift right-click on an end portal frame containing an eye of ender to remove the eye. Note that an existing portal will be removed.
