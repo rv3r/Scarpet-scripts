@@ -63,7 +63,7 @@ Makes a player face away from a specified side of a Nether portal after a dimens
 `/portalorient solid` - makes the player face the portal side with fewer solid blocks
 
 # Smelter Debug
-Aids in debugging while designing smelter arrays. Hold coal and right-click on two corners of a cuboid to cache all furnaces, smokers, and blast furnaces in the region. Shift right-click on any furnace variant to compare all other furnace variants of the same type. Cuboid region and main furnace variant can always be overwritten.
+Aids in debugging while designing smelter arrays by reducing need to open furnace GUIs. Hold coal and right-click on two corners of a cuboid to cache all furnaces, smokers, and blast furnaces in the region. Shift right-click on any furnace variant to compare all other furnace variants of the same type. Cuboid region and main furnace variant can always be overwritten.
 
 Color legend:
 
