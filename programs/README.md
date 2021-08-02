@@ -69,7 +69,7 @@ Aids in debugging while designing smelter arrays. Hold coal and right-click on t
 
 `/smelterdebug clear inventories` - clears the inventory of every cached furnace variant, best used when everything breaks and `/fill` takes too long
 
-`/smelterdebug display <display_bool>` - toggles display on the front of each furnace, indicating item discrpancies or count discrepancies
+`/smelterdebug display <display_bool>` - toggles display on the front of each furnace, indicating item discrepancies or count discrepancies
 
 `/smelterdebug print` - prints positions and discrepancies of any furnaces that do not match the inventory of the main block, click on position in chat to look at the block
 
