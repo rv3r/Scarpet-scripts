@@ -65,6 +65,12 @@ Makes a player face away from a specified side of a Nether portal after a dimens
 # Smelter Debug
 Aids in debugging while designing smelter arrays. Hold coal and right-click on two corners of a cuboid to cache all furnaces, smokers, and blast furnaces in the region. Shift right-click on any furnace variant to compare all other furnace variants of the same type. Cuboid region and main furnace variant can always be overwritten.
 
+Color legend:
+
+- green: matches main block inventory
+- yellow: correct item, incorrect count
+- red: wrong item
+
 `/smelterdebug clear data` - clears position cache and main furnace variant positions
 
 `/smelterdebug clear inventories` - clears the inventory of every cached furnace variant, best used when everything breaks and `/fill` takes too long
