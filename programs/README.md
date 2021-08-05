@@ -25,9 +25,9 @@ Be sure to edit the numbers at the beginning of the script so you can have your 
 
 Makes nonstackable bucket types stack and use similar to honey bottles. You get the empty buckets back in your inventory unless you don't have space.
 
-`/bucketstack <bucket>` - print stack size of one or all buckets
+`/bucketstack <bucket>` - prints stack size of one or all buckets
 
-`/bucketstack <bucket> <stack_size>` - change the stack size to a desired value
+`/bucketstack <bucket> <stack_size>` - changes the stack size to a desired value
 
 # Death
 Gives players who don't use [Tweakeroo](https://masa.dy.fi/mcmods/all_mods/) a death message indicating coordinates and dimension of death. Also prints death messages to server log.
@@ -76,6 +76,17 @@ Color legend:
 `/smelterdebug display <display_bool>` - toggles display on the front of each furnace, indicating item discrepancies or count discrepancies
 
 `/smelterdebug print` - prints positions and discrepancies of any furnaces that do not match the inventory of the main block, click on position in chat to look at the block
+
+# Tracer
+Displays predicted path and landing of player-launched projectiles when held in either hand(mainhand item overrules offhand item). Includes options to track each object when it is launched and not track path at all. Predicted landing color defaults to green and in-flight landing color defaults to yellow.
+
+`/tracer item <item>` - changes which items are tracked, `off`(none), `weapons`(tridents, arrows from bows or crossbows), `throwables`(eggs, snowballs, ender pearls, bottles o' enchanting, splash potions), or `all`
+
+`/tracer landing <size>` - changes edge length of square representing landing position, valid values range from `0.1` to `1`
+
+`/tracer path <path_bool>` - toggles drawing of all projectile paths
+
+`/tracer track <track_bool>` - toggles tracking of in-flight projectile path and landing position
 
 # Volume
 ### Requires my rv3r_math.scl library
