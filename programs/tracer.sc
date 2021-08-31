@@ -6,10 +6,12 @@ __config() ->
 		
 		l('commands',
 			m(
-				l('item <item>',l('__changeitem','item')),
-				l('track <track_bool>',l('__changeitem','track')),
-				l('landing <size>',l('__changeitem','landing')),
-				l('path <path_bool>',l('__changeitem','path'))
+				l('item <item>',l('__changedata','item')),
+				l('track bool <track_bool>',l('__changedata','track')),
+				l('track color <color>',l('__changedata','track_color')),
+				l('landing size <size>',l('__changedata','landing')),
+				l('landing color <color>',l('__changedata','landing_color')),
+				l('path <path_bool>',l('__changedata','path'))
 			)
 		),
 
@@ -33,6 +35,16 @@ __config() ->
 						l('max',1),
 						l('suggest',
 							l(0.1,0.2,1)
+						)
+					)
+				),
+				l('color',
+					m(
+						l('type','int'),
+						l('min',0),
+						l('max',2 ^ 32 - 1),
+						l('suggest',
+							l(0x000000FF,0xFF0000FF,0x00FF00FF,0x0000FFFF,0xFFFF00FF,0xFF00FFFF,0x00FFFFFF,0xFFFFFFFF)
 						)
 					)
 				)
@@ -105,16 +117,17 @@ __on_start() ->
 );
 
 //set a new value for the player's settings from the command
-__changeitem(value,mode) ->
+__changedata(value,mode) ->
 (
 	p = player();
 	data = parse_nbt(load_app_data());
-	//print(data);
 	if(!data:str(p),
 		data:str(p) = m(
 			l('item','off'),
 			l('track',false),
+			l('track_color',0x00FF00FF),
 			l('landing',0),
+			l('landing_color',0xFFFF00FF),
 			l('path',false)
 		);
 	);
@@ -193,14 +206,14 @@ __track(player,entity) ->
 			gravity = global_motion:'splash_potion':'gravity',
 			gravity = global_motion:entity_name:'gravity';
 		);
-		colors = l(0xFFFF00FF,0xFFFF0033);
+		color = number(global_settings:'track_color');
 
-		__predict(entity ~ 'pos',motion,gravity,null,colors);
+		__predict(entity ~ 'pos',motion,gravity,null,color);
 	);
 );
 
 //predicts where an entity will encounter a full movement-blocking block
-__predict(pos,motion,gravity,ticks,colors) ->
+__predict(pos,motion,gravity,ticks,color) ->
 (
 	newpos = copy(pos);
 	newmotion = copy(motion);
@@ -232,10 +245,10 @@ __predict(pos,motion,gravity,ticks,colors) ->
 	global_shapelist = l();
 	for(pointlist,
 		if(_i < (length(pointlist) - 1),
-			global_shapelist += l('line',ticks,'from',_,'to',pointlist:(_i + 1),'color',colors:0);
+			global_shapelist += l('line',ticks,'from',_,'to',pointlist:(_i + 1),'color',color);
 		)
 	);
-	__draw(validpos,__bisection_hitbox_search(validpos,pos),ticks,colors);
+	__draw(validpos,__bisection_hitbox_search(validpos,pos),ticks,color);
 );
 
 //given two positions, the first outside a block and the other inside a block,
@@ -253,12 +266,13 @@ __bisection_hitbox_search(pos1,pos2) ->
 			midpoint = (midpoint + upper) / 2
 		);
 	);
+	//global_final = l(lower,upper);
 	return(midpoint);
 );
 
 //might draw the last segment of the projectile's path
 //	and definitely draws the landing box on the proper face of the block
-__draw(pos,hit,ticks,colors) ->
+__draw(pos,hit,ticks,color) ->
 (
 	size = global_settings:'landing';
 	if(size,
@@ -292,11 +306,11 @@ __draw(pos,hit,ticks,colors) ->
 			from_offset:axis = 0;
 			to_offset = l(1,1,1) * size / 2;
 			to_offset:axis = height;
-			draw_shape('box',ticks,'from',round_hit + from_offset,'to',round_hit + to_offset,'color',colors:0,'fill',colors:1);
+			draw_shape('box',ticks,'from',round_hit + from_offset,'to',round_hit + to_offset,'color',color,'fill',color);
 		)
 	);
 	if(global_settings:'path',
-		global_shapelist += l('line',ticks,'from',pos,'to',hit,'color',colors:0);
+		global_shapelist += l('line',ticks,'from',pos,'to',hit,'color',color);
 		draw_shape(global_shapelist);
 	)
 );
@@ -338,7 +352,7 @@ __refresh() ->
 		);
 
 		gravity = global_motion:item:'gravity';
-		colors = l(0x00FF00FF,0x00FF00FF);
+		color = number(global_settings:'landing_color');
 		global_shapelist = l();
 		sourcepos = p ~ 'pos' + l(0,p ~ 'eye_height' - 0.1,0);
 		if(item == 'experience_bottle' || item == 'splash_potion',
@@ -347,7 +361,7 @@ __refresh() ->
 		);
 		motion = speed * look;
 
-		__predict(sourcepos,motion,gravity,global_refresh,colors),
+		__predict(sourcepos,motion,gravity,global_refresh,color),
 	)
 );
 
