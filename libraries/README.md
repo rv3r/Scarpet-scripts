@@ -114,7 +114,7 @@ Uses three common list structures as additional data types
 
 ## Description of methods
 * `__bounds(block)` - `block`(block)
-  - returns data type `bounds` of `block`, either positioned in world or passed as string
+  - returns `bounds` of `block`, either positioned in world or passed as string
   - note that blocks such as bamboo and pointed dripstone have multiple possible collision boxes, so this script returns the maximum bounds for each
   - blocks with no collision return `null`
 * `__inside(bounds,point)` - `bounds`(bounds),`point`(float triple)
