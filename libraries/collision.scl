@@ -494,22 +494,6 @@ global_vertical_direction = ['up','down'];
 global_face = ['wall','floor','ceiling'];
 global_tilt = ['none','partial','full'];
 
-
-//checks to see if a point is in a set of bounds
-//first() because any region will do
-//all() because every coordinate must be between corners
-__inside(bounds,point) ->
-(
-	first(bounds,
-		corners = _;
-		all([range(3)],
-			min = min(corners:0:_,corners:1:_);
-			max = max(corners:0:_,corners:1:_);
-			min <= point:_ <= max
-		)
-	) != null
-);
-
 //returns list of paired triples of corners of rectangular prisms that comprise collision box
 //measured relative to lower southwest corner of block aka negative direction of every axis
 __bounds(block) ->
@@ -863,6 +847,21 @@ __bounds(block) ->
 		)
 	);
 	bounds
+);
+
+//checks to see if a point is in a set of bounds
+//first() because any region will do
+//all() because every coordinate must be between corners
+__inside(bounds,point) ->
+(
+	first(bounds,
+		corners = _;
+		all([range(3)],
+			min = min(corners:0:_,corners:1:_);
+			max = max(corners:0:_,corners:1:_);
+			min <= point:_ <= max
+		)
+	) != null
 );
 
 //checks to see if a point is within the collision box of a block
