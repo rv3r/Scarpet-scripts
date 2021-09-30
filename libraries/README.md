@@ -101,6 +101,43 @@ __save_blocks(....,data);
 ```
 Thus, the methods that automatically load the data are most efficient when only one needs to be called at a time. If many need to be called in a row, store the current loaded data in a variable and use the simpler methods.
 
+# Collision Library
+Provides block collision boxes and other useful functions
+
+Uses three common list structures as additional data types
+* `prism` - pair of points that comprise opposite vertices of a rectangular prism
+  - for example any solid block has a `prism` of [0,0,0],[1,1,1]
+* `bounds` - list of prisms
+  - solid block has [ [0,0,0],[1,1,1] ]
+* `condensed bounds` - triple of lists of x-values, y-values, and z-values of any `bounds`
+  - solid block has [ [0,1],[0,1],[0,1] ]
+
+## Description of methods
+* `__bounds(block)` - `block`(block)
+  - returns data type `bounds` of `block`, either positioned in world or passed as string
+  - note that blocks such as bamboo and pointed dripstone have multiple possible collision boxes, so this script returns the maximum bounds for each
+* `__inside(bounds,point)` - `bounds`(bounds),`point`(float triple)
+  - returns `boolean` indicating if `point` is in `bounds`
+  - positions on the border return `true`
+* `__insideblock(point)` - `point`(float triple)
+  - returns `boolean` indicating if `point` is currently inside a collision box
+* `__concatenate(...lists)` - `lists`(nonzero number of lists of any lengths)
+  - more general function returning `list` containing all individual elements of `lists`
+* `__draw_bounds(block,...colors)` - `block`(block),`colors`(edge and fill colors as hex values)
+  - draws bounds of `block` as rectangular prisms using optional `colors`
+* `__all_collision_blocks()`
+  - returns list of all unique blocks and their property combinations that produce all unique collision boxes in the game
+* `__sort_direction(blocks,axis,direction,...ignore)` - `blocks`(block list),`axis`(lowercase single character string),`direction`(`'min'` or `'max'`),`ignore`(list of floats to ignore)
+  - returns sorted `block list` by sorting `blocks` along `axis` by bottom value(`min`) or top value(`max`) while ignoring blocks with `min` or `max` values in `ignore`
+  - for example, sorting all blocks by height ascending while ignoring heights of 0.5(slabs) and 1(solid blocks) can be done with: `__sort_direction( __all_collision_blocks() , 'y' , 'max' , 0.5 , 1 )`
+* `__prism_in_prism(prism1,prism2)` - `prism1`(prism),`prism2`(prism)
+  - returns `boolean` indicating if `prism1` intersects `prism2`
+  - touching at a vertex, edge, or face returns `true`
+* `__entity_block_collision(e)` - `e`(entity)
+  - returns `block list` indicating all blocks that `entity` is currently in contact with
+* `__prism_block_collision(pos,width,height)` - `pos`(float triple),`width`(float),`height`(float)
+  - returns `block list` indicating all blocks that anything at `pos` with properties `width` and `height` would contact
+
 # Inventory Library
 Imitates two common actions the player uses in an inventory.
 
