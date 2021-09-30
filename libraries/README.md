@@ -47,7 +47,7 @@ It is suggested that you set a variable to the name of the file that you would l
 * `__save_blocks(appname,data)` - `appname`(string),`data`(list)
   - saves the provided list `data` to the block file
   
-* `__find(container,type,values)` - `container`(list),`type`(string),`values`(3-element list if `'type' == 'pos'`, else a map if `'type' == 'tags'`)
+* `__find(container,type,values)` - `container`(list),`type`(string),`values`(integer triple if `'type' == 'pos'`, else a map if `'type' == 'tags'`)
   - returns a list of all values in `container` that match the `values` of `type`
     - This will give you all of the stored information(position and associated tags) for each block.
     - This is only meant to be used with this library as `type` must be `'pos'` or `'tags'`, so `container` should be the list of stored blocks, perhaps fetched from `__load_blocks(appname)`
@@ -61,23 +61,23 @@ It is suggested that you set a variable to the name of the file that you would l
           - calling `__find(data,'tags',m(l('mode','all'),l('player','AnonymousRover')))` in the above example map would return the first block even though it has extra tags, but searching for `l('tags',m(l('mode','all'),l('player','AnonymousRover'),l('bar','foo')))` would return null(unless, of course, the second block matches it) as the first block has a value of `null` for the key `'bar'`
             - you can use `null` as your value if you want to search for blocks that do not have the key you are searching for
             
-* `__add(container,pos,tags)` - `container`(list),`pos`(3-element list),`tags`(map)
+* `__add(container,pos,tags)` - `container`(list),`pos`(integer triple),`tags`(map)
   - add a new block at `pos` with associated `tags` to `container`
   - again, `container` should be the list of stored blocks, perhaps fetched from `__load_blocks(appname)`
   - note that `pos` must be a list of three elements. There are no other restrictions.
   - similarly, note that `tags` can be **any** map as there are no restrictions. Have fun with these flexible elements!
   
-* `__delete_value(container,pos,tags)` - `container`(list),`pos`(3-element list),`tags`(map)
+* `__delete_value(container,pos,tags)` - `container`(list),`pos`(integer triple),`tags`(map)
   - deletes the first element of `container` that _exactly_ matches `pos` and `tags`
   - again, `container` should be the list of stored blocks, perhaps fetched from `__load_blocks(appname)`
   
-* `__find_blocks(appname,type,values)` - `appname`(string),`type`(string),`values`(3-element list if `'type' == 'pos'`, else a map if `'type' == 'tags'`)
+* `__find_blocks(appname,type,values)` - `appname`(string),`type`(string),`values`(integer triple if `'type' == 'pos'`, else a map if `'type' == 'tags'`)
   - same as `__find` method above except automatically loads list of stored blocks
   
-* `__add_block(appname,pos,tags)` - `appname`(string),`pos`(3-element list),`tags`(map)
+* `__add_block(appname,pos,tags)` - `appname`(string),`pos`(integer triple),`tags`(map)
   - same as `__add` method above except automatically load list of stored blocks, adds block, and saves list of blocks
   
-* `__delete_block(appname,pos,tags)` - `appname`(string),`pos`(3-element list),`tags`(map)
+* `__delete_block(appname,pos,tags)` - `appname`(string),`pos`(integer triple),`tags`(map)
   - same as `__delete_value` method above except automatically load list of stored blocks, deletes first block that matches `pos` and `tags` exactly, and saves list of blocks
   
 * `__clear_all(appname)` -  `appname`(string)
@@ -109,7 +109,7 @@ Uses three common list structures as additional data types
   - for example any solid block has a `prism` of [0,0,0],[1,1,1]
 * `bounds` - list of prisms
   - solid block has [ [0,0,0],[1,1,1] ]
-* `condensed bounds` - triple of lists of x-values, y-values, and z-values of any `bounds`
+* `condensed bounds` - triple of lists of x-values, y-values, and z-values of any `bounds`, effectively just matrix transpose
   - solid block has [ [0,1],[0,1],[0,1] ]
 
 ## Description of methods
@@ -127,7 +127,7 @@ Uses three common list structures as additional data types
   - draws bounds of `block` as rectangular prisms using optional `colors`
 * `__all_collision_blocks()`
   - returns list of all unique blocks and their property combinations that produce all unique collision boxes in the game
-* `__sort_direction(blocks,axis,direction,...ignore)` - `blocks`(block list),`axis`(lowercase single character string),`direction`(`'min'` or `'max'`),`ignore`(list of floats to ignore)
+* `__sort_direction(blocks,axis,direction,...ignore)` - `blocks`(block list),`axis`(lowercase single character string),`direction`(`'min'` or `'max'`),`ignore`(float list)
   - returns sorted `block list` by sorting `blocks` along `axis` by bottom value(`min`) or top value(`max`) while ignoring blocks with `min` or `max` values in `ignore`
   - for example, sorting all blocks by height ascending while ignoring heights of 0.5(slabs) and 1(solid blocks) can be done with: `__sort_direction( __all_collision_blocks() , 'y' , 'max' , 0.5 , 1 )`
 * `__prism_in_prism(prism1,prism2)` - `prism1`(prism),`prism2`(prism)
@@ -142,7 +142,7 @@ Uses three common list structures as additional data types
 Imitates two common actions the player uses in an inventory.
 
 ### Description of methods
-* `__shiftclick(source,slot,destination)` - `source`(entity or block with inventory),`slot`(int),`destination`(entity or block with inventory)
+* `__shiftclick(source,slot,destination)` - `source`(entity or block with inventory),`slot`(integer),`destination`(entity or block with inventory)
   - shift-clicks item in `slot` from `source` inventory to `destination` inventory
   - imitates 'shift-clicking' of a stack from inventory to another
   - allows you to make a fake player move items between their inventory and a block or another player(isn't realistic but is still possible)
@@ -153,12 +153,12 @@ Imitates two common actions the player uses in an inventory.
   - shift-clicks `item` from `source` inventory to `destination` inventory
   - basically just `__shiftclick()`, but calls `inventory_find()` for you
 
-* `__swap(inventory,slot1,slot2)` - `inventory`(entity or block with inventory),`slot1`(int),`slot2`(int)
+* `__swap(inventory,slot1,slot2)` - `inventory`(entity or block with inventory),`slot1`(integer),`slot2`(integer)
   - swaps `slot1` and `slot2` inside `inventory`
   - transposes items between two slots, such as when you pick up a stack, left click on another, and set down the new stack
   - allows you to make a fake player move items around in their inventory, allowing for equipping/removing of armor and switching mainhand/offhand item with another item from their inventory
 
-* `__swapto(inventory,item,newslot)` - `inventory`(entity or block with inventory),`item`(string),`newslot`(int)
+* `__swapto(inventory,item,newslot)` - `inventory`(entity or block with inventory),`item`(string),`newslot`(integer)
   - swaps `item` into `newslot` inside `inventory`
   - swaps a particular item to the desired slot
   - basically just `__swap()`, but calls `inventory_find()` for you
@@ -167,7 +167,7 @@ Imitates two common actions the player uses in an inventory.
 My personal library of math functions that my scripts require.
 
 ### Description of methods
-* `__vector(point1,point2)` - `point1`(float list),`point2`(float list)
+* `__vector(point1,point2)` - `point1`(float list),`point2`(float list of equal length)
   - returns a vector pointing from `point1` to `point2`
 * `__magnitude(vector)` - `vector`(float list)
   - returns the magnitude of the provided vector
@@ -175,9 +175,9 @@ My personal library of math functions that my scripts require.
   - returns a vector of magnitude 1 that points in the same direction as the provided vector
 * `__dot(vec1,vec2)` - `vec1`(float list),`vec2`(float list)
   - returns the dot product of two equal length vectors
-* `__cross3(vec1,vec2)` - `vec1`(3-element float list),`vec2`(3-element float list)
+* `__cross3(vec1,vec2)` - `vec1`(float triple),`vec2`(float triple)
   - returns the cross product of two 3D vectors
-* `__roundnum(number,digits)` - `number`(float),`digits`(int)
+* `__roundnum(number,digits)` - `number`(float),`digits`(integer)
   - rounds a float to your preferred amount of decimal places
   - use negative numbers for nearest 10, 100, 1000, etc.
 * `__sum(list)` - `list`(float list)
@@ -186,11 +186,11 @@ My personal library of math functions that my scripts require.
   - returns the sign of a number
 * `__choose(n,k)` - `n`(int),`k`(int < `n`)
   - returns `n` choose `k`
-* `__det(matrix)` - `matrix`(float list list)
+* `__det(matrix)` - `matrix`(float 2D list)
   - returns determinant of any size square matrix
-* `__plane(point1,point2,point3)` - `point1`(3-element float list),`point2`(3-element float list),`point3`(3-element float list)
+* `__plane(point1,point2,point3)` - `point1`(float triple),`point2`(float triple),`point3`(float triple)
   - returns the plane vector representing a plane that goes through all three points
-* `__inPlane(point1,point2,point3,point4)` - `point1`(3-element float list),`point2`(3-element float list),`point3`(3-element float list),`point4`(3-element float list)
+* `__inPlane(point1,point2,point3,point4)` - `point1`(float triple),`point2`(float triple),`point3`(float triple),`point4`(float triple)
   - determines if a 4th point is in the same plane as three other points
 * `__heron(a,b,c)` - `a`(float),`b`(float),`c`(float)
   - finds area of a triangle with side lengths `a`, `b`, and `c` using Heron's semiperimeter formula
