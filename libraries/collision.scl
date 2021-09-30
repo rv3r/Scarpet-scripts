@@ -496,6 +496,7 @@ global_tilt = ['none','partial','full'];
 
 //returns list of paired triples of corners of rectangular prisms that comprise collision box
 //measured relative to lower southwest corner of block aka negative direction of every axis
+//cheap once (~ 0.1ms), gets called in loops in other functions
 __bounds(block) ->
 (
 	// print(str(block));
@@ -832,7 +833,7 @@ __bounds(block) ->
 		);
 		//now that we're at the end, apply rotations for 'facing' property for things that only rotate about the y-axis
 		facing = ['_wall_head$','^cocoa$','_fence_gate$','_trapdoor$','_door$','^ladder$','_bed$','_stairs$','anvil$','(?<!ender_)chest$','^hopper$','^grindstone$','^bell$',];
-		if(facing ~ key != null,
+		if(bounds != null && facing ~ key != null,
 			bounds = __rotatey(bounds,state:'facing')
 		);
 		//however some things are dumb and get all 6 directions
@@ -1172,6 +1173,7 @@ __draw_bounds(block,...colors) ->
 );
 
 //returns list of all unique collision boxes for sorting or other analysis
+//very expensive (~ 230ms)
 __all_collision_blocks() ->
 (
 	list = block_list();
@@ -1199,7 +1201,7 @@ __all_collision_blocks() ->
 		if(
 				(
 					list:_ ~ 'shulker_box$' != null || 
-					for(__concatenate(global_full_transparent,['glass_pane$','ender_chest','^potted_']),str(list:index) ~ _ != null) != 0 || 
+					for(__concatenate(global_full_transparent,['glass_pane$','ender_chest','^potted_','_wall_head$','(?<!(?:_wall)|(?:piston))_head$']),str(list:index) ~ _ != null) != 0 || 
 					solid(block(list:_)) || 
 					for(global_no_box_blocks,str(list:index) ~ _ != null) != 0
 				) && list:_ != 'stone',
@@ -1267,55 +1269,65 @@ __max_bounds(condensed_bounds,axis) ->
 
 
 //returns list of blocks sorted by direction along axis and removing ignore from return value
+//very expensive (~ 290ms)
 __sort_direction(blocks,axis,direction,...ignore) ->
 (
-	print('original length: ' + length(blocks));
-	print('ignore: ' + ignore);
-	deletelist = [];
-	if(direction == 'max',
-		for(blocks,
-			value = __max_bounds(__condense_bounds(__bounds(_)),axis);
-			if(value == null || ignore ~ value != null,
-				print('logged ' + str(_) + ' due to ignored bounds');
-				deletelist += _i;
-			)
-		);
-		for([range(length(deletelist) - 1,-1,-1)],
-			//print(_i + ' : deleting ' + blocks:(deletelist:_i) + ' because of ignored bounds');
-			delete(blocks,deletelist:_);
-		);
-		print('list length: ' + length(blocks));
-		sort_key(
-			blocks,
-			print(_);
-			print(block_state(_));
-			value = __max_bounds(
-				__condense_bounds(
-					__bounds(_)
-				),
-				axis
-			);
-			print(value);
-			value
-		),
-		direction == 'min',
-		for([range(length(blocks) - 1,-1,-1)],
-			if(ignore ~ __min_bounds(__condense_bounds(__bounds(blocks:_)),axis) != null,
-				delete(blocks,_i)
-			)
-		);
-		print('list length: ' + length(blocks));
-		sort_key(
-			blocks,
-			// print(_);
+	// print('original length: ' + length(blocks));
+	// print('ignore: ' + ignore);
+	blockmap = m();
+	// deletelist = [];
+	for(blocks,
+		// print(str(_));
+		// if(str(_) == 'prismarine_slab',
+			// print(__bounds(_));
+			// print(__condense_bounds(__bounds(_)));
+			// print(__min_bounds(__condense_bounds(__bounds(_)),'y'));
+			// print(type(_));
 			// print(block_state(_));
-			__min_bounds(
-				__condense_bounds(
-					__bounds(_)
-				),
-				axis
-			)
-		)
+		// );
+		if(direction == 'max',
+			value = __max_bounds(__condense_bounds(__bounds(_)),axis),
+			direction == 'min',
+			value = __min_bounds(__condense_bounds(__bounds(_)),axis)
+		);
+		if(value != null || ignore ~ value == null,
+			put(blockmap,_,value);
+			// print('deleted ' + str(_) + ' due to value ' + value + ' present at position in ignored bounds at ' + ignore ~ value)
+		);
+	);
+	print(blockmap);
+	print(blockmap:block('prismarine_slab'));
+	print(blockmap:block('prismarine_slab[type=top]'));
+	// for(keys(blockmap),
+	// 	value = blockmap:_;
+	// 	if(value == null || ignore ~ value != null,
+	// 		print('logged ' + str(_) + ' due to position in ignored bounds at ' + ignore ~ value);
+	// 		deletelist += _;
+	// 	)
+	// );
+	// print(deletelist);
+	// for(deletelist,
+	// 	print(_i + ' : deleting ' + blocks:(deletelist:_i) + ' because of ignored bounds');
+	// 	print('before: ' + blockmap:_);
+	// 	delete(blockmap,_);
+	// 	print('after: ' + blockmap:_);
+	// );
+	// print('list length: ' + length(keys(blockmap)));
+	sort_key(
+		keys(blockmap),
+		if(str(_) == 'prismarine_slab',
+			print(_ + ':' + blockmap:_);
+		);
+		// print(block_state(_));
+		//ew we have to get the actual value again
+		//so slow
+		// blockmap:_
+		if(direction == 'max',
+			value = __max_bounds(__condense_bounds(__bounds(_)),axis),
+			direction == 'min',
+			value = __min_bounds(__condense_bounds(__bounds(_)),axis)
+		);
+		value
 	)
 );
 
@@ -1337,6 +1349,7 @@ __prism_in_prism(prism1,prism2) ->
 );
 
 //returns all blocks the entity is currently colliding with
+//somewhat cheap (~ 1.25ms)
 __entity_block_collision(e) ->
 (
 	pos = e ~ 'pos';
