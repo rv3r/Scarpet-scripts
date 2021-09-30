@@ -1191,7 +1191,6 @@ __all_collision_blocks() ->
 		tag = for(block_tags(list:index),
 			if(
 				global_no_box_tags ~ _ != null,
-				// print('deleted ' + list:index + ' because of tag');
 				delete(list,index)
 			)
 		)
@@ -1205,7 +1204,6 @@ __all_collision_blocks() ->
 					solid(block(list:_)) || 
 					for(global_no_box_blocks,str(list:index) ~ _ != null) != 0
 				) && list:_ != 'stone',
-			// print(player('rv3r'),str(list:_) + ':' + solid(list:_))
 			delete(list,_);
 		)
 	);
@@ -1213,17 +1211,11 @@ __all_collision_blocks() ->
 	for(list,
 		complex_list += __blockcombinations(str(_));
 	);
-	blocklist = map(__concatenate(...complex_list),block(_));
-	// for([range(length(blocklist) - 1,-1,-1)],
-	// 	if(__bounds(blocklist:_) == null,
-	// 		// print(player('rv3r'),str(blocklist:index) + ':' + __bounds(blocklist:index))
-	// 		delete(blocklist,_);
-	// 	)
-	// );
-	// blocklist
+	map(__concatenate(...complex_list),block(_))
 );
 
 //turns bounds(list of prisms) into triple of lists of x-values, y-values, z-values
+//effectively just matrix transpose
 __condense_bounds(bounds) ->
 (
 	output = [[],[],[]];
@@ -1269,65 +1261,53 @@ __max_bounds(condensed_bounds,axis) ->
 
 
 //returns list of blocks sorted by direction along axis and removing ignore from return value
-//very expensive (~ 290ms)
-__sort_direction(blocks,axis,direction,...ignore) ->
+//very expensive (~ 170ms)
+__exclude_direction(blocks,axis,direction,...ignore) ->
 (
-	// print('original length: ' + length(blocks));
-	// print('ignore: ' + ignore);
 	blockmap = m();
-	// deletelist = [];
 	for(blocks,
-		// print(str(_));
-		// if(str(_) == 'prismarine_slab',
-			// print(__bounds(_));
-			// print(__condense_bounds(__bounds(_)));
-			// print(__min_bounds(__condense_bounds(__bounds(_)),'y'));
-			// print(type(_));
-			// print(block_state(_));
-		// );
+		if(blockmap:str(_) == null,
+			blockmap:str(_) = m();
+		);
 		if(direction == 'max',
 			value = __max_bounds(__condense_bounds(__bounds(_)),axis),
 			direction == 'min',
 			value = __min_bounds(__condense_bounds(__bounds(_)),axis)
 		);
-		if(value != null || ignore ~ value == null,
-			put(blockmap,_,value);
-			// print('deleted ' + str(_) + ' due to value ' + value + ' present at position in ignored bounds at ' + ignore ~ value)
+		if(ignore ~ value == null,
+			blockmap:str(_):str(block_state(_)) = value
 		);
 	);
-	print(blockmap);
-	print(blockmap:block('prismarine_slab'));
-	print(blockmap:block('prismarine_slab[type=top]'));
-	// for(keys(blockmap),
-	// 	value = blockmap:_;
-	// 	if(value == null || ignore ~ value != null,
-	// 		print('logged ' + str(_) + ' due to position in ignored bounds at ' + ignore ~ value);
-	// 		deletelist += _;
-	// 	)
-	// );
-	// print(deletelist);
-	// for(deletelist,
-	// 	print(_i + ' : deleting ' + blocks:(deletelist:_i) + ' because of ignored bounds');
-	// 	print('before: ' + blockmap:_);
-	// 	delete(blockmap,_);
-	// 	print('after: ' + blockmap:_);
-	// );
-	// print('list length: ' + length(keys(blockmap)));
-	sort_key(
-		keys(blockmap),
-		if(str(_) == 'prismarine_slab',
-			print(_ + ':' + blockmap:_);
+
+	sorted_list = sort_key(
+		filter(blocks,blockmap:str(_):str(block_state(_)) != null),
+		blockmap:str(_):str(block_state(_))
+	)
+);
+
+//returns list of blocks sorted by direction along axis and only including include in return value
+//negation of __exclude_direction()
+//very expensive (~ 170ms)
+__include_direction(blocks,axis,direction,...include) ->
+(
+	blockmap = m();
+	for(blocks,
+		if(blockmap:str(_) == null,
+			blockmap:str(_) = m();
 		);
-		// print(block_state(_));
-		//ew we have to get the actual value again
-		//so slow
-		// blockmap:_
 		if(direction == 'max',
 			value = __max_bounds(__condense_bounds(__bounds(_)),axis),
 			direction == 'min',
 			value = __min_bounds(__condense_bounds(__bounds(_)),axis)
 		);
-		value
+		if(include ~ value != null,
+			blockmap:str(_):str(block_state(_)) = value
+		);
+	);
+
+	sorted_list = sort_key(
+		filter(blocks,blockmap:str(_):str(block_state(_)) != null),
+		blockmap:str(_):str(block_state(_))
 	)
 );
 
