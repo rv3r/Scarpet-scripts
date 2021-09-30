@@ -116,6 +116,7 @@ Uses three common list structures as additional data types
 * `__bounds(block)` - `block`(block)
   - returns data type `bounds` of `block`, either positioned in world or passed as string
   - note that blocks such as bamboo and pointed dripstone have multiple possible collision boxes, so this script returns the maximum bounds for each
+  - blocks with no collision return `null`
 * `__inside(bounds,point)` - `bounds`(bounds),`point`(float triple)
   - returns `boolean` indicating if `point` is in `bounds`
   - positions on the border return `true`
@@ -127,7 +128,7 @@ Uses three common list structures as additional data types
   - draws bounds of `block` as rectangular prisms using optional `colors`
 * `__all_collision_blocks()`
   - returns list of all unique blocks and their property combinations that produce all unique collision boxes in the game
-* `__sort_direction(blocks,axis,direction,...ignore)` - `blocks`(block list),`axis`(lowercase single character string),`direction`(`'min'` or `'max'`),`ignore`(float list)
+* `__sort_direction(blocks,axis,direction,...ignore)` - `blocks`(block list),`axis`(`'x'`, `'y'`, or `'z'`),`direction`(`'min'` or `'max'`),`ignore`(float list)
   - returns sorted `block list` by sorting `blocks` along `axis` by bottom value(`min`) or top value(`max`) while ignoring blocks with `min` or `max` values in `ignore`
   - for example, sorting all blocks by height ascending while ignoring heights of 0.5(slabs) and 1(solid blocks) can be done with: `__sort_direction( __all_collision_blocks() , 'y' , 'max' , 0.5 , 1 )`
 * `__prism_in_prism(prism1,prism2)` - `prism1`(prism),`prism2`(prism)
