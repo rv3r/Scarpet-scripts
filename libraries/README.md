@@ -17,7 +17,7 @@ l(                                                    //main list
     l('tags',                                         //second map value is for the associated tags
       m(                                              //this is just an example map
         l('dimension','the_end'),                     //for example, you might want to store the dimension that the block is in
-        l('player','AnonymousRover'),                 //or you might want to link the block to a player
+        l('player','rv3r'),                           //or you might want to link the block to a player
         l('block','armor_stand')                      //probably unnecessary, but you could store the block name
         l('armor',l('golden_helmet', 'golden_boots')) //or you might want to store a list of things in one tag
         l('foo','bar')                                //or you might create some app-specific tag with your own key and value
@@ -58,7 +58,7 @@ It is suggested that you set a variable to the name of the file that you would l
         - `'any'` - returns blocks that match _any_ of the provided tags
         - `'all'` - returns blocks that match _all_ of the provided tags
           - if a block has extra tags that are not searched for, it will still be valid as long as the tags being searched for match the values
-          - calling `__find(data,'tags',m(l('mode','all'),l('player','AnonymousRover')))` in the above example map would return the first block even though it has extra tags, but searching for `l('tags',m(l('mode','all'),l('player','AnonymousRover'),l('bar','foo')))` would return null(unless, of course, the second block matches it) as the first block has a value of `null` for the key `'bar'`
+          - calling `__find(data,'tags',m(l('mode','all'),l('player','rv3r')))` in the above example map would return the first block even though it has extra tags, but searching for `l('tags',m(l('mode','all'),l('player','rv3r'),l('bar','foo')))` would return null(unless, of course, the second block matches it) as the first block has a value of `null` for the key `'bar'`
             - you can use `null` as your value if you want to search for blocks that do not have the key you are searching for
             
 * `__add(container,pos,tags)` - `container`(list),`pos`(integer triple),`tags`(map)
@@ -128,8 +128,8 @@ Uses three common list structures as additional data types
   - draws bounds of `block` as rectangular prisms using optional `colors`
 * `__all_collision_blocks()`
   - returns list of all unique blocks and their property combinations that produce all unique collision boxes in the game
-* `__filter_sort_direction(blocks,axis,direction,...values)` - `blocks`(block list),`axis`(`'x'`, `'y'`, or `'z'`, leading `'+'` or `'-'` acceptable),`direction`(`'min'` or `'max'`),`values`(list of `'include'` or `'exclude'` then floats)
-  - returns sorted `block list` by sorting `blocks` along `axis` in `'+'` or `'-'` direction by bottom value(`min`) or top value(`max`) while either only including(`'include'`) blocks with results in `values` or excluding
+* `__filter_sort_direction(blocks,axis,direction,...values)` - `blocks`(block list),`axis`(`'x'`, `'y'`, or `'z'`, leading `'+'` or `'-'` acceptable),`direction`(`'min'` or `'max'`),`values`(`'include'` or `'exclude'` then floats)
+  - returns sorted `block list` by sorting `blocks` along `axis` in `'+'` or `'-'` direction by bottom value(`min`) or top value(`max`) while either only including(`'include'`) blocks with results in `values` or excluding(`'exclude'`) blocks with results in `values`
   - omitting `values` returns all provided blocks, that is, excludes no blocks
   - for example, sorting all blocks by top(`'max'`) height(`'y'`) descending(`'-'`) while ignoring heights of 0.5(slabs) and 1(solid blocks) can be done with: `__filter_sort_direction( __all_collision_blocks() , '-y' , 'max' , 'exclude' , 0.5 , 1 )`
 * `__prism_in_prism(prism1,prism2)` - `prism1`(prism),`prism2`(prism)
