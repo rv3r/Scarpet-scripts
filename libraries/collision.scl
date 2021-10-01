@@ -1,9 +1,3 @@
-__config() -> (
-	m(
-		['scope','global']
-	)
-);
-
 //default direction for each block when placed with /setblock and no additional properties
 global_default_direction = m(
 	['piston$','north']
@@ -49,7 +43,7 @@ global_no_box_tags = [
 	'portals'
 ];
 
-//then we go to names of things with no collision box
+//names of things with no collision box
 //makes the search a little bit faster
 global_no_box_blocks = [
 	'air$',
@@ -88,7 +82,6 @@ global_no_box_blocks = [
 
 //map of all weird collision boxes
 global_box_map = m(
-	//then we do the basic, default collision box of everything else
 	['_slab$',
 		[
 			[[0,0,0],[1,0.5,1]]
@@ -499,19 +492,14 @@ global_tilt = ['none','partial','full'];
 //cheap once (~ 0.1ms), gets called in loops in other functions
 __bounds(block) ->
 (
-	// print(str(block));
-
 	//recast as block if given a string
 	if(type(block) == 'string',
 		block = block(block);
 	);
-	// print(player('*'),block);
-	// print(player('*'),type(block));
 
 	if(
 		//first check if it's solid or a full block
 		(solid(block) && (global_not_solid ~ str(block)) == null) || bool(for(global_full_transparent,str(block) ~ _ != null)),
-		// print('block was solid');
 		bounds = [[[0,0,0],[1,1,1]]],
 		//then check if it is air or has a tag that excludes it
 		tags = block_tags(block);
@@ -523,7 +511,6 @@ __bounds(block) ->
 		key = first(keys(global_box_map),
 			if(string ~ _,
 				bounds = copy(global_box_map:_);
-				// print('og bounds: ' + bounds);
 				true
 			)
 		);
@@ -871,37 +858,6 @@ __insideblock(point) ->
 	__inside(__bounds(block(point)),point);
 );
 
-//converts axis string to list index and vice versa
-//currently deprecated
-__axis_number(input) ->
-(
-	map = m(['x',0],['y',1],['z',2]);
-	if(type(input) == 'string',
-		map:input;
-		type(input) == 'number',
-		keys(map):input;
-	)
-);
-
-//converts dumb cardinal direction into integer for later decoding
-//currently deprecated
-__direction_number(input) ->
-(
-	m(['north',0],['west',1],['south',2],['east',3],['up',5],['down',6]):input
-);
-
-//returns sign of input number
-//currently deprecated
-__sign(number) ->
-(
-	if(number > 0,
-		1,
-		number < 0,
-		-1,
-		0
-	)
-);
-
 //centers bounds on [0.5,0.5,0.5] to make math easier
 //only used in low level operations
 __center(bounds) ->
@@ -1034,16 +990,10 @@ __combinations(initial,...lists) ->
 (
 	product = 1;
 	indices = [];
-	// print('0: ' + lists);
 	for(lists,
-		// print('1: ' + _);
-		// for(_,
-			// print('2: ' + _);
-		// );
 		product = copy(product) * length(_);
 		indices += 0;
 	);
-	// print('product: ' + product);
 	output = [];
 	loop(product,
 		combination = initial;
@@ -1051,7 +1001,6 @@ __combinations(initial,...lists) ->
 			combination += _:(indices:_i);
 		);
 		output += combination;
-		// print(combination);
 
 		indices:0 = indices:0 + 1;
 		for(lists,
@@ -1107,18 +1056,15 @@ __blockcombinations(blockstring) ->
 	for(keys,
 		value = combination_map:_;
 		if(value != null,
-			// print(_);
 			state_list += _
 		)
 	);
-	// print(state_list);
 
 	length = reduce(
 		map(state_list,combination_map:_),
 		_a + length(_),
 		0
 	);
-	// print('before: ' + length);
 	//eliminate unnecessary values for block states
 	for(state_list,
 		state = _;
@@ -1126,27 +1072,22 @@ __blockcombinations(blockstring) ->
 			combination_map:state,
 			try(
 				string = replace(blockstring + _ + ']','\\[,','[');
-				// print(string);
 				block(string),
 				'unknown_block',
 				false
 			)
 		)
 	);
-	// print(map(state_list,combination_map:_));
 	length = reduce(
 		map(state_list,combination_map:_),
 		_a + length(_),
 		0
 	);
-	// print('after: ' + length);
 
 	for(__combinations(blockstring,...map(state_list,combination_map:_)),
 		//use try() as a lazy check to see if the block can exist
 		try(
-			// print(_);
 			fullstring = replace(_ + ']','\\[,','[');
-			// print('3: ' + fullstring);
 			block = block(fullstring);
 			if(
 				//takes a long time, but it's worth it to remove repeats of default behaviors
@@ -1160,7 +1101,6 @@ __blockcombinations(blockstring) ->
 			x = 1;
 		)
 	);
-	// print('output: ' + length(output));
 	output
 );
 
@@ -1219,7 +1159,6 @@ __all_collision_blocks() ->
 __condense_bounds(bounds) ->
 (
 	output = [[],[],[]];
-	// print(bounds);
 	if(bounds == null || bounds == 0,
 		output = [[null],[null],[null]],
 		for(bounds,
@@ -1260,54 +1199,51 @@ __max_bounds(condensed_bounds,axis) ->
 );
 
 
-//returns list of blocks sorted by direction along axis and removing ignore from return value
+//returns list of blocks sorted by direction along axis including only include or excluding only exclude
 //very expensive (~ 170ms)
-__exclude_direction(blocks,axis,direction,...ignore) ->
+__filter_sort_direction(blocks,axis,direction,...values) ->
 (
 	blockmap = m();
-	for(blocks,
-		if(blockmap:str(_) == null,
-			blockmap:str(_) = m();
-		);
-		if(direction == 'max',
-			value = __max_bounds(__condense_bounds(__bounds(_)),axis),
-			direction == 'min',
-			value = __min_bounds(__condense_bounds(__bounds(_)),axis)
-		);
-		if(ignore ~ value == null,
-			blockmap:str(_):str(block_state(_)) = value
-		);
+	axis_options = split('(?<=[+-])',axis);
+	print(axis_options);
+	if(length(axis_options) == 2,
+		axis_direction = axis_options:0,
+		axis_direction = '+'
+	);
+	axis_direction = number(axis_direction + '1');
+	print(axis_direction);
+	axis_name = axis_options:1;
+
+	include_option = values:0;
+
+	if(include_option == 'include',
+		include = true,
+		include_option == 'exclude',
+		include = false,
+		include = null
 	);
 
-	sorted_list = sort_key(
-		filter(blocks,blockmap:str(_):str(block_state(_)) != null),
-		blockmap:str(_):str(block_state(_))
-	)
-);
+	if(include != null,
+		for(blocks,
+			if(blockmap:str(_) == null,
+				blockmap:str(_) = m();
+			);
+			if(direction == 'max',
+				value = __max_bounds(__condense_bounds(__bounds(_)),axis_name),
+				direction == 'min',
+				value = __min_bounds(__condense_bounds(__bounds(_)),axis_name)
+			);
+			if( ( include ) == (values ~ value != null),
+				blockmap:str(_):str(block_state(_)) = value
+			);
+		);
 
-//returns list of blocks sorted by direction along axis and only including include in return value
-//negation of __exclude_direction()
-//very expensive (~ 170ms)
-__include_direction(blocks,axis,direction,...include) ->
-(
-	blockmap = m();
-	for(blocks,
-		if(blockmap:str(_) == null,
-			blockmap:str(_) = m();
-		);
-		if(direction == 'max',
-			value = __max_bounds(__condense_bounds(__bounds(_)),axis),
-			direction == 'min',
-			value = __min_bounds(__condense_bounds(__bounds(_)),axis)
-		);
-		if(include ~ value != null,
-			blockmap:str(_):str(block_state(_)) = value
-		);
-	);
+		sorted_list = sort_key(
+			filter(blocks,blockmap:str(_):str(block_state(_)) != null),
+			axis_direction * blockmap:str(_):str(block_state(_))
+		),
 
-	sorted_list = sort_key(
-		filter(blocks,blockmap:str(_):str(block_state(_)) != null),
-		blockmap:str(_):str(block_state(_))
+		[]
 	)
 );
 
@@ -1315,14 +1251,8 @@ __include_direction(blocks,axis,direction,...include) ->
 //prisms are pairs of points
 __prism_in_prism(prism1,prism2) ->
 (
-	// print(prism1);
-	// print(prism2);
 	delta_center = map( ( (prism2:0 + prism2:1) - (prism1:0 + prism1:1) ) / 2 , abs(_) );
 	side_lengths = map( (prism1:1 - prism1:0) / 2,abs(_) ) + map( (prism2:1 - prism2:0) / 2, abs(_) );
-	// print(delta_center);
-	// print(side_lengths);
-	// draw_shape('box',200,'from',prism1:0,'to',prism1:1,'color',0x0000FFFF,'fill',0x0000FF33);
-	// draw_shape('box',200,'from',prism2:0,'to',prism2:1,'color',0x0000FFFF,'fill',0x0000FF33);
 	all(side_lengths,
 		_ >= delta_center:_i
 	)
@@ -1344,14 +1274,9 @@ __prism_block_collision(pos,width,height) ->
 	planar_offset = [width,0,width] / 2;
 	min_corner = pos - planar_offset;
 	max_corner = pos + planar_offset + [0,height,0];
-	// print(min_corner);
-	// print(max_corner);
 	e_prism = [min_corner,max_corner];
-	// draw_shape('box',200,'from',min_corner,'to',max_corner,'color',0x0000FFFF,'fill',0x0000FF33);
 	min_block = map(min_corner,floor(_)) - 1;
 	max_block = map(max_corner,ceil(_));
-	// print(min_block);
-	// print(max_block);
 	blocklist = [];
 	volume(min_block,max_block,
 		//get position of block
@@ -1368,11 +1293,9 @@ __prism_block_collision(pos,width,height) ->
 		//check if block bounds intersect entity bounds
 		if(
 			first(bounds,
-				// print(block + ': ' + _);
 				__prism_in_prism(e_prism,_)
 			) != null,
 			blocklist += _;
-			// __draw_bounds(_,0x0000FFFF,0x0000FF33)
 		);
 	);
 	blocklist
