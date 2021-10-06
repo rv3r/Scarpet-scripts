@@ -106,11 +106,11 @@ Provides block collision boxes and other useful functions
 
 Uses three common list structures as additional data types
 * `prism` - pair of points that comprise opposite vertices of a rectangular prism
-  - for example any solid block has a `prism` of [0,0,0],[1,1,1]
+  - for example any bottom slab has a `prism` of [0,0,0],[1,0.5,1]
 * `bounds` - list of prisms
-  - solid block has [ [0,0,0],[1,1,1] ]
+  - bottom slab has [ [0,0,0],[1,0.5,1] ]
 * `condensed bounds` - triple of lists of x-values, y-values, and z-values of any `bounds`, effectively just matrix transpose
-  - solid block has [ [0,1],[0,1],[0,1] ]
+  - solid block has [ [0,1],[0,0.5],[0,1] ]
 
 ## Description of methods
 * `__bounds(block)` - `block`(block)
@@ -122,12 +122,13 @@ Uses three common list structures as additional data types
   - positions on the border return `true`
 * `__insideblock(point)` - `point`(float triple)
   - returns `boolean` indicating if `point` is currently inside a collision box
+  - positions on the border return `true`
 * `__concatenate(...lists)` - `lists`(nonzero number of lists of any lengths)
   - more general function returning `list` containing all individual elements of `lists`
 * `__draw_bounds(block,...colors)` - `block`(block),`colors`(edge and fill colors as hex values)
   - draws bounds of `block` as rectangular prisms using optional `colors`
 * `__all_collision_blocks()`
-  - returns list of all unique blocks and their property combinations that produce all unique collision boxes in the game
+  - returns list of the blocks and their property combinations that produce all unique collision boxes in the game
 * `__filter_sort_direction(blocks,axis,direction,...values)` - `blocks`(block list),`axis`(`'x'`, `'y'`, or `'z'`, leading `'+'` or `'-'` acceptable),`direction`(`'min'` or `'max'`),`values`(`'include'` or `'exclude'` then floats)
   - returns sorted `block list` by sorting `blocks` along `axis` in `'+'` or `'-'` direction by bottom value(`min`) or top value(`max`) while either only including(`'include'`) blocks with results in `values` or excluding(`'exclude'`) blocks with results in `values`
   - omitting `values` returns all provided blocks, that is, excludes no blocks
