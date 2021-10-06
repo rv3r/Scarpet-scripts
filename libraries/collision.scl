@@ -864,7 +864,40 @@ __inside(bounds,point) ->
 //checks to see if a point is within the collision box of a block
 __insideblock(point) ->
 (
-	__inside(__bounds(block(point)),map(point,_ % 1));
+	point_mod = map(point, _ % 1);
+	zeros = for(point_mod, _ == 0);
+
+	if(zeros == 0,
+		//if not on face, edge, or vertex, block will likely contain point
+		__inside(__bounds(block(point)),point_mod),
+
+		//else we need to check multiple sides of a point
+
+		//not actually machine epsilon(2^-44) but modulus does weird things to that
+		machine_epsilon = 2^-40;
+		if(zeros == 3,
+			pointlist = [ [-machine_epsilon,-machine_epsilon,-machine_epsilon] ],
+			pointlist = []
+		);
+		for([range(3)],
+			if(point_mod:_i == 0,
+				list = [0,0,0];
+				list:_i = -machine_epsilon;
+				pointlist += list;
+			);
+			if(point_mod:_i == 0 && point_mod:(_i - 2) == 0,
+				list = [0,0,0];
+				list:_i = -machine_epsilon;
+				list:(_i - 2) = -machine_epsilon;
+				pointlist += list;
+			);
+		);
+
+		for(pointlist,
+			__inside(__bounds(block(point + _)),print(map(_, _ % 1));map(_, _ % 1))
+		) > 0
+	
+	)
 );
 
 //centers bounds on [0.5,0.5,0.5] to make math easier
