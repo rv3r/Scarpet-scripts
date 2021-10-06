@@ -819,7 +819,7 @@ __bounds(block) ->
 			bounds = __upside_down(bounds)
 		);
 		//now that we're at the end, apply rotations for 'facing' property for things that only rotate about the y-axis
-		facing = ['_wall_head$','^cocoa$','_fence_gate$','_trapdoor$','_door$','^ladder$','_bed$','_stairs$','anvil$','(?<!ender_)chest$','^hopper$','^grindstone$','^bell$',];
+		facing = ['_wall_head$','_wall_skull$','^cocoa$','_fence_gate$','_trapdoor$','_door$','^ladder$','_bed$','_stairs$','anvil$','(?<!ender_)chest$','^hopper$','^grindstone$','^bell$',];
 		if(bounds != null && facing ~ key != null,
 			bounds = __rotatey(bounds,state:'facing')
 		);
