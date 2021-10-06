@@ -125,8 +125,8 @@ Uses three common list structures as additional data types
   - positions on the border return `true`
 * `__concatenate(...lists)` - `lists`(nonzero number of lists of any lengths)
   - more general function returning `list` containing all individual elements of `lists`
-* `__draw_bounds(block,...colors)` - `block`(block),`colors`(edge and fill colors as hex values)
-  - draws bounds of `block` as rectangular prisms using optional `colors`
+* `__draw_bounds(block,...colors)` - `block`(block),`colors`(hex list)
+  - draws bounds of `block` as rectangular prisms using optional `colors` for color and fill in that order
 * `__all_collision_blocks()`
   - returns list of the blocks and their property combinations that produce all unique collision boxes in the game
 * `__filter_sort_direction(blocks,axis,direction,...values)` - `blocks`(block list),`axis`(`'x'`, `'y'`, or `'z'`, leading `'+'` or `'-'` acceptable),`direction`(`'min'` or `'max'`),`values`(`'include'` or `'exclude'` then floats)
