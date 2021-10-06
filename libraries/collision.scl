@@ -1289,15 +1289,16 @@ __filter_sort_direction(blocks,axis,direction,...values) ->
 	)
 );
 
-//returns boolean representing intersection of two rectangular prisms
-//prisms are pairs of points
 __prism_in_prism(prism1,prism2) ->
 (
 	delta_center = map( ( (prism2:0 + prism2:1) - (prism1:0 + prism1:1) ) / 2 , abs(_) );
 	side_lengths = map( (prism1:1 - prism1:0) / 2,abs(_) ) + map( (prism2:1 - prism2:0) / 2, abs(_) );
 	all(side_lengths,
 		_ >= delta_center:_i
-	)
+	) &&
+	for(side_lengths,
+		_ == delta_center:_i
+	) <= 1
 );
 
 //returns all blocks the entity is currently colliding with
