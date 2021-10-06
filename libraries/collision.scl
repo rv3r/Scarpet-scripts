@@ -1117,7 +1117,7 @@ __blockcombinations(blockstring) ->
 __draw_bounds(block,...colors) ->
 (
 	for(__bounds(block),
-		draw_shape('box',100,'from',pos(block) + _:0,'to',pos(block) + _:1,'color',colors:0,'fill',colors:1)
+		draw_shape('box',100,'from',pos(block) + _:0,'to',pos(block) + _:1,'color',number(colors:0) || 0x00FF00FF,'fill',number(colors:1) || 0x00FF0033)
 	)
 );
 
