@@ -499,7 +499,7 @@ __bounds(block) ->
 
 	if(
 		//first check if it's solid or a full block
-		(solid(block) && (global_not_solid ~ str(block)) == null) || bool(for(global_full_transparent,str(block) ~ _ != null)),
+		(bool(for(global_full_transparent,str(block) ~ _ != null)) || solid(block) && (global_not_solid ~ str(block)) == null),
 		bounds = [[[0,0,0],[1,1,1]]],
 		//then check if it is air or has a tag that excludes it
 		tags = block_tags(block);
@@ -608,9 +608,9 @@ __bounds(block) ->
 			up = bool(state:'up');
 			down = bool(state:'down');
 			add = [
-				[[0.1875,0.1875,0],[0.1875,0.8125,0.1875]],
+				[[0.1875,0.1875,0],[0.8125,0.8125,0.1875]],
 				[[0.8125,0.1875,0.1875],[1,0.8125,0.8125]],
-				[[0.1875,0.1875,0.8125],[0.1875,0.8125,1]],
+				[[0.1875,0.1875,0.8125],[0.8125,0.8125,1]],
 				[[0,0.1875,0.1875],[0.1875,0.8125,0.8125]],
 				[[0.1875,0.8125,0.1875],[0.8125,1,0.8125]],
 				[[0.1875,0,0.1875],[0.8125,0.1875,0.8125]]
@@ -834,6 +834,15 @@ __bounds(block) ->
 			bounds = __rotate6(bounds,state:'facing')
 		)
 	);
+	
+	//sort bounds for easier comparison later
+	for(bounds,
+		bounds:_i = [
+			[min(_:0:0,_:1:0),min(_:0:1,_:1:1),min(_:0:2,_:1:2)],
+			[max(_:0:0,_:1:0),max(_:0:1,_:1:1),max(_:0:2,_:1:2)]
+		]
+	);
+	
 	bounds
 );
 
@@ -855,7 +864,7 @@ __inside(bounds,point) ->
 //checks to see if a point is within the collision box of a block
 __insideblock(point) ->
 (
-	__inside(__bounds(block(point)),point);
+	__inside(__bounds(block(point)),map(point,_ % 1));
 );
 
 //centers bounds on [0.5,0.5,0.5] to make math easier
