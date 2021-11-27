@@ -1,0 +1,228 @@
+global_entity_size_map = m(
+	['arrow',
+		m(
+			['width',0.5],
+			['height',0.5]
+		)
+	],
+	['dragon_fireball',
+		m(
+			['width',1],
+			['height',1]
+		)
+	],
+	['egg',
+		m(
+			['width',0.25],
+			['height',0.25]
+		)
+	],
+	['ender_pearl',
+		m(
+			['width',0.25],
+			['height',0.25]
+		)
+	],
+	['experience_bottle',
+		m(
+			['width',0.25],
+			['height',0.25]
+		)
+	],
+	['item',
+		m(
+			['width',0.25],
+			['height',0.25]
+		)
+	],
+	['snowball',
+		m(
+			['width',0.25],
+			['height',0.25]
+		)
+	],
+	['splash_potion',	
+		m(
+			['width',0.25],
+			['height',0.25]
+		)
+	],
+	['trident',
+		m(
+			['width',0.25],
+			['height',0.25]
+		)
+	]
+);
+
+__get_hit_entity(entity, ...args) ->
+(
+	length = length(args);
+	if(length == 0,
+		start = entity ~ 'pos';
+		end = entity ~ 'pos' + e ~ 'motion';
+		box = __expand(__stretch(__getBoundingBox(entity), entity ~ 'motion'), 1),
+		length == 2,
+		[pos,motion] = args;
+		start = pos;
+		end = pos + motion;
+		data = global_entity_size_map:entity;
+		width = data:'width';
+		height = data:'height';
+		box = __expand(__stretch([-width / 2, 0, -width / 2, width / 2, height, width / 2], motion), 1),
+		length == 4,
+		[pos,motion,width,height] = args;
+		start = pos;
+		end = pos + motion;
+		box = __expand(__stretch([-width / 2, 0, -width / 2, width / 2, height, width / 2], motion), 1)
+	);
+	f = 0.3;
+	// 2^1024 - 1
+	d = 1.7976931348623157e308;
+	result = null;
+	// any entities that it could collide with
+	entities_list = entity_area('*', start, (slice(box,3,6) - slice(box,0,3)) / 2);
+	// remove projectile entity from the list
+	first(entities_list, 
+		if(_ == entity,
+			delete(entities_list, _i);
+		)
+	);
+	// then, if the list still has entries, find any that will collide
+	for(entities_list,
+		if(optional = __raycast(__expand(__getBoundingBox(_), f) + [...(_ ~ 'pos'), ...(_ ~ 'pos')], start, end),
+			e = reduce(start - optional, _a + _ ^ 2, 0);
+			// find the closest one and return that
+			if(e < d,
+				result = _;
+				d = copy(e);
+			)
+		)
+	);
+	result
+);
+
+__getBoundingBox(e) ->
+(
+    width = e ~ 'width';
+		[-width / 2, 0, -width / 2, width / 2, e ~ 'height', width / 2]
+);
+
+// mirror of java function
+__stretch(box, scale) ->
+(
+	for(scale,
+		if(_ > 0,
+			box:(_i + 3) = box:(_i + 3) + _,
+			_ < 0,
+			box:(_i) = box:(_i) + _
+		)
+	);
+	box
+);
+
+// mirror of java function
+__expand(box, distance) ->
+(
+	[ ...( slice(box,0,3) - abs(distance) ), ...( slice(box,3,6) + abs(distance) ) ]
+);
+
+// mirror of java function
+__raycast(box, start, end) ->
+(
+	ds = [1];
+	motion = end - start;
+	if(direction = __traceCollisionSideBox(box, start, ds, motion),
+		g = ds:0;
+		start + g * motion,
+		null
+	)
+);
+
+// mirror of java function
+// used for loop and list argument to reduce line count
+__traceCollisionSideBox(box, intersectingVector, traceDistanceResult, deltas) ->
+(
+	approachDirection = null;
+	// these aren't the actual positive and negative directions along each axis
+	// they're just the direction in which the hit occurs based on the delta sign
+	// also this script doesn't use this information, only cares if direction value isn't null
+	positiveDirections = ['west', 'down', 'north'];
+	negativeDirections = ['east', 'up', 'south'];
+	for(deltas,
+		if(_ > 1e-7,
+			approachDirection = __traceCollisonSideArray(traceDistanceResult, copy(approachDirection), deltas:_i, deltas:(_i + 1), deltas:(_i + 2), box:_i, box:((_i + 1) % 3), box:((_i + 4) % 3 + 3), box:((_i - 1) % 3), box:((_i + 5) % 3 + 3), positiveDirections:_i, intersectingVector:_i, intersectingVector:(_i + 1), intersectingVector:(_i + 2));
+			_ < 1e-7,
+			approachDirection = __traceCollisonSideArray(traceDistanceResult, copy(approachDirection), deltas:_i, deltas:(_i + 1), deltas:(_i + 2), box:(_i + 3), box:((_i + 1) % 3), box:((_i + 4) % 3 + 3), box:((_i - 1) % 3), box:((_i + 5) % 3 + 3), negativeDirections:_i, intersectingVector:_i, intersectingVector:(_i + 1), intersectingVector:(_i + 2));
+		)
+	);
+	approachDirection
+);
+
+// mirror of java function
+__traceCollisonSideArray(traceDistanceResult, approachDirection, deltaX, deltaY, deltaZ, begin, minX, maxX, minZ, maxZ, resultDirection, startX, startY, startZ) ->
+(
+	o = (begin - startX) / deltaX;
+	p = startY + o * deltaY;
+	q = startZ + o * deltaZ;
+	if(0 < o && o < traceDistanceResult:0 && minX - 1e-7 < p && p < maxX + 1e-7 && minZ - 1e-7 < q && q < maxZ + 1e-7,
+		traceDistanceResult:0 = o;
+		resultDirection,
+		approachDirection
+	)
+);
+
+__on_start() ->
+(
+	global_hit_map = m();
+	for(entity_types('projectile'),
+		entity_load_handler(
+			_,
+			_(e, new) -> 
+			(
+				global_hit_map:(e ~ 'id') = m();
+				global_hit_map:(e ~ 'id'):'thrower' = entity_id(uuid_to_string(parse_nbt(e ~ 'nbt'):'Owner'));
+				entity_event(
+					e,
+					'on_removed',
+					_(e) -> (
+						// assign data map to variable for less array accessing
+						data = global_hit_map:(e ~ 'id');
+						if(hit_entity = data:'hit',
+							// made custom event that passes the three relevant values as a list for parsing by your script
+							signal_event('projectile_hit', null, [e, data:'thrower', hit_entity])
+						);
+						delete(global_hit_map, e ~ 'id')
+					)
+				);
+				entity_event(
+					e,
+					'on_tick',
+					_(e) -> (
+						global_hit_map:(e ~ 'id'):'hit' = __get_hit_entity(e)
+					)
+				)
+			)
+		)
+	)
+);
+
+// function from UUIDS.scl pull by BisUmTo
+// Converts UUID int array to UUID string
+uuid_to_string(uuid) -> (
+    if( type(uuid) != 'list' ||
+        length(uuid) != 4 ||
+        reduce(uuid, _a || type(_) != 'number', false),
+    // then
+        exit('Invalid UUID: ' + uuid)
+    );
+		// hex formatting is silly rn so quick workaround
+		str1 = slice(str('%x',uuid:0),-8,-1);
+		str2 = slice(str('%x',floor(uuid:1 / 2^16)),-4,-1);
+		str3 = slice(str('%x',uuid:1 % 2^16),-4,-1);
+		str4 = slice(str('%x',floor(uuid:2 / 2^16)),-4,-1);
+		str5 = slice(str('%x',uuid:2 % 2^16),-4,-1);
+		str6 = slice(str('%x',uuid:3),-8,-1);
+		str('%s-%s-%s-%s-%s%s',str1,str2,str3,str4,str5,str6)
+    // str('%08x-%04x-%04x-%04x-%04x%08x', uuid:0, floor(uuid:1 / 2^16), uuid:1 % 2^16, floor(uuid:2 / 2^16), uuid:2 % 2^16, uuid:3)
+);
