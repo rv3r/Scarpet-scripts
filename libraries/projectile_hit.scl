@@ -29,12 +29,6 @@ global_entity_size_map = m(
 			['height',0.25]
 		)
 	],
-	['item',
-		m(
-			['width',0.25],
-			['height',0.25]
-		)
-	],
 	['snowball',
 		m(
 			['width',0.25],
@@ -66,12 +60,18 @@ __get_hit_entity(entity, ...args) ->
 		[pos,motion] = args;
 		start = pos;
 		end = pos + motion;
-		data = global_entity_size_map:entity;
-		width = data:'width';
-		height = data:'height';
-		box = __expand(__stretch([-width / 2, 0, -width / 2, width / 2, height, width / 2], motion), 1),
+		if(type(entity) == 'string',
+			data = global_entity_size_map:entity;
+			width = data:'width';
+			height = data:'height';
+			box = __expand(__stretch([-width / 2, 0, -width / 2, width / 2, height, width / 2], motion), 1),
+			type(entity) == 'entity',
+			box = __expand(__stretch(__getBoundingBox(entity), motion), 1)
+		),
 		length == 4,
 		[pos,motion,width,height] = args;
+		width = abs(width);
+		height = abs(height);
 		start = pos;
 		end = pos + motion;
 		box = __expand(__stretch([-width / 2, 0, -width / 2, width / 2, height, width / 2], motion), 1)
