@@ -202,13 +202,13 @@ My personal library of math functions that my scripts require.
 Mirrors original Minecraft code to detect projectile hits. On starting, sets up entity load handlers to signal events every time a projectile hits an entity. Event `projectile_hit` passes original projectile entity, throwing entity, and hit entity.
 
 ### Description of methods
-* `__get_hit_entity(entity, ...args)` - `entity`(projectile entity of interest, string if `args` is length 4),`args`(see below)
+* `__get_hit_entity(entity, ...args)` - `entity`(projectile entity of interest, string if `args` is length 2),`args`(see below)
   - returns entity that `entity` is about to collide with or `null` if no collision is predicted
   - `args` option 1: empty
   - `args` option 2: `[position, motion]`
+    - requires `entity` to be a string describing the type of the projectile entity
     - pass a list of two triples to predict collisions if `entity` was at position of the first triple with motion of the second triple
     - allows predicting entity collision if `entity` was in different `position` with different `motion`
   - `args` option 2: `[position, motion, width, height]`
-    - requires `entity` to be a string describing the type of the projectile entity
     - pass a list of two float triples and two positive floats to predict collisions if nonexistent `entity` was at position of the first triple with motion of the second triple with width of the first positive float and height of the second positive float
     - allows predicting entity collision if `entity` existed at `position` with `motion` and has `width` and `height`
