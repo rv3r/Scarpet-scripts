@@ -54,7 +54,7 @@ __get_hit_entity(entity, ...args) ->
 	length = length(args);
 	if(length == 0,
 		start = entity ~ 'pos';
-		end = entity ~ 'pos' + e ~ 'motion';
+		end = entity ~ 'pos' + entity ~ 'motion';
 		box = __expand(__stretch(__getBoundingBox(entity), entity ~ 'motion'), 1),
 		length == 2,
 		[pos,motion] = args;
@@ -172,10 +172,10 @@ __traceCollisonSideArray(traceDistanceResult, approachDirection, deltaX, deltaY,
 	)
 );
 
-__on_start() ->
+__handle_entity_hits(...projectiles) ->
 (
 	global_hit_map = m();
-	for(entity_types('projectile'),
+	for(projectiles,
 		entity_load_handler(
 			_,
 			_(e, new) -> 
