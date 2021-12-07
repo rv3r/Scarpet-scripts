@@ -132,7 +132,7 @@ Uses three common list structures as additional data types
 * `__filter_sort_direction(blocks,axis,direction,...values)` - `blocks`(block list),`axis`(`'x'`, `'y'`, or `'z'`, leading `'+'` or `'-'` acceptable),`direction`(`'min'` or `'max'`),`values`(`'include'` or `'exclude'` then floats)
   - returns sorted `block list` by sorting `blocks` along `axis` in `'+'` or `'-'` direction by bottom value(`min`) or top value(`max`) while either only including(`'include'`) blocks with results in `values` or excluding(`'exclude'`) blocks with results in `values`
   - omitting `values` returns all provided blocks, that is, excludes no blocks
-  - for example, sorting all blocks by top(`'max'`) height(`'y'`) descending(`'-'`) while ignoring heights of 0.5(slabs) and 1(solid blocks) can be done with: `__filter_sort_direction( __all_collision_blocks() , '-y' , 'max' , 'exclude' , 0.5 , 1 )`
+  - for example, sorting all blocks(`'__all_collision_blocks()'`) by top(`'max'`) height(`'y'`) descending(`'-'`) while ignoring heights of 0.5(slabs) and 1(solid blocks) can be done with: `__filter_sort_direction( __all_collision_blocks() , '-y' , 'max' , 'exclude' , 0.5 , 1 )`
 * `__prism_in_prism(prism1,prism2)` - `prism1`(prism),`prism2`(prism)
   - returns `boolean` indicating if `prism1` intersects `prism2`
   - touching at a vertex, edge, or face returns `true`
