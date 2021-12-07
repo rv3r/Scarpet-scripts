@@ -43,7 +43,7 @@ global_no_box_tags = [
 	'portals'
 ];
 
-//names of things with no collision box
+//then we go to names of things with no collision box
 //makes the search a little bit faster
 global_no_box_blocks = [
 	'air$',
@@ -71,7 +71,7 @@ global_no_box_blocks = [
 	'_sapling$',
 	'vine',
 	'powder_snow',
-	'light',
+	'^light$',
 	'structure_void',
 
 	//for now, we'll set these liquids as null
@@ -82,6 +82,7 @@ global_no_box_blocks = [
 
 //map of all weird collision boxes
 global_box_map = m(
+	//then we do the basic, default collision box of everything else
 	['_slab$',
 		[
 			[[0,0,0],[1,0.5,1]]
@@ -208,7 +209,7 @@ global_box_map = m(
 	],
 	['^daylight_detector$',
 		[
-			[[0,0,0],[0,0.375,0]]
+			[[0,0,0],[1,0.375,1]]
 		]
 	],
 	['^lily_pad$',
@@ -489,9 +490,11 @@ global_tilt = ['none','partial','full'];
 
 //returns list of paired triples of corners of rectangular prisms that comprise collision box
 //measured relative to lower southwest corner of block aka negative direction of every axis
-//cheap once (~ 0.1ms), gets called in loops in other functions
+//cheap once (~ 0.08ms), gets called in loops in other functions
 __bounds(block) ->
 (
+	// print(str(block));
+
 	//recast as block if given a string
 	if(type(block) == 'string',
 		block = block(block);
@@ -499,6 +502,7 @@ __bounds(block) ->
 
 	if(
 		//first check if it's solid or a full block
+		//solid check after full transparent to account for error on shulker box check
 		(bool(for(global_full_transparent,str(block) ~ _ != null)) || solid(block) && (global_not_solid ~ str(block)) == null),
 		bounds = [[[0,0,0],[1,1,1]]],
 		//then check if it is air or has a tag that excludes it
@@ -519,7 +523,6 @@ __bounds(block) ->
 			//stairs can bend so now things get weird
 			key == '_stairs$',
 			shape = state:'shape';
-			// print(state);
 			if(
 				//not bent
 				shape == 'straight',
@@ -834,7 +837,7 @@ __bounds(block) ->
 			bounds = __rotate6(bounds,state:'facing')
 		)
 	);
-	
+
 	//sort bounds for easier comparison later
 	for(bounds,
 		bounds:_i = [
@@ -842,7 +845,7 @@ __bounds(block) ->
 			[max(_:0:0,_:1:0),max(_:0:1,_:1:1),max(_:0:2,_:1:2)]
 		]
 	);
-	
+
 	bounds
 );
 
@@ -1033,6 +1036,10 @@ __combinations(initial,...lists) ->
 	product = 1;
 	indices = [];
 	for(lists,
+		// print('1: ' + _);
+		// for(_,
+			// print('2: ' + _);
+		// );
 		product = copy(product) * length(_);
 		indices += 0;
 	);
@@ -1182,7 +1189,13 @@ __all_collision_blocks() ->
 		if(
 				(
 					list:_ ~ 'shulker_box$' != null || 
-					for(__concatenate(global_full_transparent,['glass_pane$','ender_chest','^potted_','_wall_head$','(?<!(?:_wall)|(?:piston))_head$']),str(list:index) ~ _ != null) != 0 || 
+					for(
+						__concatenate(
+							global_full_transparent,
+							['glass_pane$','ender_chest','^potted_','_wall_head$','(?<!(?:_wall)|(?:piston))_head$']
+						),
+						str(list:index) ~ _ != null
+					) != 0 || 
 					solid(block(list:_)) || 
 					for(global_no_box_blocks,str(list:index) ~ _ != null) != 0
 				) && list:_ != 'stone',
@@ -1246,7 +1259,10 @@ __max_bounds(condensed_bounds,axis) ->
 __filter_sort_direction(blocks,axis,direction,...values) ->
 (
 	blockmap = m();
-	axis_options = split('(?<=[+-])',axis);
+	axis_options = split(
+		'(?<=[+-])',
+		axis
+	);
 	print(axis_options);
 	if(length(axis_options) == 2,
 		axis_direction = axis_options:0,
@@ -1262,7 +1278,9 @@ __filter_sort_direction(blocks,axis,direction,...values) ->
 		include = true,
 		include_option == 'exclude',
 		include = false,
-		include = null
+		//omitting values excludes no blocks
+		include_options == null,
+		include = false
 	);
 
 	if(include != null,
@@ -1289,6 +1307,8 @@ __filter_sort_direction(blocks,axis,direction,...values) ->
 	)
 );
 
+//returns boolean representing intersection of two rectangular prisms
+//prisms are pairs of points
 __prism_in_prism(prism1,prism2) ->
 (
 	delta_center = map( ( (prism2:0 + prism2:1) - (prism1:0 + prism1:1) ) / 2 , abs(_) );
