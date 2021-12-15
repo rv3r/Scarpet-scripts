@@ -2,6 +2,17 @@
 Pick the library you need and follow [these](https://github.com/gnembon/fabric-carpet/wiki/Installing-carpet-scripts-in-your-world) instructions for installation!
 
 Be sure to call `import()` with the name of the library and all of the methods you would like to use.
+If you're using multiple libraries and want to import *every* function from each, I would suggest the following.
+```
+__on_start() ->
+(
+	libraries = ['foo','bar','baz'];
+	for(libraries,
+		import(_,...import(_));
+	)
+);
+```
+This allows you to simply list out the libraries and not make individual calls to `import()`.
 
 # [Block Position Library](https://github.com/rv3r/Scarpet-scripts/blob/main/libraries/blockpos.scl)
 Library to allow your scripts to save block positions along with associated data. Saved blocks can be searched for certain positions or data. You can save almost any data alongside the block, allowing for very flexible scripts.
