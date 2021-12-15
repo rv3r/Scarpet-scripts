@@ -177,9 +177,9 @@ Imitates some common actions a player takes.
   - swaps a particular item to the desired slot
   - basically just `__swap()`, but calls `inventory_find()` for you
 
-* `__playerset(player,pos,block)` - `player`(player),`pos`(float triple),`block`(string)
+* `__playerset(player,pos,block)` - `player`(player),`pos`(float triple),`block`(block)
   - **note**
-    - currently has takes only strings without nbt for blocks and will overwrite anything
+    - currently takes only blocks and will overwrite anything
   - if `player` is in creative or survival `player` has requisite block(s), places `block` at `pos`
 
 # [Projectile Hit Library](https://github.com/rv3r/Scarpet-scripts/blob/main/libraries/projectile_hit.scl)
