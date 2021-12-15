@@ -3,16 +3,15 @@ __shiftclick(source,slot,destination) ->
 	if(slot == null,
 		return();
 	);
-	playerList = map(l(range(44,8,-1)),_%36);
+	playerList = map([range(44,8,-1)],_ % 36);
 	
 	while(inventory_get(source,slot),inventory_size(destination),
-		l(itemName, itemCount, itemNbt) = inventory_get(source,slot);
+		[itemName, itemCount, itemNbt] = inventory_get(source,slot);
 	
-		if(destination~'type' == 'player',
-			loop(2*length(playerList),
+		if(destination ~ 'type' == 'player',
+			loop(2 * length(playerList),
 				prevSlot = playerList:_;
-				prevCount = inventory_get(destination,prevSlot):1;
-				prevNbt = inventory_get(destination,prevSlot):2;
+				[x,prevCount,prevNbt] = inventory_get(destination,prevSlot) || [null,null,null];
 				if((prevCount != null || (_ >= length(playerList) && prevCount == null)) && prevCount < stack_limit(itemName) && (prevNbt == itemNbt || prevNbt == null),
 					break(),
 					prevSlot = null;
@@ -20,13 +19,12 @@ __shiftclick(source,slot,destination) ->
 					prevNbt = null;
 				);
 			),
-			loop(inventory_size(destination) + 1,
+			loop(inventory_size(destination),
 				if(_ < inventory_size(destination),
 					prevSlot = _;
-					prevCount = inventory_get(destination,prevSlot):1;
-					prevNbt = inventory_get(destination,prevSlot):2,
+					[x,prevCount,prevNbt] = inventory_get(destination,prevSlot) || [null,null,null];,
 					
-					_ == inventory_size(destination),
+					_ == inventory_size(destination) - 1,
 					prevSlot = inventory_find(destination,null);
 					prevCount = null;
 					prevNbt = null;
@@ -46,29 +44,128 @@ __shiftclick(source,slot,destination) ->
 		);
 		if(prevSlot != null,
 			inventory_set(destination,prevSlot,prevCount+moveAmount,itemName,itemNbt);
-			inventory_remove(source,itemName,moveAmount)
+			inventory_set(source,slot,itemCount - moveAmount,itemName,itemNbt)
 		);
 	);
 );
 
 __shiftitem(source,item,destination) ->
 (
-	slot = inventory_find(source,item);
-	__shiftclick(source,slot,destination);
+	__shiftclick(source,inventory_find(source,item),destination)
 );
 
 __swap(inventory,slot1,slot2) ->
 (
-	if(slot1 != null && slot2 != null,
+	if(slot1 != null && slot1 < inventory_size(inventory) && slot2 != null && slot2 < inventory_size(inventory),
 		stack1 = inventory_get(inventory,slot1);
 		stack2 = inventory_get(inventory,slot2);
 		inventory_set(inventory,slot2,stack1:1,stack1:0,stack1:2);
 		inventory_set(inventory,slot1,stack2:1,stack2:0,stack2:2);
-	);
+	)
 );
 
 __swapto(inventory,item,newslot) ->
 (
-	oldslot = inventory_find(inventory,item);
-	__swap(inventory,oldslot,newslot);
+	__swap(inventory,inventory_find(inventory,item),newslot)
+);
+
+__findcomplex(inventory,item_tuple) ->
+(
+	result = [];
+	loop(inventory_size(inventory),
+		if(inventory_get(inventory,_) == item_tuple,
+			result += _;
+		);
+	);
+	result
+);
+
+//sets a block using blocks from the player's inventory
+//uses block name and state to ensure empty block inventory
+__playerset(player,pos,block) ->
+(
+	placeable = {
+		['tripwire','string'],
+		['wheat','wheat_seeds'],
+		['bubble_column','water_bucket'],
+		['water','water_bucket'],
+		['lava','lava_bucket'],
+		['powder_snow','powder_snow_bucket'],
+		['redstone_wire','redstone'],
+		['pumpkin_stem','pumpkin_seeds'],
+		['attached_pumpkin_stem','pumpkin_seeds'],
+		['melon_stem','melon_seeds'],
+		['attached_melon_stem','melon_seeds'],
+		['fire','fire_charge'],
+		['soul_fire','fire_charge'],
+		['carrots','carrot'],
+		['potatoes','potato'],
+		['beetroots','beetroot'],
+		['sweet_berry_bush','sweet_berries'],
+		['cocoa','cocoa_beans'],
+		['kelp_plant','kelp'],
+		['bamboo_sapling','bamboo'],
+		['twisting_vines_plant','twisting_vines'],
+		['weeping_vines_plant','weeping_vines'],
+		['cave_vines','glow_berries'],
+		['cave_vines_plant','glow_berries'],
+		['tall_seagrass','seagrass'],
+		['big_dripleaf_stem','big_dripleaf']
+	};
+
+	non_placeable = [
+		'end_gateway',
+		'frosted_ice',
+		'moving_piston',
+		'piston_head',
+		'nether_portal',
+		'end_portal'
+	];
+	
+	if(item_list() ~ block,
+		item = str(block),
+		item = placeable:str(block),
+		true,
+		air(block(block)),
+		result = true;
+		item = 'air',
+		block ~ 'wall_',
+		item = replace(block,'wall_',''),
+		non_placeable ~ block != null,
+		return(false),
+		block ~ '_cauldron',
+		item = ['cauldron',placeable:str(replace(block,'_cauldron',''))],
+		block ~ 'potted_',
+		item = ['flower_pot',replace(block,'potted_','')],
+		block ~ '_cake',
+		item = ['cake',replace(block,'_cake','')],
+		item = null
+	);
+
+	if(item != null,
+		if(player ~ 'gamemode' == 'creative',
+			result = set(pos,str(block),block_state(block)),
+			
+			type(item) == 'string',
+			if(slot = inventory_find(player,item),
+				if(set(pos,str(block),block_state(block)),
+					result = inventory_remove(player,item);
+					if(item ~ '_bucket',
+						inventory_set(player,slot,1,'bucket');
+					);
+				)
+			),
+
+			type(item) == 'list',
+			if(slot = inventory_find(player,item:1),
+				if(set(pos,str(block),block_state(block)),
+					result = inventory_remove(player,item:0) && inventory_remove(player,item:1);
+					if(item:1 ~ '_bucket',
+						inventory_set(player,slot,1,'bucket');
+					);
+				)
+			)
+		)
+	);
+	result
 );
