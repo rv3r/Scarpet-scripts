@@ -1010,7 +1010,7 @@ __multiply(matrix1,matrix2) ->
 //concatenates any number of lists
 __concatenate(... lists) ->
 (
-	output = l();
+	output = [];
 	for(lists,
 		reduce(_,_a+=_,output);
 	);
