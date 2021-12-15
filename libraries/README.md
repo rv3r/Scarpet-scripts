@@ -153,7 +153,7 @@ Uses three common list structures as additional data types
   - returns `block list` indicating all blocks that anything at `pos` with properties `width` and `height` would contact
 
 # [Inventory Library](https://github.com/rv3r/Scarpet-scripts/blob/main/libraries/inventory.scl)
-Imitates two common actions the player uses in an inventory.
+Imitates some common actions a player takes.
 
 ### Description of methods
 * `__shiftclick(source,slot,destination)` - `source`(entity or block with inventory),`slot`(integer),`destination`(entity or block with inventory)
@@ -176,6 +176,11 @@ Imitates two common actions the player uses in an inventory.
   - swaps `item` into `newslot` inside `inventory`
   - swaps a particular item to the desired slot
   - basically just `__swap()`, but calls `inventory_find()` for you
+
+* `__playerset(player,pos,block)` - `player`(player),`pos`(float triple),`block`(string)
+  - **note**
+    - currently has takes only strings without nbt for blocks and will overwrite anything
+  - if `player` is in creative or survival `player` has requisite block(s), places `block` at `pos`
 
 # [Projectile Hit Library](https://github.com/rv3r/Scarpet-scripts/blob/main/libraries/projectile_hit.scl)
 Mirrors original Minecraft code to detect projectile hits. On starting, sets up entity load handlers to signal events every time a projectile hits an entity. Event `projectile_hit` passes original projectile entity, throwing entity, and hit entity.
