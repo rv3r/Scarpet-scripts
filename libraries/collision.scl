@@ -1,12 +1,12 @@
 //default direction for each block when placed with /setblock and no additional properties
-global_default_direction = m(
+global_default_direction = {
 	['piston$','north']
 	['^piston_head$','north'],
 	['^small_amethyst_bud$','up'],
 	['^medium_amethyst_bud$','up'],
 	['^large_amethyst_bud$','up'],
 	['^amethyst_cluster$','up']
-);
+};
 
 //blocks that are transparent but still have a full block collision box
 global_full_transparent = [
@@ -40,6 +40,7 @@ global_no_box_tags = [
 	'bee_growables',
 	'corals',
 	'wall_corals',
+	//just gonna leave portals here for now unless someone needs them
 	'portals'
 ];
 
@@ -81,8 +82,8 @@ global_no_box_blocks = [
 ];
 
 //map of all weird collision boxes
-global_box_map = m(
-	//then we do the basic, default collision box of everything else
+//then we do the basic, default collision box of everything else
+global_box_map = {
 	['_slab$',
 		[
 			[[0,0,0],[1,0.5,1]]
@@ -452,12 +453,12 @@ global_box_map = m(
 			[[0.1875,0,0.1875],[0.8125,0.6875,0.8125]]
 		]
 	],
-	['soul_sand',
+	['^soul_sand$',
 		[
 			[[0,0,0],[1,0.875,1]]
 		]
 	]
-);
+};
 
 //and now, every single collision box changing option for every single block state
 global_axis = ['x','y','z'];
@@ -493,12 +494,8 @@ global_tilt = ['none','partial','full'];
 //cheap once (~ 0.08ms), gets called in loops in other functions
 __bounds(block) ->
 (
-	// print(str(block));
-
-	//recast as block if given a string
-	if(type(block) == 'string',
-		block = block(block);
-	);
+	//recast as block to allow for most argument types
+	block = block(block);
 
 	if(
 		//first check if it's solid or a full block
@@ -969,14 +966,14 @@ __rotatenumber(bounds,axis,turns) ->
 //for blocks that just use facing for rotation about the y-axis
 __rotatey(bounds,facing) ->
 (
-	loops = m(['north',0],['west',1],['south',2],['east',3]):facing;
+	loops = {['north',0],['west',1],['south',2],['east',3]}:facing;
 	__rotatenumber(bounds,'y',loops)
 );
 
 //for blocks that just use facing for all 6 directions
 __rotate6(bounds,facing) ->
 (
-	loops = m(['north',0],['west',1],['south',2],['east',3]):facing;
+	loops = {['north',0],['west',1],['south',2],['east',3]}:facing;
 	if(loops == null,
 		if(facing == 'up',
 			__rotate(bounds,'x'),
@@ -1036,10 +1033,6 @@ __combinations(initial,...lists) ->
 	product = 1;
 	indices = [];
 	for(lists,
-		// print('1: ' + _);
-		// for(_,
-			// print('2: ' + _);
-		// );
 		product = copy(product) * length(_);
 		indices += 0;
 	);
@@ -1071,7 +1064,7 @@ __blockcombinations(blockstring) ->
 	keys = keys(block_state(block(blockstring)));
 	blockstring = blockstring + '[';
 
-	combination_map = m(
+	combination_map = {
 		['axis',__options('axis',global_axis)],
 		['extended',__options('extended',global_extended)],
 		['facing',__options('facing',global_facing)],
@@ -1099,7 +1092,7 @@ __blockcombinations(blockstring) ->
 		['vertical_direction',__options('vertical_direction',global_vertical_direction)],
 		['face',__options('face',global_face)],
 		['tilt',__options('tilt',global_tilt)]
-	);
+	};
 
 	state_list = [];
 	for(keys,
@@ -1156,6 +1149,7 @@ __blockcombinations(blockstring) ->
 //draws bounds of a block
 __draw_bounds(block,...colors) ->
 (
+	block = block(block);
 	for(__bounds(block),
 		draw_shape('box',100,'from',pos(block) + _:0,'to',pos(block) + _:1,'color',number(colors:0) || 0x00FF00FF,'fill',number(colors:1) || 0x00FF0033)
 	)
@@ -1258,7 +1252,7 @@ __max_bounds(condensed_bounds,axis) ->
 //very expensive (~ 170ms)
 __filter_sort_direction(blocks,axis,direction,...values) ->
 (
-	blockmap = m();
+	blockmap = {};
 	axis_options = split(
 		'(?<=[+-])',
 		axis
@@ -1286,7 +1280,7 @@ __filter_sort_direction(blocks,axis,direction,...values) ->
 	if(include != null,
 		for(blocks,
 			if(blockmap:str(_) == null,
-				blockmap:str(_) = m();
+				blockmap:str(_) = {};
 			);
 			if(direction == 'max',
 				value = __max_bounds(__condense_bounds(__bounds(_)),axis_name),
