@@ -113,32 +113,32 @@ Uses three common list structures as additional data types
   - bottom slab has [ [0,1],[0,0.5],[0,1] ], azalea has [ [0.375,0.625,0,1],[0,0.5,0.5,1],[0.375,0.625,0,1] ]
 
 ## Description of methods
-* `__bounds(block)` - `block`(block, float triple, or string)
+* [`__bounds(block)`](https://github.com/rv3r/Scarpet-scripts/blob/4ee08d909731b31b8b04af2025b616db83a99df8/libraries/collision.scl#L495) - `block`(block, float triple, or string)
   - returns `bounds` of `block`, either positioned in world or passed as string
   - note that blocks such as bamboo and pointed dripstone have multiple possible collision boxes, so this script returns the maximum bounds for each
   - blocks with no collision return `null`
-* `__inside(bounds,point)` - `bounds`(bounds),`point`(float triple)
+* [`__inside(bounds,point)`](https://github.com/rv3r/Scarpet-scripts/blob/4ee08d909731b31b8b04af2025b616db83a99df8/libraries/collision.scl#L852) - `bounds`(bounds),`point`(float triple)
   - returns `boolean` indicating if `point` is in `bounds`
   - positions on the border return `true`
-* `__insideblock(point)` - `point`(float triple)
+* [`__insideblock(point)`](https://github.com/rv3r/Scarpet-scripts/blob/4ee08d909731b31b8b04af2025b616db83a99df8/libraries/collision.scl#L865) - `point`(float triple)
   - returns `boolean` indicating if `point` is currently inside a collision box
   - positions on the border return `true`
-* `__concatenate(...lists)` - `lists`(nonzero number of lists of any lengths)
+* [`__concatenate(...lists)`](https://github.com/rv3r/Scarpet-scripts/blob/4ee08d909731b31b8b04af2025b616db83a99df8/libraries/collision.scl#L1011) - `lists`(nonzero number of lists of any lengths)
   - more general function returning `list` containing all individual elements of `lists`
-* `__draw_bounds(block,...colors)` - `block`(block, float triple, or string),`colors`(hex list)
+* [`__draw_bounds(block,...colors)`](https://github.com/rv3r/Scarpet-scripts/blob/4ee08d909731b31b8b04af2025b616db83a99df8/libraries/collision.scl#L1150) - `block`(block, float triple, or string),`colors`(hex list)
   - draws bounds of `block` as rectangular prisms using optional `colors` for color and fill in that order
-* `__all_collision_blocks()`
+* [`__all_collision_blocks()`](https://github.com/rv3r/Scarpet-scripts/blob/4ee08d909731b31b8b04af2025b616db83a99df8/libraries/collision.scl#L1160)
   - returns list of the blocks and their property combinations that produce all unique collision boxes in the game
-* `__filter_sort_direction(blocks,axis,direction,...values)` - `blocks`(block list),`axis`(`'x'`, `'y'`, or `'z'`, leading `'+'` or `'-'` acceptable),`direction`(`'min'` or `'max'`),`values`(`'include'` or `'exclude'` then floats)
+* [`__filter_sort_direction(blocks,axis,direction,...values)`](https://github.com/rv3r/Scarpet-scripts/blob/4ee08d909731b31b8b04af2025b616db83a99df8/libraries/collision.scl#L1160) - `blocks`(block list),`axis`(`'x'`, `'y'`, or `'z'`, leading `'+'` or `'-'` acceptable),`direction`(`'min'` or `'max'`),`values`(`'include'` or `'exclude'` then floats)
   - returns sorted `block list` by sorting `blocks` along `axis` in `'+'` or `'-'` direction by bottom value(`min`) or top value(`max`) while either only including(`'include'`) blocks with results in `values` or excluding(`'exclude'`) blocks with results in `values`
   - omitting `values` returns all provided blocks, that is, excludes no blocks
   - for example, sorting all blocks(`'__all_collision_blocks()'`) by top(`'max'`) height(`'y'`) descending(`'-'`) while ignoring heights of 0.5(slabs) and 1(solid blocks) can be done with: `__filter_sort_direction( __all_collision_blocks() , '-y' , 'max' , 'exclude' , 0.5 , 1 )`
-* `__prism_in_prism(prism1,prism2)` - `prism1`(prism),`prism2`(prism)
+* [`__prism_in_prism(prism1,prism2)`](https://github.com/rv3r/Scarpet-scripts/blob/4ee08d909731b31b8b04af2025b616db83a99df8/libraries/collision.scl#L1306) - `prism1`(prism),`prism2`(prism)
   - returns `boolean` indicating if `prism1` intersects `prism2`
   - touching at a vertex, edge, or face returns `true`
-* `__entity_block_collision(e)` - `e`(entity)
+* [`__entity_block_collision(e)`](https://github.com/rv3r/Scarpet-scripts/blob/4ee08d909731b31b8b04af2025b616db83a99df8/libraries/collision.scl#L1320) - `e`(entity)
   - returns `block list` indicating all blocks that `entity` is currently in contact with
-* `__prism_block_collision(pos,width,height)` - `pos`(float triple),`width`(float),`height`(float)
+* [`__prism_block_collision(pos,width,height)`](https://github.com/rv3r/Scarpet-scripts/blob/4ee08d909731b31b8b04af2025b616db83a99df8/libraries/collision.scl#L1329) - `pos`(float triple),`width`(float),`height`(float)
   - returns `block list` indicating all blocks that anything at `pos` with properties `width` and `height` would contact
 
 # [Inventory Library](https://github.com/rv3r/Scarpet-scripts/blob/main/libraries/inventory.scl)
