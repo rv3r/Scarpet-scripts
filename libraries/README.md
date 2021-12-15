@@ -3,7 +3,7 @@ Pick the library you need and follow [these](https://github.com/gnembon/fabric-c
 
 Be sure to call `import()` with the name of the library and all of the methods you would like to use.
 
-# Block Position Library
+# [Block Position Library](https://github.com/rv3r/Scarpet-scripts/blob/main/libraries/blockpos.scl)
 Library to allow your scripts to save block positions along with associated data. Saved blocks can be searched for certain positions or data. You can save almost any data alongside the block, allowing for very flexible scripts.
 
 Blocks are stored in <script_name>\_blocks.data with the following format:
@@ -101,7 +101,7 @@ __save_blocks(....,data);
 ```
 Thus, the methods that automatically load the data are most efficient when only one needs to be called at a time. If many need to be called in a row, store the current loaded data in a variable and use the simpler methods.
 
-# Collision Library
+# [Collision Library](https://github.com/rv3r/Scarpet-scripts/blob/main/libraries/collision.scl)
 Provides block collision boxes and other useful functions
 
 Uses three common list structures as additional data types
@@ -141,7 +141,7 @@ Uses three common list structures as additional data types
 * `__prism_block_collision(pos,width,height)` - `pos`(float triple),`width`(float),`height`(float)
   - returns `block list` indicating all blocks that anything at `pos` with properties `width` and `height` would contact
 
-# Inventory Library
+# [Inventory Library](https://github.com/rv3r/Scarpet-scripts/blob/main/libraries/inventory.scl)
 Imitates two common actions the player uses in an inventory.
 
 ### Description of methods
@@ -166,7 +166,28 @@ Imitates two common actions the player uses in an inventory.
   - swaps a particular item to the desired slot
   - basically just `__swap()`, but calls `inventory_find()` for you
 
-# Math Library
+# [Projectile Hit Library](https://github.com/rv3r/Scarpet-scripts/blob/main/libraries/projectile_hit.scl)
+Mirrors original Minecraft code to detect projectile hits. On starting, sets up entity load handlers to signal events every time a projectile hits an entity. Event `projectile_hit` passes original projectile entity, throwing entity, and hit entity.
+
+### Description of methods
+* `__handle_entity_hits(...projectiles)` - `projectiles`(nonzero comma separated strings)
+  - sets up entity load handler for the listed projectiles and signals event `projectile_hit` when any of those projectiles collide with an entity
+* `__get_hit_entity(entity, ...args)` - `entity`(entity if `args` is length 0, entity or string if `args` is length 2, anything if `args` is length 4),`args`(see below)
+  - returns entity that `entity` is about to collide with or `null` if no collision is predicted
+  - `args` option 1: empty
+    - requires `entity` to be the entity of interest
+    - allows predicting entity collision of `entity` at `position` with `motion`
+  - `args` option 2: `[position, motion]`
+    - requires `entity` to be the entity or a string describing the type of the projectile entity
+    - if `entity` is a string, library will get width and height itself and use those for calculations, so entity doesn't strictly need to exist
+    - allows predicting entity collision if `entity` was in `position` with `motion`
+  - `args` option 2: `[position, motion, width, height]`
+    - function will just trust whatever values you gave it, so `width` and `height` can be whatever values your heart desires
+    - this also means that the function has no need for `entity`, so you can pass it your thesis for all I care
+    - function will take absolute value of your `width` and `height` inputs, so negatives are allowed but never suggested
+    - allows predicting entity collision if `entity` existed at `position` with `motion` and has `width` and `height`
+
+# [Math Library](https://github.com/rv3r/Scarpet-scripts/blob/main/libraries/rv3rmath.scl)
 My personal library of math functions that my scripts require.
 
 ### Description of methods
@@ -197,24 +218,3 @@ My personal library of math functions that my scripts require.
   - determines if a 4th point is in the same plane as three other points
 * `__heron(a,b,c)` - `a`(float),`b`(float),`c`(float)
   - finds area of a triangle with side lengths `a`, `b`, and `c` using Heron's semiperimeter formula
-
-# Projectile Hit Library
-Mirrors original Minecraft code to detect projectile hits. On starting, sets up entity load handlers to signal events every time a projectile hits an entity. Event `projectile_hit` passes original projectile entity, throwing entity, and hit entity.
-
-### Description of methods
-* `__handle_entity_hits(...projectiles)` - `projectiles`(nonzero comma separated strings)
-  - sets up entity load handler for the listed projectiles and signals event `projectile_hit` when any of those projectiles collide with an entity
-* `__get_hit_entity(entity, ...args)` - `entity`(entity if `args` is length 0, entity or string if `args` is length 2, anything if `args` is length 4),`args`(see below)
-  - returns entity that `entity` is about to collide with or `null` if no collision is predicted
-  - `args` option 1: empty
-    - requires `entity` to be the entity of interest
-    - allows predicting entity collision of `entity` at `position` with `motion`
-  - `args` option 2: `[position, motion]`
-    - requires `entity` to be the entity or a string describing the type of the projectile entity
-    - if `entity` is a string, library will get width and height itself and use those for calculations, so entity doesn't strictly need to exist
-    - allows predicting entity collision if `entity` was in `position` with `motion`
-  - `args` option 2: `[position, motion, width, height]`
-    - function will just trust whatever values you gave it, so `width` and `height` can be whatever values your heart desires
-    - this also means that the function has no need for `entity`, so you can pass it your thesis for all I care
-    - function will take absolute value of your `width` and `height` inputs, so negatives are allowed but never suggested
-    - allows predicting entity collision if `entity` existed at `position` with `motion` and has `width` and `height`
