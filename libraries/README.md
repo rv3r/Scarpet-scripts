@@ -113,7 +113,7 @@ Uses three common list structures as additional data types
   - solid block has [ [0,1],[0,0.5],[0,1] ]
 
 ## Description of methods
-* `__bounds(block)` - `block`(block)
+* `__bounds(block)` - `block`(block, float triple, or string)
   - returns `bounds` of `block`, either positioned in world or passed as string
   - note that blocks such as bamboo and pointed dripstone have multiple possible collision boxes, so this script returns the maximum bounds for each
   - blocks with no collision return `null`
@@ -125,7 +125,7 @@ Uses three common list structures as additional data types
   - positions on the border return `true`
 * `__concatenate(...lists)` - `lists`(nonzero number of lists of any lengths)
   - more general function returning `list` containing all individual elements of `lists`
-* `__draw_bounds(block,...colors)` - `block`(block),`colors`(hex list)
+* `__draw_bounds(block,...colors)` - `block`(block, float triple, or string),`colors`(hex list)
   - draws bounds of `block` as rectangular prisms using optional `colors` for color and fill in that order
 * `__all_collision_blocks()`
   - returns list of the blocks and their property combinations that produce all unique collision boxes in the game
