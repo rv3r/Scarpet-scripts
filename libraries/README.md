@@ -106,11 +106,11 @@ Provides block collision boxes and other useful functions
 
 Uses three common list structures as additional data types
 * `prism` - pair of points that comprise opposite vertices of a rectangular prism
-  - for example any bottom slab has a `prism` of [0,0,0],[1,0.5,1]
+  - for example any bottom slab has a `prism` of [ [0,0,0],[1,0.5,1] ], while an azalea has two, [ [0.375,0,0.375],[0.625,0.5,0.625] ] (stem) and [ [0,0.5,0],[1,1,1] ] (bush) 
 * `bounds` - list of prisms
-  - bottom slab has [ [0,0,0],[1,0.5,1] ]
-* `condensed bounds` - triple of lists of x-values, y-values, and z-values of any `bounds`, effectively just matrix transpose
-  - solid block has [ [0,1],[0,0.5],[0,1] ]
+  - bottom slab has [ [ [0,0,0],[1,0.5,1] ] ], azalea has [ [ [0.375,0,0.375],[0.625,0.5,0.625] ] , [ [0,0.5,0],[1,1,1] ] ]
+* `condensed bounds` - triple of lists of unsorted x-values, y-values, and z-values of any `bounds`, effectively just matrix transpose
+  - bottom slab has [ [0,1],[0,0.5],[0,1] ], azalea has [ [0.375,0.625,0,1],[0,0.5,0.5,1],[0.375,0.625,0,1] ]
 
 ## Description of methods
 * `__bounds(block)` - `block`(block, float triple, or string)
