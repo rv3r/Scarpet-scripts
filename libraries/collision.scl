@@ -894,7 +894,7 @@ __insideblock(point) ->
 		);
 
 		for(pointlist,
-			__inside(__bounds(block(point + _)),print(map(_, _ % 1));map(_, _ % 1))
+			__inside(__bounds(block(point + _)),map(_, _ % 1))
 		) > 0
 	
 	)
@@ -1257,13 +1257,11 @@ __filter_sort_direction(blocks,axis,direction,...values) ->
 		'(?<=[+-])',
 		axis
 	);
-	print(axis_options);
 	if(length(axis_options) == 2,
 		axis_direction = axis_options:0,
 		axis_direction = '+'
 	);
 	axis_direction = number(axis_direction + '1');
-	print(axis_direction);
 	axis_name = axis_options:1;
 
 	include_option = values:0;
