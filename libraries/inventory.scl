@@ -147,17 +147,17 @@ __playerset(player,pos,block) ->
 			result = set(pos,str(block),block_state(block)),
 			
 			type(item) == 'string',
-			if(slot = inventory_find(player,item),
+			if((slot = inventory_find(player,item)) != null,
 				if(set(pos,str(block),block_state(block)),
 					result = inventory_remove(player,item);
 					if(item ~ '_bucket',
 						inventory_set(player,slot,1,'bucket');
 					);
-				)
+				);
 			),
 
 			type(item) == 'list',
-			if(slot = inventory_find(player,item:1),
+			if((slot = inventory_find(player,item:1)) != null,
 				if(set(pos,str(block),block_state(block)),
 					result = inventory_remove(player,item:0) && inventory_remove(player,item:1);
 					if(item:1 ~ '_bucket',
