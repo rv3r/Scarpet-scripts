@@ -77,8 +77,8 @@ global_no_box_blocks = [
 	//for now, we'll set these liquids as null
 	'water$',
 	'lava$',
-	'^bubble_column$'
-	'powder_snow$',
+	'^bubble_column$',
+	'powder_snow$'
 ];
 
 //map of all weird collision boxes
