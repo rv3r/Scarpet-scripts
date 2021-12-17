@@ -71,14 +71,14 @@ global_no_box_blocks = [
 	'small_dripleaf',
 	'_sapling$',
 	'vine',
-	'powder_snow',
 	'^light$',
 	'structure_void',
 
 	//for now, we'll set these liquids as null
-	'water',
-	'lava',
-	'bubble_column'
+	'water$',
+	'lava$',
+	'^bubble_column$'
+	'powder_snow$',
 ];
 
 //map of all weird collision boxes
