@@ -1,51 +1,51 @@
 global_entity_size_map = m(
 	['arrow',
-		m(
+		{
 			['width',0.5],
 			['height',0.5]
-		)
+		}
 	],
 	['dragon_fireball',
-		m(
+		{
 			['width',1],
 			['height',1]
-		)
+		}
 	],
 	['egg',
-		m(
+		{
 			['width',0.25],
 			['height',0.25]
-		)
+		}
 	],
 	['ender_pearl',
-		m(
+		{
 			['width',0.25],
 			['height',0.25]
-		)
+		}
 	],
 	['experience_bottle',
-		m(
+		{
 			['width',0.25],
 			['height',0.25]
-		)
+		}
 	],
 	['snowball',
-		m(
+		{
 			['width',0.25],
 			['height',0.25]
-		)
+		}
 	],
 	['splash_potion',	
-		m(
+		{
 			['width',0.25],
 			['height',0.25]
-		)
+		}
 	],
 	['trident',
-		m(
+		{
 			['width',0.25],
 			['height',0.25]
-		)
+		}
 	]
 );
 
@@ -174,13 +174,13 @@ __traceCollisonSideArray(traceDistanceResult, approachDirection, deltaX, deltaY,
 
 __handle_entity_hits(...projectiles) ->
 (
-	global_hit_map = m();
+	global_hit_map = {};
 	for(projectiles,
 		entity_load_handler(
 			_,
 			_(e, new) -> 
 			(
-				global_hit_map:(e ~ 'id') = m();
+				global_hit_map:(e ~ 'id') = {};
 				global_hit_map:(e ~ 'id'):'thrower' = entity_id(uuid_to_string(parse_nbt(e ~ 'nbt'):'Owner'));
 				entity_event(
 					e,
