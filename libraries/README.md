@@ -203,7 +203,7 @@ Mirrors original Minecraft code to detect projectile hits. On starting, sets up 
     - function will take absolute value of your `width` and `height` inputs, so negatives are allowed but never suggested
     - allows predicting entity collision if `entity` existed at `position` with `motion` and has `width` and `height`
 
-# [Math Library](https://github.com/rv3r/Scarpet-scripts/blob/main/libraries/rv3rmath.scl)
+# [Math Library](https://github.com/rv3r/Scarpet-scripts/blob/main/libraries/rv3r_math.scl)
 My personal library of math functions that my scripts require.
 
 ### Description of methods
