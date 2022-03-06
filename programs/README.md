@@ -54,6 +54,8 @@ Heals players if they fall into the void. This script assumes you've fallen into
 # Open Box
 Put 'open' in a shulker box name and throw to open. Close the screen like usual when done.
 
+Known issue: pick up the box while in the screen to delete the box and its contents.
+
 # Portal Orient
 Makes a player face away from a specified side of a Nether portal after a dimension change. Now you won't have to remember which way to face when getting in the portal. Settings are player specific and script will do nothing if each side has the same number of valid blocks.
 
