@@ -12,6 +12,7 @@ global_box_name = null;
 global_box_inventory = null;
 global_pickup = false;
 global_update_actions = ['pickup','quick_move','swap','clone','throw','quick_craft','pickup_all'];
+global_thrown = null;
 
 // Turns out player swings hand for basically all item dropping events
 __on_player_swings_hand(player, hand) ->
@@ -29,16 +30,19 @@ get_thrown_item(pos) ->
 	// I'm aware
 	item_entity = entity_area('item', pos, [1e-6,1e-6,1e-6]):0;
 	global_item_nbt = parse_nbt(item_entity ~ 'nbt');
-	// Better be a shulker box
-	// With 'open' in the name(borrowed from shulkerboxes.sc, that thing's a gold mine!)
-	// And has pickup delay 40 since you just dropped it
-	if(global_item_nbt:'Item':'id' ~ 'shulker_box$' && (global_box_name = parse_nbt(global_item_nbt:'Item':'tag':'display':'Name'):'text') ~ 'open' && global_item_nbt:'PickupDelay' == 40,
-		// Reset the pickup delay so you can pick it back up
-		modify(item_entity, 'pickup_delay', 0);
-		// Allow a screen to be made
-		global_allowed = true;
-		// Disallow screen creation at the end of the tick
-		schedule(0,_() -> global_allowed = false);
+	// The item should have a pickup delay 40 since you just dropped it
+	if(global_item_nbt:'PickupDelay' == 40,
+		// Check if it's a shulker box
+		// With 'open' in the name(borrowed from shulkerboxes.sc, that thing's a gold mine!)
+		if(global_item_nbt:'Item':'id' ~ 'shulker_box$' && (global_box_name = parse_nbt(global_item_nbt:'Item':'tag':'display':'Name'):'text') ~ 'open',
+			// Reset the pickup delay so you can pick it back up
+			modify(item_entity, 'pickup_delay', 0);
+			// Allow a screen to be made
+			global_allowed = true;
+			// Disallow screen creation at the end of the tick
+			schedule(0,_() -> global_allowed = false),
+			print(player(),global_item_nbt);
+		);
 	);
 );
 
@@ -107,7 +111,7 @@ update_box_inventory(screen, data) ->
 		if(slot < 27,
 			stack = data:'stack';
 			set_box_stack(slot, stack);
-			box_items = map(global_box_inventory, encode_nbt(_));
+			//box_items = map(global_box_inventory, encode_nbt(_));
 			parsed_nbt = parse_nbt(nbt);
 			// If there were no items in the box, set up the data structure
 			if(parsed_nbt:'BlockEntityTag' == null,
@@ -159,7 +163,7 @@ set_box_stack(slot, stack) ->
 		data:'id' = stack:0;
 		data:'Count' = stack:1;
 		if(stack:2 != null,
-			data:'tag' = stack:2
+			data:'tag' = parse_nbt(stack:2);
 		);
 		global_box_inventory += data;
 	);
