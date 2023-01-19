@@ -16,6 +16,7 @@ global_update_actions = ['pickup','quick_move','swap','clone','throw','quick_cra
 global_thrown = null;
 global_screens = {};
 global_nest = false;
+global_replace_slot = null;
 
 // Turns out player swings hand for basically all item dropping events
 __on_player_swings_hand(player, hand) ->
@@ -38,7 +39,7 @@ get_thrown_item(pos) ->
 		// Check if it's a shulker box
 		// With 'open' in the name(borrowed from shulkerboxes.sc, that thing's a gold mine!)
 		if((name = get_item_id(global_item_nbt)) ~ 'shulker_box$' && (global_box_name = parse_nbt(global_item_nbt:'Item':'tag':'display':'Name'):'text') ~ 'open',
-			if(global_replace,
+			if(global_replace && global_replace_slot < inventory_size('enderchest',player()),
 				schedule(0,'replace_box',global_replace_slot);
 			);
 			global_thrown = 'shulker';
@@ -64,6 +65,9 @@ pickup(item_entity) ->
 	modify(item_entity, 'pickup_delay', 0);
 	// Allow a screen to be made
 	global_allowed = true;
+	if(global_replace_slot >= inventory_size('enderchest',player()),
+		global_nest = false;
+	);
 	// Disallow screen creation at the end of the tick and reset pickup delay if you didn't pick it up
 	schedule(0,_() -> (if(item_entity,modify(item_entity, 'pickup_delay', 40));global_allowed = false))
 );
@@ -114,7 +118,7 @@ make_box_screen(box_nbt) ->
 // Screen got updated! Better do something...
 update_data(screen, player, action, data) ->
 (
-	if(action == 'throw',
+	if(action == 'throw' && screen == 'generic_9x3_screen',
 		global_replace = true;
 		global_replace_slot = data:'slot';
 		schedule(0,_() -> global_replace = false);
@@ -133,9 +137,9 @@ update_data(screen, player, action, data) ->
 		global_pickup = true,
 		// On close, reset the global values
 		action == 'close',
-		if(screen == 'generic_9x3_screen' && global_pickup && data:'slot' < inventory_size('enderchest',player),
+		if(screen == 'generic_9x3_screen' && global_pickup && global_replace_slot < inventory_size('enderchest',player),
 			delete(global_screens:'ender');
-			global_nest = true;,
+			global_nest = true,
 			delete(global_screens:global_thrown);
 		);
 		if(global_nest && global_thrown == 'shulker' && screen == 'shulker_box_screen',
@@ -152,6 +156,7 @@ update_data(screen, player, action, data) ->
 			global_pickup = false;
 			global_thrown = null;
 			global_nest = false;
+			global_replace_slot = null;
 		);
 	);
 );
