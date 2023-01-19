@@ -15,6 +15,7 @@ global_pickup = false;
 global_update_actions = ['pickup','quick_move','swap','clone','throw','quick_craft','pickup_all'];
 global_thrown = null;
 global_screens = {};
+global_nest = false;
 
 // Turns out player swings hand for basically all item dropping events
 __on_player_swings_hand(player, hand) ->
@@ -60,16 +61,16 @@ pickup(item_entity) ->
 	modify(item_entity, 'pickup_delay', 0);
 	// Allow a screen to be made
 	global_allowed = true;
-	// Disallow screen creation at the end of the tick
-	schedule(0,_() -> global_allowed = false)
+	// Disallow screen creation at the end of the tick and reset pickup delay if you didn't pick it up
+	schedule(0,_() -> (if(item_entity,modify(item_entity, 'pickup_delay', 40));global_allowed = false))
 );
 
 __on_player_picks_up_item(player, item) ->
 (
 	// Wait until the player picks up the box to make the screen for the box
 	// Since this gets reset, doesn't make a screen if you fail to pick up the box immediately
-	if(global_allowed,
-		make_box_screen(global_item_nbt);
+	if(global_allowed && (global_thrown == 'ender' || (global_thrown == 'shulker' && get_box_slot())),
+		make_box_screen(global_item_nbt)
 	);
 );
 
@@ -114,6 +115,9 @@ make_box_screen(box_nbt) ->
 update_data(screen, player, action, data) ->
 (
 	if(action == 'slot_update' && global_pickup,
+		if(global_thrown == 'shulker' && !get_box_slot(),
+			close_screen(screen);
+		);
 		if(global_thrown == 'shulker',
 			update_box_inventory(screen, data),
 			global_thrown == 'ender',
@@ -124,13 +128,25 @@ update_data(screen, player, action, data) ->
 		global_pickup = true,
 		// On close, reset the global values
 		action == 'close',
-		delete(global_screens, global_thrown);
+		if(screen == 'generic_9x3_screen' && global_pickup && data:'slot' < inventory_size('enderchest',player),
+			delete(global_screens:'ender');
+			global_nest = true,
+			delete(global_screens:global_thrown);
+		);
+		if(global_nest && global_thrown == 'shulker' && screen == 'shulker_box_screen',
+			delete(global_screens:'shulker');
+			global_thrown = 'ender';
+			global_screens:'ender' = null;
+			global_nest = false;
+			schedule(0,'make_box_screen',null);
+		);
 		if(global_screens == {},
 			global_box_name = null;
 			global_inventory = null;
 			global_pickup = false;
 			global_thrown = null;
 			global_screens = {};
+			global_nest = false
 		);
 	);
 );
@@ -138,23 +154,7 @@ update_data(screen, player, action, data) ->
 // Changes the box item's inventory to match the screen
 update_box_inventory(screen, data) ->
 (
-	// Save the player to a variable for the upcoming loop
-	p = player();
-	box_slot = first([range(36)],
-		if(item_tuple = inventory_get(p, _),
-			// Unpack for later usage, might not need to do this, might be too expensive
-			[item, count, nbt] = copy(item_tuple);
-			// It's gotta be a box with a stack size of 1 and the correct name from earlier
-			item ~ 'shulker_box$' && count == 1 && (nametag = nbt:'display.Name') != null && parse_nbt(nametag):'text' == global_box_name,
-			false
-		);
-	);
-
-	// If the box is not in the inventory, close the screen(gonna be done later)
-	// Otherwise set the updated inventory to the item nbt
-	if(// box_slot == null,
-		// schedule(0,_(screen) -> close_screen(screen), screen),
-		box_slot != null,
+	if([box_slot, item, count, nbt] = get_box_slot(),
 		slot = data:'slot';
 		if(slot < 27,
 			stack = data:'stack';
@@ -178,9 +178,30 @@ update_box_inventory(screen, data) ->
 				parsed_nbt:'BlockEntityTag':'Items' = global_inventory;
 			);
 			// Set the item in the player's inventory
-			inventory_set(p, box_slot, count, item, encode_nbt(parsed_nbt));
+			inventory_set(player(), box_slot, count, item, encode_nbt(parsed_nbt));
 		);
 	);
+);
+
+get_box_slot() ->
+(
+	// Save the player to a variable for the upcoming loop
+	p = player();
+	if(global_screens:global_thrown,
+		cursor = inventory_get(global_screens:global_thrown,-1);
+	);
+	slot_range = [...range(36),40,-1];
+	first([...filter(inventory_get(p),_i < 36 || _i == 40), cursor],
+		if(_,
+			// Unpack for later usage, might not need to do this, might be too expensive
+			[item, count, nbt] = copy(_);
+			slot = slot_range:_i;
+			// It's gotta be a box with a stack size of 1 and the correct name from earlier
+			item ~ 'shulker_box$' && count == 1 && (nametag = nbt:'display.Name') != null && parse_nbt(nametag):'text' == global_box_name,
+			false
+		);
+	);
+	[slot, item, count, nbt]
 );
 
 // Set the given slot and stack at the right spot
