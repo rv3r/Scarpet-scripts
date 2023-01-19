@@ -114,10 +114,10 @@ make_box_screen(box_nbt) ->
 // Screen got updated! Better do something...
 update_data(screen, player, action, data) ->
 (
+	if(global_thrown == 'shulker' && action == 'pickup' && data:'slot' == null && get_box_slot():0 == -1,
+		close_screen(screen);
+	);
 	if(action == 'slot_update' && global_pickup,
-		if(global_thrown == 'shulker' && !get_box_slot(),
-			close_screen(screen);
-		);
 		if(global_thrown == 'shulker',
 			update_box_inventory(screen, data),
 			global_thrown == 'ender',
@@ -140,13 +140,13 @@ update_data(screen, player, action, data) ->
 			global_nest = false;
 			schedule(0,'make_box_screen',null);
 		);
-		if(global_screens == {},
+		if(global_screens == {} && !global_allowed,
 			global_box_name = null;
+			global_item_nbt = null;
 			global_inventory = null;
 			global_pickup = false;
 			global_thrown = null;
-			global_screens = {};
-			global_nest = false
+			global_nest = false;
 		);
 	);
 );
@@ -154,7 +154,7 @@ update_data(screen, player, action, data) ->
 // Changes the box item's inventory to match the screen
 update_box_inventory(screen, data) ->
 (
-	if([box_slot, item, count, nbt] = get_box_slot(),
+	if([box_slot, item, count, nbt] = get_box_slot() || return(),
 		slot = data:'slot';
 		if(slot < 27,
 			stack = data:'stack';
@@ -191,7 +191,7 @@ get_box_slot() ->
 		cursor = inventory_get(global_screens:global_thrown,-1);
 	);
 	slot_range = [...range(36),40,-1];
-	first([...filter(inventory_get(p),_i < 36 || _i == 40), cursor],
+	box = first([...filter(inventory_get(p),_i < 36 || _i == 40), cursor],
 		if(_,
 			// Unpack for later usage, might not need to do this, might be too expensive
 			[item, count, nbt] = copy(_);
@@ -201,7 +201,10 @@ get_box_slot() ->
 			false
 		);
 	);
-	[slot, item, count, nbt]
+	if(box,
+		[slot, item, count, nbt],
+		null
+	);
 );
 
 // Set the given slot and stack at the right spot
