@@ -38,6 +38,9 @@ get_thrown_item(pos) ->
 		// Check if it's a shulker box
 		// With 'open' in the name(borrowed from shulkerboxes.sc, that thing's a gold mine!)
 		if((name = get_item_id(global_item_nbt)) ~ 'shulker_box$' && (global_box_name = parse_nbt(global_item_nbt:'Item':'tag':'display':'Name'):'text') ~ 'open',
+			if(global_replace,
+				schedule(0,'replace_box',global_replace_slot);
+			);
 			global_thrown = 'shulker';
 			global_screens:'shulker' = null;
 			pickup(item_entity),
@@ -102,10 +105,7 @@ make_box_screen(box_nbt) ->
 		for(range(inventory_size('enderchest',player())),
 			item_tuple = global_inventory:_;
 			if(item_tuple != null,
-				if(item_tuple:2 == null,
-					inventory_set(global_screens:global_thrown, _, item_tuple:1, item_tuple:0),
-					inventory_set(global_screens:global_thrown, _, item_tuple:1, item_tuple:0, item_tuple:2)
-				);
+				inventory_set(global_screens:global_thrown, _, ...reorder_tuple(item_tuple))
 			);
 		);
 	);
@@ -114,6 +114,11 @@ make_box_screen(box_nbt) ->
 // Screen got updated! Better do something...
 update_data(screen, player, action, data) ->
 (
+	if(action == 'throw',
+		global_replace = true;
+		global_replace_slot = data:'slot';
+		schedule(0,_() -> global_replace = false);
+	);
 	if(global_thrown == 'shulker' && action == 'pickup' && data:'slot' == null && get_box_slot():0 == -1,
 		close_screen(screen);
 	);
@@ -130,7 +135,7 @@ update_data(screen, player, action, data) ->
 		action == 'close',
 		if(screen == 'generic_9x3_screen' && global_pickup && data:'slot' < inventory_size('enderchest',player),
 			delete(global_screens:'ender');
-			global_nest = true,
+			global_nest = true;,
 			delete(global_screens:global_thrown);
 		);
 		if(global_nest && global_thrown == 'shulker' && screen == 'shulker_box_screen',
@@ -156,6 +161,11 @@ update_box_inventory(screen, data) ->
 (
 	if([box_slot, item, count, nbt] = get_box_slot() || return(),
 		slot = data:'slot';
+		if(box_slot ~ 'e',
+			box_slot = number(box_slot - 'e');
+			e = true,
+			e = false;
+		);
 		if(slot < 27,
 			stack = data:'stack';
 			set_box_stack(slot, stack);
@@ -178,7 +188,11 @@ update_box_inventory(screen, data) ->
 				parsed_nbt:'BlockEntityTag':'Items' = global_inventory;
 			);
 			// Set the item in the player's inventory
-			inventory_set(player(), box_slot, count, item, encode_nbt(parsed_nbt));
+			if(e,
+				inv = ['enderchest', player()],
+				inv = [player()];
+			);
+			inventory_set(...inv, box_slot, count, item, encode_nbt(parsed_nbt));
 		);
 	);
 );
@@ -191,11 +205,14 @@ get_box_slot() ->
 		cursor = inventory_get(global_screens:global_thrown,-1);
 	);
 	slot_range = [...range(36),40,-1];
-	box = first([...filter(inventory_get(p),_i < 36 || _i == 40), cursor],
+	box = first([...filter(inventory_get(p),_i < 36 || _i == 40), cursor, ...inventory_get('enderchest',p)],
 		if(_,
 			// Unpack for later usage, might not need to do this, might be too expensive
 			[item, count, nbt] = copy(_);
-			slot = slot_range:_i;
+			if(_i < 37,
+				slot = slot_range:_i,
+				slot = slot_range:_i + 'e';
+			);
 			// It's gotta be a box with a stack size of 1 and the correct name from earlier
 			item ~ 'shulker_box$' && count == 1 && (nametag = nbt:'display.Name') != null && parse_nbt(nametag):'text' == global_box_name,
 			false
@@ -247,4 +264,22 @@ update_ender_inventory(screen, data) ->
 	if(slot < inventory_size('enderchest',player()),
 		inventory_set('enderchest',player(),slot, data:'stack':1, data:'stack':0, data:'stack':2);
 	);
+);
+
+replace_box(old_slot) ->
+(
+	p = player();
+	current = get_box_slot():0;
+	box = inventory_get(p,current);
+	if(inventory_set(p,current,0),
+		inventory_set('enderchest',p,old_slot,...reorder_tuple(box))
+	)
+);
+
+reorder_tuple(item_tuple) ->
+(
+	if(item_tuple:2 == null,
+		[item_tuple:1, item_tuple:0],
+		[item_tuple:1, item_tuple:0, item_tuple:2]
+	)
 );
