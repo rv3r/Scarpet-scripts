@@ -197,7 +197,7 @@ update_box_inventory(screen, data) ->
 				inv = ['enderchest', player()],
 				inv = [player()];
 			);
-			inventory_set(...inv, box_slot, count, item, encode_nbt(parsed_nbt));
+			inventory_set(...inv, box_slot, count, if(item ~ ':', item, 'minecraft:' + item), encode_nbt(parsed_nbt));
 		);
 	);
 );
@@ -245,7 +245,7 @@ set_box_stack(slot, stack) ->
 		),
 		// Otherwise if we found the slot, set the new values
 		found,
-		global_inventory:changed_slot:'id' = stack:0;
+		global_inventory:changed_slot:'id' = if(stack:0 ~ ':', stack:0, 'minecraft:' + stack:0);
 		global_inventory:changed_slot:'Count' = stack:1;
 		if(stack:2 != null,
 			global_inventory:changed_slot:'tag' = parse_nbt(stack:2),
@@ -254,7 +254,7 @@ set_box_stack(slot, stack) ->
 		// If we didn't find the slot, make a new entry for the item
 		data = {};
 		data:'Slot' = slot;
-		data:'id' = stack:0;
+		data:'id' = if(stack:0 ~ ':', stack:0, 'minecraft:' + stack:0);
 		data:'Count' = stack:1;
 		if(stack:2 != null,
 			data:'tag' = parse_nbt(stack:2);
@@ -267,7 +267,7 @@ update_ender_inventory(screen, data) ->
 (
 	slot = data:'slot';
 	if(slot < inventory_size('enderchest',player()),
-		inventory_set('enderchest',player(),slot, data:'stack':1, data:'stack':0, data:'stack':2);
+		inventory_set('enderchest',player(),slot, data:'stack':1, if(data:'stack':0 ~ ':', data:'stack':0, 'minecraft:' + data:'stack':0), data:'stack':2);
 	);
 );
 
@@ -284,7 +284,7 @@ replace_box(old_slot) ->
 reorder_tuple(item_tuple) ->
 (
 	if(item_tuple:2 == null,
-		[item_tuple:1, item_tuple:0],
-		[item_tuple:1, item_tuple:0, item_tuple:2]
+		[item_tuple:1, if(item_tuple:0 ~ ':', item_tuple:0, 'minecraft:' + item_tuple:0)],
+		[item_tuple:1, if(item_tuple:0 ~ ':', item_tuple:0, 'minecraft:' + item_tuple:0), item_tuple:2]
 	)
 );
