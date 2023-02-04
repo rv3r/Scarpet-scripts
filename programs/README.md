@@ -64,8 +64,7 @@ Makes a player face away from a specified side of a Nether portal after a dimens
 `/portalorient solid` - makes the player face the portal side with fewer solid blocks
 
 # Potion Bow
-
-Requires my projectile_hit.scl library.
+### Requires my projectile_hit.scl library
 
 Hit a bow item with a lingering potion to apply that effect to the bow. Arrows fired from the bow become a splash potion with that effect. Potion effect can be changed at any time. Useful for effects such as water breathing, fire resistance, slow falling, healing, or really any effect. Or maybe you can just take out campfires from afar with your new splash water bottle bow.
 
