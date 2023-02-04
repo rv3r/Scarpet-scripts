@@ -44,7 +44,7 @@ Draws ellipsoids(default green color) with `draw_shape()` instead of setting blo
 Shift right-click on an end portal frame containing an eye of ender to remove the eye. Note that an existing portal will be removed.
 
 # Inventory Sort
-### Requires my inventory.scl library
+### Requires my [inventory.scl](https://github.com/rv3r/Scarpet-scripts/blob/main/libraries/inventory.scl) library
 ### This is still missing features for deleting and overwriting of preferences
 Allows players to set up inventory preferences for later sorting with a single command(`/invsort`). Each slot can be individually tailored based on what the player currently has in their inventory. It is suggested that you remove all but the essentials before `/invsort setup`.
 
@@ -64,7 +64,7 @@ Makes a player face away from a specified side of a Nether portal after a dimens
 `/portalorient solid` - makes the player face the portal side with fewer solid blocks
 
 # Potion Bow
-### Requires my projectile_hit.scl library
+### Requires my [projectile_hit.scl](https://github.com/rv3r/Scarpet-scripts/blob/main/libraries/projectile_hit.scl) library
 
 Hit a bow item with a lingering potion to apply that effect to the bow. Arrows fired from the bow become a splash potion with that effect. Potion effect can be changed at any time. Useful for effects such as water breathing, fire resistance, slow falling, healing, or really any effect. Or maybe you can just take out campfires from afar with your new splash water bottle bow.
 
@@ -97,7 +97,7 @@ Displays predicted path and landing of player-launched projectiles when held in 
 `/tracer track <track_bool>` - toggles tracking of in-flight projectile path and landing position
 
 # Volume
-### Requires my rv3r_math.scl library
+### Requires my [rv3r_math.scl](https://github.com/rv3r/Scarpet-scripts/blob/main/libraries/rv3r_math.scl) library
 Attack blocks around your build with a mainhand golden sword to make triangles until you obtain the region you want to manipulate.
 
 ### Data Manipulation
