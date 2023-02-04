@@ -52,9 +52,7 @@ Allows players to set up inventory preferences for later sorting with a single c
 Heals players if they fall into the void. This script assumes you've fallen into the void in the End as it will teleport you back to the End platform after 10 seconds if you fail to leave the void. Useful for when the server lets you glitch through the world and fall into the void. There's no point in losing your stuff if it wasn't your fault.
 
 # Open Box
-Put 'open' in a shulker box name and throw to open. Close the screen like usual when done.
-
-Known issue: pick up the box while in the screen to delete the box and its contents.
+Put 'open' in a shulker box name and throw to open. Close the screen like usual when done. Also works with your ender chest. Throwing a box from the ender chest creates a "nested" screen that brings you back to the ender chest. Box item is also returned to the ender chest.
 
 # Portal Orient
 Makes a player face away from a specified side of a Nether portal after a dimension change. Now you won't have to remember which way to face when getting in the portal. Settings are player specific and script will do nothing if each side has the same number of valid blocks.
@@ -64,6 +62,12 @@ Makes a player face away from a specified side of a Nether portal after a dimens
 `/portalorient air` - makes the player face the portal side with more air blocks
 
 `/portalorient solid` - makes the player face the portal side with fewer solid blocks
+
+# Potion Bow
+
+Requires my projectile_hit.scl library.
+
+Hit a bow item with a lingering potion to apply that effect to the bow. Arrows fired from the bow become a splash potion with that effect. Potion effect can be changed at any time. Useful for effects such as water breathing, fire resistance, slow falling, healing, or really any effect. Or maybe you can just take out campfires from afar with your new splash water bottle bow.
 
 # Smelter Debug
 Aids in debugging while designing smelter arrays by reducing need to open furnace GUIs. Hold coal and right-click on two corners of a cuboid to cache all furnaces, smokers, and blast furnaces in the region. Shift right-click on any furnace variant to compare all other furnace variants of the same type. Cuboid region and main furnace variant can always be overwritten.
