@@ -224,18 +224,18 @@ __display() ->
 				text = str(_);
 				//figure out proper color based on error status
 				if(_ == 0,
-					color = 0x00FF00FF,
+					color = 0x00FF0055,
 					type(_) == 'list',
 					//overwrite relevant text if necessary
 					text = 'Item';
-					color = 0xFF0000FF,
-					color = 0xFFFF00FF
+					color = 0xFF000055,
+					color = 0xFFFF0055
 				);
 				//center of the current box and label, more index + 1 for more hacky rotation
 				shape_center = face_center + box_offsets:_i:0 * offsets:(face_index + 1) + [0,box_offsets:_i:1,0];
 				//draw for 2 ticks because sometimes it flashes oddly, send only to player
-				shapelist += ['box',2,player,p,'color',color,'fill',color,'from',shape_center + shape_corner,'to',shape_center - shape_corner + 0.02 * offsets:face_index];
-				shapelist += ['label',2,player,p,'text',text,'pos',shape_center + 0.03 * offsets:face_index - [0,0.125,0],'color',0x000000FF,'facing',facing]
+				shapelist += ['box',2,'player',p,'color',color,'fill',color,'from',shape_center + shape_corner,'to',shape_center - shape_corner + 0.02 * offsets:face_index];
+				shapelist += ['label',2,'player',p,'text',text,'pos',shape_center + 0.03 * offsets:face_index - [0,0.125,0],'color',0x000000FF,'facing',facing]
 			)
 		)
 	);
