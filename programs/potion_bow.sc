@@ -21,6 +21,9 @@ handle_event('projectile_hit',
 __on_player_releases_item(player, item_tuple, hand) ->
 (
 	[item, count, nbt] = item_tuple;
+	if(!nbt,
+		return();
+	);
 	if(item ~ 'bow$' && effect = nbt:'potion_effect',
 		// arrow starts 0.1 blocks below player eyes
 		arrow = entity_area('arrows',player ~ 'pos' + [0,player ~ 'eye_height' - 0.1,0],[0.000001,0.000001,0.000001]):0;
