@@ -60,7 +60,7 @@ __on_player_releases_item(player, item_tuple, hand) ->
 __replace_arrow_with_potion(player, item_tuple) ->
 (
 	[item, count, nbt] = item_tuple;
-	if(!nbt,
+	if(!nbt || !(nbt:'potion_effect'),
 		return();
 	);
 	if((item == 'bow' || item == 'crossbow') && effect = nbt:'potion_effect',
