@@ -47,7 +47,7 @@ l(                                                    //main list
 
 It is suggested that you set a variable to the name of the file that you would like the blocks to be stored in, such as `global_appname = 'beehiveCount'` if used in config or just `appname = 'beehiveCount'` if in the main program. This variable should then be used in any method that requires `appname`.
 
-### Description of methods
+## Description of methods
 * `__initialize(appname)` - `appname`(string)
   - if the current script does not already have an associated file for saving blocks, creates the file, otherwise does nothing
     - It is suggested that you call this in the config of the app or at the beginning of the main program.
@@ -155,7 +155,7 @@ Uses three common list structures as additional data types
 # [Inventory Library](https://github.com/rv3r/Scarpet-scripts/blob/main/libraries/inventory.scl)
 Imitates some common actions a player takes.
 
-### Description of methods
+## Description of methods
 * `__shiftclick(source,slot,destination)` - `source`(entity or block with inventory),`slot`(integer),`destination`(entity or block with inventory)
   - shift-clicks item in `slot` from `source` inventory to `destination` inventory
   - imitates 'shift-clicking' of a stack from inventory to another
@@ -182,31 +182,10 @@ Imitates some common actions a player takes.
     - currently takes only blocks and will overwrite anything
   - if `player` is in creative or survival `player` has requisite block(s), places `block` at `pos`
 
-# [Projectile Hit Library](https://github.com/rv3r/Scarpet-scripts/blob/main/libraries/projectile_hit.scl)
-Mirrors original Minecraft code to detect projectile hits. On starting, sets up entity load handlers to signal events every time a projectile hits an entity. Event `projectile_hit` passes original projectile entity, throwing entity, and hit entity.
-
-### Description of methods
-* `__handle_entity_hits(...projectiles)` - `projectiles`(nonzero comma separated strings)
-  - sets up entity load handler for the listed projectiles and signals event `projectile_hit` when any of those projectiles collide with an entity
-* `__get_hit_entity(entity, ...args)` - `entity`(entity if `args` is length 0, entity or string if `args` is length 2, anything if `args` is length 4),`args`(see below)
-  - returns entity that `entity` is about to collide with or `null` if no collision is predicted
-  - `args` option 1: empty
-    - requires `entity` to be the entity of interest
-    - allows predicting entity collision of `entity` at `position` with `motion`
-  - `args` option 2: `[position, motion]`
-    - requires `entity` to be the entity or a string describing the type of the projectile entity
-    - if `entity` is a string, library will get width and height itself and use those for calculations, so entity doesn't strictly need to exist
-    - allows predicting entity collision if `entity` was in `position` with `motion`
-  - `args` option 2: `[position, motion, width, height]`
-    - function will just trust whatever values you gave it, so `width` and `height` can be whatever values your heart desires
-    - this also means that the function has no need for `entity`, so you can pass it your thesis for all I care
-    - function will take absolute value of your `width` and `height` inputs, so negatives are allowed but never suggested
-    - allows predicting entity collision if `entity` existed at `position` with `motion` and has `width` and `height`
-
 # [Math Library](https://github.com/rv3r/Scarpet-scripts/blob/main/libraries/rv3r_math.scl)
 My personal library of math functions that my scripts require.
 
-### Description of methods
+## Description of methods
 * `__vector(point1,point2)` - `point1`(float list),`point2`(float list of equal length)
   - returns a vector pointing from `point1` to `point2`
 * `__magnitude(vector)` - `vector`(float list)
@@ -234,3 +213,60 @@ My personal library of math functions that my scripts require.
   - determines if a 4th point is in the same plane as three other points
 * `__heron(a,b,c)` - `a`(float),`b`(float),`c`(float)
   - finds area of a triangle with side lengths `a`, `b`, and `c` using Heron's semiperimeter formula
+
+# [Projectile Hit Library](https://github.com/rv3r/Scarpet-scripts/blob/main/libraries/projectile_hit.scl)
+Mirrors original Minecraft code to detect projectile hits. On starting, sets up entity load handlers to signal events every time a projectile hits an entity. Event `projectile_hit` passes original projectile entity, throwing entity, and hit entity.
+
+## Description of methods
+* `__handle_entity_hits(...projectiles)` - `projectiles`(nonzero comma separated strings)
+  - sets up entity load handler for the listed projectiles and signals event `projectile_hit` when any of those projectiles collide with an entity
+* `__get_hit_entity(entity, ...args)` - `entity`(entity if `args` is length 0, entity or string if `args` is length 2, anything if `args` is length 4),`args`(see below)
+  - returns entity that `entity` is about to collide with or `null` if no collision is predicted
+  - `args` option 1: empty
+    - requires `entity` to be the entity of interest
+    - allows predicting entity collision of `entity` at `position` with `motion`
+  - `args` option 2: `[position, motion]`
+    - requires `entity` to be the entity or a string describing the type of the projectile entity
+    - if `entity` is a string, library will get width and height itself and use those for calculations, so entity doesn't strictly need to exist
+    - allows predicting entity collision if `entity` was in `position` with `motion`
+  - `args` option 2: `[position, motion, width, height]`
+    - function will just trust whatever values you gave it, so `width` and `height` can be whatever values your heart desires
+    - this also means that the function has no need for `entity`, so you can pass it your thesis for all I care
+    - function will take absolute value of your `width` and `height` inputs, so negatives are allowed but never suggested
+    - allows predicting entity collision if `entity` existed at `position` with `motion` and has `width` and `height`
+
+# [Quaternion Library](https://github.com/rv3r/Scarpet-scripts/blob/main/libraries/quaternions.scl)
+Uses [classes.scl](https://github.com/gnembon/scarpet/blob/38ce6bac031ad74470292a3ea687e7f051b6bc57/programs/fundamentals/classes.scl) to implement quaternions in scarpet. I have never studied or used quaternions until now so use at your own risk.
+
+## Description of methods
+### Quaternion initialization
+* `quaternion(real, i, j, k)` - `real`(number), `i`(number), `j`(number), `k`(number)
+  - returns a quaternion object
+  - takes 1-4 numbers and returns the quaternion object represented by them
+  - if given fewer than 4 arguments, sets ending components to 0
+    - quaternion(-2,1) -> -2 + 1i + 0j + 0k
+* `quaternion(components)` - `components`(list of 1-4 numbers)
+  - same as above, but takes a list rather than individual components
+
+### Object-specific methods as called by `call_function(object, 'function_name', ...args)`
+* `components` - no arguments
+  - returns a list of 4 numbers
+  - `call_function(quaternion(-2,0,3,5),'components') -> [-2,0,3,5]`
+* `norm` - no arguments
+  - returns a number
+* `unit` - no arguments
+  - returns a quaternion object
+* `conjugate` - no arguments
+  - returns a quaternion object
+  - `call_function(quaternion(-2,0,3,5),'conjugate') -> 6.16`
+* `inverse` - no arguments
+  - returns a quaternion object
+* `sum` - quaternion
+  - returns a quaternion object
+  - `call_function(quaternion(-2,0,3,5),'sum',quaternion(10,4,-13,6) == quaternion(8,4,-10,11)`
+* `difference` - quaternion
+  - returns a quaternion object
+* `product` - quaternion
+  - returns a quaternion object
+* `quotient` - quaternion
+  - returns a quaternion object
