@@ -236,7 +236,7 @@ Mirrors original Minecraft code to detect projectile hits. On starting, sets up 
     - allows predicting entity collision if `entity` existed at `position` with `motion` and has `width` and `height`
 
 # [Quaternion Library](https://github.com/rv3r/Scarpet-scripts/blob/main/libraries/quaternions.scl)
-Uses [classes.scl](https://github.com/gnembon/scarpet/blob/38ce6bac031ad74470292a3ea687e7f051b6bc57/programs/fundamentals/classes.scl) to implement quaternions in scarpet. I have never studied or used quaternions until now so use at your own risk.
+Uses [classes.scl](https://github.com/gnembon/scarpet/blob/38ce6bac031ad74470292a3ea687e7f051b6bc57/programs/fundamentals/classes.scl) to implement quaternions in scarpet. I have never studied or used quaternions until about 5 minutes ago so use at your own risk.
 
 ## Description of methods
 ### Quaternion initialization
