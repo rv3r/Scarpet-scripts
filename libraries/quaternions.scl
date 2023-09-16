@@ -117,8 +117,3 @@ __init_quaternion(list) ->
 		new_object(global_quaternion_class, ...list)
 	)
 );
-
-p(a) ->
-(
-	print(player('rovxr'),a);
-);
