@@ -1,0 +1,124 @@
+import('classes','new_class','call_function','new_object');
+
+global_quaternion_class = new_class('Quaternion',
+	{
+		['real', null],
+		['i', null],
+		['j', null],
+		['k', null],
+		['__init__',
+			_(self, ...args) ->
+			(
+				p(args);
+				self:'real' = args:0;
+				self:'i' = args:1;
+				self:'j' = args:2;
+				self:'k' = args:3;
+				self
+			),
+		],
+		['components',
+			_(self) ->
+			(
+				[self,[self:'real',self:'i',self:'j',self:'k']]
+			)
+		],
+		['norm',
+			_(self) ->
+			(
+				[self,sqrt(reduce([self:'real',self:'i',self:'j',self:'k'],_a + _ ^ 2,0))]
+			)
+		],
+		['unit',
+			_(self) ->
+			(
+				l = [
+					self:'count',
+					self:'id',
+					self:'item_nbt'
+				];
+				[self,quaternion(call_function(self,'components') / call_function(self,'norm'))]
+			)
+		],
+		['conjugate',
+			_(self) ->
+			(
+				[self,quaternion([1,-1,-1,-1] * call_function(self,'components'))]
+			)
+		],
+		['inverse',
+			_(self) ->
+			(
+				[self,quaternion(call_function(call_function(self,'conjugate'),'components') / call_function(self,'norm') ^ 2)]
+			)
+		],
+		['sum',
+			_(self,q) ->
+			(
+				if(q:'__name__' != self:'__name__',
+					throw('invalid_quaterion','value_exception',q)
+				);
+				[self,quaternion(call_function(self,'components') + call_function(q,'components'))]
+			)
+		],
+		['difference',
+			_(self,q) ->
+			(
+				if(q:'__name__' != self:'__name__',
+					throw('invalid_quaterion','value_exception',q)
+				);
+				[self,quaternion(call_function(self,'components') - call_function(q,'components'))]
+			)
+		],
+		['product',
+			_(self,q) ->
+			(
+				if(q:'__name__' != self:'__name__',
+					throw('invalid_quaterion','value_exception',q)
+				);
+				q1 = call_function(self,'components');
+				q2 = call_function(q,'components');
+				[self,quaternion([q1:0*q2:0-q1:1*q2:1-q1:2*q2:2-q1:3*q2:3,q1:0*q2:1+q1:1*q2:0+q1:2*q2:3-q1:3*q2:2,q1:0*q2:2-q1:1*q2:3+q1:2*q2:0+q1:3*q2:1,q1:0*q2:3+q1:1*q2:2-q1:2*q2:1+q1:3*q2:0])]
+			)
+		],
+		['quotient',
+			_(self,q) ->
+			(
+				if(q:'__name__' != self:'__name__',
+					throw('invalid_quaterion','value_exception',q)
+				);
+				[self,call_function(self,'product',call_function(q,'inverse'))]
+			)
+		]
+	}
+);
+
+quaternion(...args) ->
+(
+	t = type(args:0);
+	l = length(args);
+ 	if(t == 'list' && l == 1 && length(args:0) < 5 && all(map(args:0,type(_)),_ == 'number'),
+		__init_quaternion(args:0),
+		t == 'number' && l < 5 && all(map(args,type(_)),_ == 'number'),
+		__init_quaternion(args),
+		throw('invalid_quaternion','value_exception','Must initialize quaternion as 4 or fewer numbers or as a list of 4 or fewer numbers')
+	);
+);
+
+__init_quaternion(list) ->
+(
+	l = length(list);
+	if(l == 1,
+		new_object(global_quaternion_class, ...list,0,0,0),
+		l == 2,
+		new_object(global_quaternion_class, ...list,0,0),
+		l == 3,
+		new_object(global_quaternion_class, ...list,0),
+		new_object(global_quaternion_class, ...list)
+	)
+);
+
+p(a) ->
+(
+	print(player('rovxr'),a);
+);
