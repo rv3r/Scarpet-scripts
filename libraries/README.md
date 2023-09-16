@@ -244,29 +244,31 @@ Uses [classes.scl](https://github.com/gnembon/scarpet/blob/38ce6bac031ad74470292
   - returns a quaternion object
   - takes 1-4 numbers and returns the quaternion object represented by them
   - if given fewer than 4 arguments, sets ending components to 0
-    - quaternion(-2,1) -> -2 + 1i + 0j + 0k
+    - `quaternion(-2,1) == quaternion(-2,1,0,0)`
 * `quaternion(components)` - `components`(list of 1-4 numbers)
   - same as above, but takes a list rather than individual components
+    - `quaternion([-2,1]) == quaternion(-2,1,0,0)`
 
 ### Object-specific methods as called by `call_function(object, 'function_name', ...args)`
 * `components` - no arguments
-  - returns a list of 4 numbers
+  - returns a list of 4 numbers representing the real, i, j, and k components of the quaternion
   - `call_function(quaternion(-2,0,3,5),'components') -> [-2,0,3,5]`
 * `norm` - no arguments
-  - returns a number
+  - returns a number equal to the quaternion's norm
+  - `call_function(quaternion(-2,0,3,5),'norm') -> 6.16`
 * `unit` - no arguments
-  - returns a quaternion object
+  - returns a quaternion object equal to the original quaternion scaled down by its norm
 * `conjugate` - no arguments
-  - returns a quaternion object
-  - `call_function(quaternion(-2,0,3,5),'conjugate') -> 6.16`
+  - returns a quaternion object equal to `a - bi - cj - dk`
 * `inverse` - no arguments
-  - returns a quaternion object
+  - returns a quaternion object equal to the multiplicative inverse of the original quaternion
 * `sum` - quaternion
-  - returns a quaternion object
+  - returns a quaternion object equal to the componentwise sum of the two quaternions
   - `call_function(quaternion(-2,0,3,5),'sum',quaternion(10,4,-13,6) == quaternion(8,4,-10,11)`
 * `difference` - quaternion
-  - returns a quaternion object
+  - returns a quaternion object equal to the componentwise difference of the two quaternions
 * `product` - quaternion
-  - returns a quaternion object
+  - returns a quaternion object equal to the product of the two quaternions by the distributive property and quaternions multiplication rules
+  - `i^2 = j^2 = k^2 = ijk = -1`
 * `quotient` - quaternion
-  - returns a quaternion object
+  - returns a quaternion object equal to the product of the first quaternion and the inverse of the second quaternion
